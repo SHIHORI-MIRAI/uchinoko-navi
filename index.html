@@ -3,964 +3,247 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>うちの子ナビ（仮） — 愛犬との暮らしの伴走者</title>
+<title>うちの子ナビ｜愛犬との暮らしの伴走者 — 犬種・月齢に合わせたケアを無料で</title>
+<meta name="description" content="犬種・月齢・暮らしに合わせて『今この子にいいこと』を提案する無料Webアプリ。社会化・しつけ・運動・フード量・体重管理まで、科学にもとづいてやさしく伴走します。登録不要・データは端末内のみ。">
+<meta property="og:title" content="うちの子ナビ｜愛犬との暮らしの伴走者">
+<meta property="og:description" content="犬種・月齢・暮らしに合わせた愛犬ケアを、無料・登録不要で。今この子にいいことが、すぐわかる。">
+<meta property="og:type" content="website">
 <style>
   :root{
     --bg:#fbf7f1; --panel:#ffffff; --ink:#2c2622; --sub:#6f655c;
     --accent:#d97324; --accent-dark:#b85c14; --accent-soft:#fdecd9;
-    --line:#ece3d8; --good:#2f8f5b; --warn:#c0392b; --warn-soft:#fdecea;
-    --shadow:0 2px 10px rgba(120,90,50,.08);
+    --line:#ece3d8; --good:#2f8f5b;
+    --shadow:0 6px 24px rgba(120,90,50,.10);
+    --shadow-lg:0 16px 50px rgba(120,90,50,.18);
   }
   *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
   body{
     margin:0; background:var(--bg); color:var(--ink);
     font-family:"Yu Gothic UI","Hiragino Sans","Hiragino Kaku Gothic ProN",Meiryo,"Segoe UI",sans-serif;
-    line-height:1.7; font-size:15px;
+    line-height:1.8; font-size:16px;
   }
-  header.appbar{
-    background:linear-gradient(135deg,var(--accent),var(--accent-dark));
-    color:#fff; padding:18px 22px; box-shadow:var(--shadow);
-  }
-  header.appbar h1{margin:0; font-size:20px; letter-spacing:.5px}
-  header.appbar p{margin:4px 0 0; font-size:12.5px; opacity:.92}
-  .disclaimer{
-    background:var(--accent-soft); color:#8a5a22; font-size:12px;
-    padding:8px 22px; border-bottom:1px solid var(--line);
-  }
-  .wrap{max-width:1040px; margin:0 auto; padding:22px 18px 60px}
-  .card{
-    background:var(--panel); border:1px solid var(--line); border-radius:14px;
-    padding:20px 22px; margin-bottom:18px; box-shadow:var(--shadow);
-  }
-  h2.section{font-size:17px; margin:0 0 14px; display:flex; align-items:center; gap:8px}
-  h2.section .em{font-size:20px}
-  label{display:block; font-size:13px; color:var(--sub); margin:12px 0 5px; font-weight:600}
-  input[type=text],input[type=number],select{
-    width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:10px;
-    font:inherit; background:#fffdfb; color:var(--ink);
-  }
-  input:focus,select:focus{outline:2px solid var(--accent-soft); border-color:var(--accent)}
-  .grid{display:grid; grid-template-columns:1fr 1fr; gap:6px 18px}
-  @media(max-width:640px){.grid{grid-template-columns:1fr}}
-  .chips{display:flex; flex-wrap:wrap; gap:8px; margin-top:6px}
-  .chip{
-    display:inline-flex; align-items:center; gap:6px; padding:7px 12px; border-radius:999px;
-    border:1px solid var(--line); background:#fff; cursor:pointer; font-size:13px; user-select:none;
-  }
-  .chip input{display:none}
-  .chip.on{background:var(--accent-soft); border-color:var(--accent); color:var(--accent-dark); font-weight:600}
+  a{color:inherit}
+  .wrap{max-width:1040px; margin:0 auto; padding:0 20px}
   .btn{
-    background:var(--accent); color:#fff; border:none; padding:12px 22px; border-radius:10px;
-    font:inherit; font-weight:700; cursor:pointer; box-shadow:var(--shadow);
+    display:inline-flex; align-items:center; gap:9px; background:var(--accent); color:#fff;
+    border:none; padding:16px 34px; border-radius:999px; font:inherit; font-weight:800; font-size:17px;
+    cursor:pointer; box-shadow:var(--shadow); text-decoration:none; transition:transform .12s,box-shadow .12s;
   }
-  .btn:hover{background:var(--accent-dark)}
-  .btn.ghost{background:#fff; color:var(--accent-dark); border:1px solid var(--accent)}
-  .row-actions{display:flex; gap:10px; flex-wrap:wrap; margin-top:18px}
-  .hint{font-size:12px; color:var(--sub); margin-top:4px}
-  /* guide */
-  .dogcard{
-    display:flex; align-items:center; gap:14px; background:linear-gradient(135deg,#fff,#fdf6ee);
-    border:1px solid var(--line); border-radius:14px; padding:16px 20px; margin-bottom:18px; box-shadow:var(--shadow);
+  .btn:hover{background:var(--accent-dark); transform:translateY(-2px); box-shadow:var(--shadow-lg)}
+  .btn.big{padding:18px 44px; font-size:19px}
+  .btn.ghost{background:#fff; color:var(--accent-dark); border:2px solid var(--accent); box-shadow:none}
+  .sub{color:var(--sub)}
+  .center{text-align:center}
+
+  /* ===== ナビ ===== */
+  nav.top{
+    position:sticky; top:0; z-index:20; background:rgba(251,247,241,.86); backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);
   }
-  .dogcard .avatar{font-size:38px; background:var(--accent-soft); width:60px; height:60px; border-radius:50%;
-    display:flex; align-items:center; justify-content:center}
-  .dogcard h2{margin:0; font-size:19px}
-  .dogcard .meta{font-size:13px; color:var(--sub); margin-top:2px}
-  .advice{
-    border:1px solid var(--line); border-left:4px solid var(--accent); border-radius:10px;
-    padding:13px 15px; margin:10px 0; background:#fffdfb;
+  nav.top .inner{display:flex; align-items:center; justify-content:space-between; height:60px}
+  nav.top .logo{font-weight:800; font-size:18px}
+  nav.top .logo span{color:var(--accent)}
+  nav.top .navcta{padding:9px 20px; font-size:14px}
+  @media(max-width:520px){nav.top .navcta{padding:8px 14px; font-size:13px}}
+
+  /* ===== ヒーロー ===== */
+  .hero{
+    background:radial-gradient(1200px 500px at 75% -10%, var(--accent-soft), transparent 60%),
+               linear-gradient(180deg,#fff,var(--bg));
+    padding:64px 0 48px;
   }
-  .advice.safety{border-left-color:var(--warn); background:var(--warn-soft)}
-  .advice .t{font-weight:700; font-size:14.5px}
-  .advice .a{margin:5px 0 0; font-size:13.5px}
-  .advice .why{margin-top:8px; font-size:12.5px; color:var(--sub); background:#f8f2ea; border-radius:8px; padding:8px 10px}
-  .advice .src{display:inline-block; margin-top:7px; font-size:11px; color:var(--accent-dark);
-    background:var(--accent-soft); padding:2px 8px; border-radius:999px}
-  .tag{font-size:11px; background:#eee7dd; color:var(--sub); padding:2px 8px; border-radius:999px; margin-left:6px}
-  .empty{color:var(--sub); font-size:13px; padding:6px 2px}
-  .stage-banner{background:var(--accent-soft); border-radius:10px; padding:12px 16px; margin-bottom:8px}
-  .stage-banner b{color:var(--accent-dark)}
-  footer{text-align:center; color:var(--sub); font-size:11.5px; margin-top:30px}
-  .pill{display:inline-block; font-size:11px; padding:2px 9px; border-radius:999px; background:var(--accent-soft); color:var(--accent-dark); margin-right:6px}
-  /* ペット切替 */
-  .petbar{display:flex; align-items:center; gap:8px; flex-wrap:wrap}
-  .petbar select{width:auto; min-width:150px; padding:8px 10px}
-  /* チェックリスト */
-  .advice.task .t{display:flex; align-items:flex-start; gap:9px; cursor:pointer}
-  .advice.task input.task-check{width:18px; height:18px; margin-top:1px; accent-color:var(--accent); cursor:pointer; flex:0 0 auto}
-  .advice.task.done{opacity:.62; background:#f4f8f4; border-left-color:var(--good)}
-  .advice.task.done .t span.tt{text-decoration:line-through; color:var(--sub)}
-  .progress{font-size:12.5px; color:var(--sub); margin:4px 2px 10px}
-  .progress b{color:var(--good)}
-  /* 体重記録 */
-  .wform{display:flex; gap:8px; align-items:flex-end; flex-wrap:wrap; margin-bottom:6px}
-  .wform .fld{display:flex; flex-direction:column}
-  .wform label{margin:0 0 4px}
-  .wform input{width:auto}
-  .wlog{list-style:none; padding:0; margin:10px 0 0}
-  .wlog li{display:flex; align-items:center; gap:10px; padding:6px 8px; border-bottom:1px dashed var(--line); font-size:13px}
-  .wlog li .wd{color:var(--sub); width:96px}
-  .wlog li .wk{font-weight:700}
-  .wlog li .wdel{margin-left:auto; border:none; background:none; color:var(--warn); cursor:pointer; font-size:15px; line-height:1}
-  .wgraph{width:100%; height:auto; margin:8px 0 4px}
-  .wgraph .gl{stroke:var(--line); stroke-width:1}
-  .wgraph .gline{fill:none; stroke:var(--accent); stroke-width:2}
-  .wgraph .gdot{fill:var(--accent)}
-  .wgraph text{fill:var(--sub); font-size:9px; font-family:inherit}
-  @media(max-width:640px){.dogcard{flex-wrap:wrap}}
-  /* 使い方ガイド（ヘルプ） */
-  .help-btn{
-    background:rgba(255,255,255,.18); color:#fff; border:1px solid rgba(255,255,255,.55);
-    padding:6px 13px; border-radius:999px; font:inherit; font-size:13px; font-weight:700; cursor:pointer;
+  .hero .inner{display:grid; grid-template-columns:1.15fr .85fr; gap:30px; align-items:center}
+  @media(max-width:780px){.hero .inner{grid-template-columns:1fr; text-align:center}}
+  .badge{
+    display:inline-block; background:var(--accent-soft); color:var(--accent-dark);
+    font-size:13px; font-weight:700; padding:6px 14px; border-radius:999px; margin-bottom:18px;
   }
-  .help-btn:hover{background:rgba(255,255,255,.3)}
-  .appbar-top{display:flex; align-items:flex-start; justify-content:space-between; gap:12px}
-  .modal-bg{
-    position:fixed; inset:0; background:rgba(40,30,20,.5); display:none;
-    align-items:flex-start; justify-content:center; padding:24px 14px; z-index:50; overflow:auto;
+  .hero h1{font-size:42px; line-height:1.35; margin:0 0 16px; letter-spacing:.5px}
+  .hero h1 .hl{color:var(--accent); position:relative}
+  @media(max-width:520px){.hero h1{font-size:31px}}
+  .hero p.lead{font-size:18px; color:var(--sub); margin:0 0 28px}
+  .hero .cta-row{display:flex; gap:14px; flex-wrap:wrap}
+  @media(max-width:780px){.hero .cta-row{justify-content:center}}
+  .hero .note{font-size:13px; color:var(--sub); margin-top:14px}
+  .hero-card{
+    background:var(--panel); border:1px solid var(--line); border-radius:24px; padding:26px;
+    box-shadow:var(--shadow-lg); transform:rotate(-1.2deg);
   }
-  .modal-bg.on{display:flex}
-  .modal{
-    background:var(--panel); border-radius:16px; max-width:680px; width:100%;
-    padding:22px 24px 28px; box-shadow:0 12px 40px rgba(80,50,20,.25); position:relative;
+  .hero-card .dog{font-size:64px; text-align:center; margin-bottom:6px}
+  .hero-card h3{margin:0 0 4px; font-size:18px}
+  .hero-card .meta{display:flex; gap:7px; flex-wrap:wrap; margin:10px 0 14px}
+  .hero-card .pill{font-size:12px; background:var(--accent-soft); color:var(--accent-dark); padding:3px 11px; border-radius:999px}
+  .hero-card .task{display:flex; align-items:center; gap:10px; font-size:14px; padding:8px 0; border-top:1px dashed var(--line)}
+  .hero-card .task .ck{width:20px;height:20px;border-radius:6px;background:var(--good);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;flex:0 0 auto}
+  .hero-card .task .ck.off{background:#fff;border:2px solid var(--line)}
+
+  /* ===== セクション共通 ===== */
+  section.block{padding:62px 0}
+  section.block.alt{background:var(--panel); border-top:1px solid var(--line); border-bottom:1px solid var(--line)}
+  .h2{font-size:30px; text-align:center; margin:0 0 8px; letter-spacing:.5px}
+  @media(max-width:520px){.h2{font-size:24px}}
+  .h2sub{text-align:center; color:var(--sub); margin:0 auto 38px; max-width:620px}
+
+  /* 悩み */
+  .pains{display:grid; grid-template-columns:repeat(3,1fr); gap:18px}
+  @media(max-width:780px){.pains{grid-template-columns:1fr}}
+  .pain{background:var(--bg); border:1px solid var(--line); border-radius:16px; padding:22px; text-align:center}
+  .pain .em{font-size:34px}
+  .pain p{margin:8px 0 0; font-size:15px}
+
+  /* 特徴 */
+  .feats{display:grid; grid-template-columns:repeat(3,1fr); gap:20px}
+  @media(max-width:780px){.feats{grid-template-columns:1fr 1fr}}
+  @media(max-width:520px){.feats{grid-template-columns:1fr}}
+  .feat{background:var(--panel); border:1px solid var(--line); border-radius:18px; padding:24px; box-shadow:var(--shadow); transition:transform .12s}
+  section.block.alt .feat{background:var(--bg)}
+  .feat:hover{transform:translateY(-3px)}
+  .feat .ic{font-size:32px; width:58px; height:58px; border-radius:14px; background:var(--accent-soft); display:flex; align-items:center; justify-content:center; margin-bottom:14px}
+  .feat h3{margin:0 0 6px; font-size:18px}
+  .feat p{margin:0; font-size:14.5px; color:var(--sub)}
+
+  /* ステップ */
+  .steps{display:grid; grid-template-columns:repeat(3,1fr); gap:22px; counter-reset:s}
+  @media(max-width:780px){.steps{grid-template-columns:1fr}}
+  .step{position:relative; background:var(--panel); border:1px solid var(--line); border-radius:18px; padding:28px 24px 24px; box-shadow:var(--shadow)}
+  .step .num{position:absolute; top:-18px; left:24px; width:40px; height:40px; border-radius:50%; background:var(--accent); color:#fff; font-weight:800; font-size:19px; display:flex; align-items:center; justify-content:center; box-shadow:var(--shadow)}
+  .step h3{margin:10px 0 6px; font-size:18px}
+  .step p{margin:0; font-size:14.5px; color:var(--sub)}
+
+  /* 安心 */
+  .trust{display:grid; grid-template-columns:repeat(4,1fr); gap:16px}
+  @media(max-width:780px){.trust{grid-template-columns:1fr 1fr}}
+  .tcard{text-align:center; padding:18px}
+  .tcard .em{font-size:30px}
+  .tcard b{display:block; margin-top:6px; font-size:15px}
+  .tcard span{font-size:13px; color:var(--sub)}
+
+  /* 最終CTA */
+  .finalcta{
+    background:linear-gradient(135deg,var(--accent),var(--accent-dark)); color:#fff;
+    border-radius:24px; padding:48px 30px; text-align:center; box-shadow:var(--shadow-lg);
   }
-  .modal h2{margin:0 0 4px; font-size:20px}
-  .modal .lead{color:var(--sub); font-size:13.5px; margin:0 0 16px}
-  .modal .x{
-    position:absolute; top:14px; right:16px; border:none; background:none; font-size:24px;
-    color:var(--sub); cursor:pointer; line-height:1;
-  }
-  .step{display:flex; gap:13px; padding:13px 0; border-top:1px solid var(--line)}
-  .step .n{
-    flex:0 0 30px; height:30px; border-radius:50%; background:var(--accent); color:#fff;
-    display:flex; align-items:center; justify-content:center; font-weight:700; font-size:15px;
-  }
-  .step .st{font-weight:700; font-size:14.5px; margin:3px 0 4px}
-  .step .sd{font-size:13.5px; color:var(--ink)}
-  .step .sd b{color:var(--accent-dark)}
-  .tiplist{margin:14px 0 0; padding:14px 16px; background:var(--accent-soft); border-radius:12px; font-size:13px}
-  .tiplist .ti{display:flex; gap:8px; margin:7px 0}
-  .tiplist .ti:first-child{margin-top:0}
-  .tiplist .ti span:first-child{flex:0 0 auto}
-  /* 印刷 */
-  @media print{
-    header.appbar,.disclaimer,.row-actions,.btn,.help-btn,.modal-bg,#view-profile,.petbar,.wform,.wlog .wdel{display:none!important}
-    body{background:#fff; font-size:13px}
-    .wrap{padding:0}
-    .card,.dogcard{box-shadow:none; border-color:#ccc; break-inside:avoid; page-break-inside:avoid}
-    .advice .why{background:#f6f6f6}
-  }
+  .finalcta h2{font-size:28px; margin:0 0 10px}
+  @media(max-width:520px){.finalcta h2{font-size:22px}}
+  .finalcta p{margin:0 0 26px; opacity:.95}
+  .finalcta .btn{background:#fff; color:var(--accent-dark)}
+  .finalcta .btn:hover{background:#fff5ec}
+
+  footer{padding:34px 0 50px; text-align:center; color:var(--sub); font-size:12.5px}
+  footer .disc{background:var(--accent-soft); color:#8a5a22; border-radius:12px; padding:14px 18px; max-width:780px; margin:0 auto 18px; font-size:12.5px; text-align:left}
 </style>
 </head>
 <body>
-<header class="appbar">
-  <div class="appbar-top">
+
+<!-- ナビ -->
+<nav class="top">
+  <div class="wrap inner">
+    <div class="logo">🐾 うちの子<span>ナビ</span></div>
+    <a class="btn navcta" href="app.html">アプリを使う</a>
+  </div>
+</nav>
+
+<!-- ヒーロー -->
+<header class="hero">
+  <div class="wrap inner">
     <div>
-      <h1>🐾 うちの子ナビ <span style="font-size:12px;opacity:.8">(仮 / v1試作)</span></h1>
-      <p>犬種・月齢・住環境・あなたの状況に合わせて「今この子にいいこと」を、最新の科学にもとづいてお届けします。</p>
+      <span class="badge">🐶 犬種・月齢に合わせた愛犬ケア</span>
+      <h1>今この子に<br><span class="hl">いいこと</span>が、すぐわかる。</h1>
+      <p class="lead">犬種・月齢・住まい・あなたの暮らしに合わせて、<br>「いま大切なケア」を最新の科学にもとづいてやさしく提案。<br>愛犬との毎日に、頼れる伴走者を。</p>
+      <div class="cta-row">
+        <a class="btn big" href="app.html">アプリを使ってみる（無料）→</a>
+        <a class="btn ghost" href="#features">特徴を見る</a>
+      </div>
+      <p class="note">✓ 登録不要　✓ 完全無料　✓ データは端末内のみ（外部送信なし）</p>
     </div>
-    <button class="help-btn" onclick="openHelp()">❓ 使い方</button>
+    <div class="hero-card" aria-hidden="true">
+      <div class="dog">🐕</div>
+      <h3 class="center">もも のガイド</h3>
+      <div class="meta center" style="justify-content:center">
+        <span class="pill">トイプードル</span><span class="pill">超小型犬</span><span class="pill">5ヶ月</span>
+      </div>
+      <div style="font-size:13px;font-weight:700;color:var(--accent-dark);margin-bottom:4px">✅ 今週やってあげたいこと</div>
+      <div class="task"><span class="ck">✓</span>色々な“はじめて”に1日1つ慣れさせる</div>
+      <div class="task"><span class="ck">✓</span>名前＝いいこと、を作る</div>
+      <div class="task"><span class="ck off"></span>子犬教室（パピークラス）を探す</div>
+    </div>
   </div>
 </header>
-<div class="disclaimer">
-  ⚠️ 本アプリは情報提供を目的としたもので、獣医師・専門家の診断や指導の代わりではありません。気になる症状や行動は専門家にご相談ください。／入力内容はこの端末内にのみ保存され、外部には送信されません。
-</div>
 
-<!-- ============ 使い方ガイド（モーダル） ============ -->
-<div class="modal-bg" id="help-modal" onclick="if(event.target===this)closeHelp()">
-  <div class="modal" role="dialog" aria-modal="true" aria-label="使い方ガイド">
-    <button class="x" onclick="closeHelp()" aria-label="閉じる">×</button>
-    <h2>📖 うちの子ナビの使い方</h2>
-    <p class="lead">愛犬の犬種・月齢・暮らしに合わせて、いま大切なケアを提案するアプリです。3ステップで始められます。</p>
-
-    <div class="step">
-      <div class="n">1</div>
-      <div>
-        <div class="st">うちの子のプロフィールを入力</div>
-        <div class="sd">名前・<b>犬種</b>・<b>年齢</b>（子犬は「0年 ◯ヶ月」）・性別・体重などを入力します。住まいや「気になっていること」も選ぶほど、提案がその子に合った内容になります。わからない項目は空欄でもOK。</div>
-      </div>
-    </div>
-    <div class="step">
-      <div class="n">2</div>
-      <div>
-        <div class="st">「ガイドを見る」でおすすめを表示</div>
-        <div class="sd">いまの時期のテーマ、<b>今週やってあげたいこと</b>、運動・遊び、フード量の目安、住まい・季節の注意、悩み別ヒントなどが表示されます。各カードの「なぜ？」で根拠も確認できます。</div>
-      </div>
-    </div>
-    <div class="step">
-      <div class="n">3</div>
-      <div>
-        <div class="st">日々の記録・チェックに活用</div>
-        <div class="sd"><b>今週やりたいこと</b>はチェックを付けて進み具合を管理。<b>体重の記録</b>は日付と体重を入れるとグラフで推移が見え、最新体重はフード量計算にも反映されます。</div>
-      </div>
-    </div>
-
-    <div class="tiplist">
-      <div class="ti"><span>🐕</span><span><b>複数の子を登録</b>：ガイド上部のドロップダウンで切り替え。「＋新しい子を追加」で何頭でも登録できます。</span></div>
-      <div class="ti"><span>📝</span><span><b>編集</b>：ガイド上部の「編集」からいつでもプロフィールを直せます。</span></div>
-      <div class="ti"><span>☀️</span><span><b>季節の切替</b>：「いまの時期のテーマ」の右上で季節を手動切替（既定は今の季節を自動表示）。</span></div>
-      <div class="ti"><span>🖨️</span><span><b>印刷・PDF保存</b>：ガイド上部の「🖨️印刷」で、動物病院やご家族と共有できる形に出力できます。</span></div>
-      <div class="ti"><span>🔒</span><span><b>プライバシー</b>：入力内容はこの端末の中だけに保存され、外部には送信されません。</span></div>
-      <div class="ti"><span>⚠️</span><span><b>ご注意</b>：本アプリは情報提供が目的で、獣医師の診断・指導の代わりではありません。気になる症状は専門家にご相談ください。</span></div>
-    </div>
-
-    <div class="row-actions" style="margin-top:18px">
-      <button class="btn" onclick="closeHelp()">使ってみる 🐾</button>
+<!-- 共感・悩み -->
+<section class="block">
+  <div class="wrap">
+    <h2 class="h2">こんなお悩み、ありませんか？</h2>
+    <p class="h2sub">愛犬を迎えると、うれしさと同じくらい「これでいいのかな？」がいっぱい。</p>
+    <div class="pains">
+      <div class="pain"><div class="em">🔰</div><p>初めての子育てで、何から始めればいいか分からない</p></div>
+      <div class="pain"><div class="em">🌐</div><p>ネットの情報がバラバラで、どれを信じればいいか不安</p></div>
+      <div class="pain"><div class="em">🐾</div><p>うちの子の犬種・月齢に「ちょうどいい」ケアが知りたい</p></div>
     </div>
   </div>
-</div>
+</section>
 
-<div class="wrap">
-
-  <!-- ============ プロフィール入力 ============ -->
-  <section id="view-profile">
-    <div class="card">
-      <h2 class="section"><span class="em">🐶</span>うちの子のプロフィール</h2>
-      <div class="grid">
-        <div>
-          <label>名前</label>
-          <input type="text" id="f-name" placeholder="例：もも">
-        </div>
-        <div>
-          <label>犬種</label>
-          <select id="f-breed"></select>
-          <div class="hint">わからない／ミックスの場合は、近い大きさを選んでください。</div>
-        </div>
-        <div>
-          <label>年齢</label>
-          <div style="display:flex; gap:8px">
-            <input type="number" id="f-years" min="0" max="25" placeholder="年" style="flex:1">
-            <input type="number" id="f-months" min="0" max="11" placeholder="ヶ月" style="flex:1">
-          </div>
-          <div class="hint">子犬は「0年 ○ヶ月」で。例：3ヶ月なら 0年・3ヶ月。</div>
-        </div>
-        <div>
-          <label>性別・状態</label>
-          <select id="f-sex">
-            <option value="">選択してください</option>
-            <option>オス（未去勢）</option>
-            <option>オス（去勢済み）</option>
-            <option>メス（未避妊）</option>
-            <option>メス（避妊済み）</option>
-          </select>
-        </div>
-        <div>
-          <label>体重（kg）</label>
-          <input type="number" id="f-weight" min="0" max="90" step="0.1" placeholder="例：4.2">
-          <div class="hint">フード量の目安の計算に使います。わかる範囲でOK。</div>
-        </div>
-      </div>
-
-      <label>住まいのタイプ</label>
-      <div class="chips" data-single="housing">
-        <label class="chip"><input type="radio" name="housing" value="apartment">🏢 マンション・集合住宅</label>
-        <label class="chip"><input type="radio" name="housing" value="house">🏠 戸建て</label>
-      </div>
-
-      <div class="grid" style="margin-top:6px">
-        <div>
-          <label>庭・運動できる外スペース</label>
-          <select id="f-yard">
-            <option value="">選択してください</option>
-            <option value="none">なし（散歩が中心）</option>
-            <option value="small">少しある</option>
-            <option value="yes">庭がある</option>
-          </select>
-        </div>
-        <div>
-          <label>主な床</label>
-          <select id="f-floor">
-            <option value="">選択してください</option>
-            <option value="flooring">フローリング中心</option>
-            <option value="carpet">カーペット・マットあり</option>
-          </select>
-        </div>
-      </div>
-
-      <label>あなた（飼い主さん）の状況 <span class="tag">あてはまるもの全部</span></label>
-      <div class="chips" data-multi="owner">
-        <label class="chip"><input type="checkbox" value="firstTime">🔰 初めて犬を飼う</label>
-        <label class="chip"><input type="checkbox" value="awayOften">🕒 日中は留守がち</label>
-        <label class="chip"><input type="checkbox" value="home">🏡 在宅が多い</label>
-        <label class="chip"><input type="checkbox" value="smallKids">👶 小さい子どもがいる</label>
-        <label class="chip"><input type="checkbox" value="senior">🧑‍🦳 高齢の家族と暮らす</label>
-      </div>
-
-      <label>いま気になっていること <span class="tag">あてはまるもの全部</span></label>
-      <div class="chips" data-multi="concern">
-        <label class="chip"><input type="checkbox" value="barking">🔊 吠える</label>
-        <label class="chip"><input type="checkbox" value="toilet">🚽 トイレが安定しない</label>
-        <label class="chip"><input type="checkbox" value="biting">🦷 甘噛み・噛む</label>
-        <label class="chip"><input type="checkbox" value="alone">😢 お留守番が苦手そう</label>
-        <label class="chip"><input type="checkbox" value="pulling">🦮 散歩で引っ張る</label>
-        <label class="chip"><input type="checkbox" value="socialize">🐕 ほかの犬・人が苦手</label>
-      </div>
-
-      <div class="row-actions">
-        <button class="btn" onclick="saveAndShow()">この子のガイドを見る 🐾</button>
-        <button class="btn ghost" onclick="clearAll()">入力をクリア</button>
-      </div>
+<!-- 特徴 -->
+<section class="block alt" id="features">
+  <div class="wrap">
+    <h2 class="h2">うちの子ナビが、できること</h2>
+    <p class="h2sub">入力はかんたん。あとは、その子に合わせたケアが自動で並びます。</p>
+    <div class="feats">
+      <div class="feat"><div class="ic">🎯</div><h3>その子だけの提案</h3><p>犬種・月齢・住まい・気になることから、今いちばん大切なケアだけを表示します。</p></div>
+      <div class="feat"><div class="ic">🔬</div><h3>科学にもとづく根拠</h3><p>各アドバイスに「なぜ？」と出典タグ（AVSAB／WSAVA等）。納得して取り組めます。</p></div>
+      <div class="feat"><div class="ic">✅</div><h3>今週のチェックリスト</h3><p>やってあげたいことをチェックして、無理なく習慣化。進み具合もひと目で。</p></div>
+      <div class="feat"><div class="ic">⚖️</div><h3>体重の記録＆グラフ</h3><p>体重を記録すると推移をグラフ化。肥満予防に役立ち、フード量にも自動反映。</p></div>
+      <div class="feat"><div class="ic">🍚</div><h3>フード量の目安</h3><p>体重と活動量から1日の必要カロリーとグラム数を計算（獣医栄養学のRER/MER）。</p></div>
+      <div class="feat"><div class="ic">🐕‍🦺</div><h3>多頭飼いも安心</h3><p>何頭でも登録して切り替え。季節の注意や印刷・PDF保存にも対応しています。</p></div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- ============ ガイド ============ -->
-  <section id="view-guide" style="display:none">
-    <div class="dogcard">
-      <div class="avatar">🐕</div>
-      <div style="flex:1">
-        <h2 id="g-name">—</h2>
-        <div class="meta" id="g-meta">—</div>
-      </div>
-      <div class="petbar">
-        <select id="pet-switch" onchange="onPetSwitch(this.value)" title="子を切り替え"></select>
-        <button class="btn ghost" onclick="editPet()">編集</button>
-        <button class="btn ghost" onclick="window.print()">🖨️ 印刷</button>
-      </div>
+<!-- 使い方 -->
+<section class="block">
+  <div class="wrap">
+    <h2 class="h2">使い方は、3ステップ</h2>
+    <p class="h2sub">アプリのダウンロードもインストールも不要。ブラウザですぐ始められます。</p>
+    <div class="steps">
+      <div class="step"><div class="num">1</div><h3>プロフィールを入力</h3><p>名前・犬種・月齢・体重などを入力。わかる範囲でOKです。</p></div>
+      <div class="step"><div class="num">2</div><h3>ガイドを見る</h3><p>今の時期のテーマ、今週やりたいこと、運動・フード量などが一覧で表示。</p></div>
+      <div class="step"><div class="num">3</div><h3>毎日に活かす</h3><p>チェックや体重記録で、愛犬の成長と健康を楽しく見守れます。</p></div>
     </div>
+  </div>
+</section>
 
-    <div class="card">
-      <h2 class="section" style="justify-content:space-between">
-        <span><span class="em">🌱</span>いまの時期のテーマ</span>
-        <span class="petbar" style="font-size:12px">
-          <label style="margin:0">季節</label>
-          <select id="g-season" onchange="onSeasonChange(this.value)" style="font-size:12px; padding:4px 8px">
-            <option value="">自動（今の季節）</option>
-            <option value="spring">🌸 春</option>
-            <option value="summer">☀️ 夏</option>
-            <option value="autumn">🍂 秋</option>
-            <option value="winter">❄️ 冬</option>
-          </select>
-        </span>
-      </h2>
-      <div id="g-stage"></div>
+<!-- 安心ポイント -->
+<section class="block alt">
+  <div class="wrap">
+    <h2 class="h2">安心して使えます</h2>
+    <p class="h2sub">大切な家族のこと。だから、気軽に・安全に。</p>
+    <div class="trust">
+      <div class="tcard"><div class="em">💴</div><b>完全無料</b><span>すべての機能が無料</span></div>
+      <div class="tcard"><div class="em">🙅</div><b>登録不要</b><span>メールも会員登録もなし</span></div>
+      <div class="tcard"><div class="em">🔒</div><b>端末内に保存</b><span>入力は外部に送信しません</span></div>
+      <div class="tcard"><div class="em">📱</div><b>スマホもPCも</b><span>ブラウザだけで動きます</span></div>
     </div>
+  </div>
+</section>
 
-    <div class="card">
-      <h2 class="section"><span class="em">✅</span>今週、この子にやってあげたいこと</h2>
-      <div id="g-tasks"></div>
+<!-- 最終CTA -->
+<section class="block">
+  <div class="wrap">
+    <div class="finalcta">
+      <h2>うちの子の「いいこと」、始めてみませんか？</h2>
+      <p>入力1分。今日からできるケアが、すぐ見つかります。</p>
+      <a class="btn big" href="app.html">無料でアプリを使ってみる →</a>
     </div>
+  </div>
+</section>
 
-    <div class="card">
-      <h2 class="section"><span class="em">🎾</span>運動・遊び</h2>
-      <div id="g-exercise"></div>
-    </div>
+<footer>
+  <div class="wrap">
+    <div class="disc">⚠️ 本アプリは情報提供を目的としたもので、獣医師・専門家の診断や指導の代わりではありません。気になる症状や行動は専門家にご相談ください。掲載内容は代表的なケースのスターターセットです。</div>
+    🐾 うちの子ナビ — 愛犬との暮らしの伴走者
+  </div>
+</footer>
 
-    <div class="card">
-      <h2 class="section"><span class="em">🍚</span>フード量の目安</h2>
-      <div id="g-food"></div>
-    </div>
-
-    <div class="card">
-      <h2 class="section"><span class="em">⚖️</span>体重の記録</h2>
-      <div id="g-weight"></div>
-    </div>
-
-    <div class="card">
-      <h2 class="section"><span class="em">🏠</span>あなたの住まい・季節に合わせた注意</h2>
-      <div id="g-home"></div>
-    </div>
-
-    <div class="card" id="g-concern-card">
-      <h2 class="section"><span class="em">💡</span>気になっていることへのヒント</h2>
-      <div id="g-concern"></div>
-    </div>
-
-    <div class="card">
-      <h2 class="section"><span class="em">🧡</span>気持ちのサインを読む（基礎）</h2>
-      <div id="g-feelings"></div>
-    </div>
-
-    <div class="card">
-      <h2 class="section"><span class="em">🛍️</span>あると良いグッズ・用具</h2>
-      <div id="g-goods"></div>
-    </div>
-
-    <footer>
-      出典タグは内容の根拠の目安です（AVSAB＝米国獣医動物行動学会、WSAVA＝世界小動物獣医師会 ほか）。<br>
-      ※v1試作のため、掲載内容は代表的なケースのスターターセットです。最終的には専門家のレビューを受けてご利用ください。
-    </footer>
-  </section>
-
-</div>
-
-<script>
-/* ===================== 知識ベース（後から増やせる） ===================== */
-
-// 犬種 → サイズ・運動量・気質・健康注意
-const BREEDS = [
-  {name:"トイプードル", size:"toy", ex:"med", traits:["賢い","人好き"], health:["膝(膝蓋骨脱臼)","歯"]},
-  {name:"チワワ", size:"toy", ex:"low", traits:["愛情深い","警戒心"], health:["膝","気管","寒さに弱い"]},
-  {name:"ミニチュアダックスフンド", size:"small", ex:"med", traits:["好奇心","頑固"], health:["椎間板ヘルニア(腰)"]},
-  {name:"ポメラニアン", size:"toy", ex:"low", traits:["活発","甘えん坊"], health:["膝","気管","皮膚"]},
-  {name:"柴犬", size:"medium", ex:"high", traits:["独立心","忠実","きれい好き"], health:["皮膚(アレルギー)","認知症(高齢)"]},
-  {name:"豆柴", size:"small", ex:"med", traits:["独立心","忠実"], health:["皮膚"]},
-  {name:"ヨークシャーテリア", size:"toy", ex:"low", traits:["勇敢","甘えん坊"], health:["膝","気管","歯"]},
-  {name:"マルチーズ", size:"toy", ex:"low", traits:["穏やか","甘えん坊"], health:["涙やけ","膝"]},
-  {name:"フレンチブルドッグ", size:"small", ex:"low", traits:["陽気","人好き"], health:["呼吸(短頭種)","暑さに非常に弱い","皮膚"]},
-  {name:"パグ", size:"small", ex:"low", traits:["おだやか","おちゃめ"], health:["呼吸(短頭種)","暑さに非常に弱い","目"]},
-  {name:"シーズー", size:"small", ex:"low", traits:["穏やか","友好的"], health:["目","呼吸(短頭種)","皮膚"]},
-  {name:"ミニチュアシュナウザー", size:"small", ex:"med", traits:["賢い","活発"], health:["膵炎","目"]},
-  {name:"ウェルシュコーギー", size:"medium", ex:"high", traits:["賢い","よく動く"], health:["椎間板ヘルニア(腰)","肥満注意"]},
-  {name:"ゴールデンレトリバー", size:"large", ex:"high", traits:["温厚","人好き","賢い"], health:["股関節","肥満注意","がん"]},
-  {name:"ラブラドールレトリバー", size:"large", ex:"high", traits:["温厚","食いしん坊"], health:["股関節","肥満注意"]},
-  {name:"ボーダーコリー", size:"medium", ex:"vhigh", traits:["非常に賢い","運動欲求大"], health:["股関節","目"]},
-  {name:"ビーグル", size:"medium", ex:"high", traits:["陽気","嗅覚抜群","食いしん坊"], health:["肥満注意","耳(垂れ耳)"]},
-  {name:"キャバリア", size:"small", ex:"med", traits:["穏やか","友好的"], health:["心臓(僧帽弁)","目"]},
-  {name:"ジャック・ラッセル・テリア", size:"small", ex:"vhigh", traits:["活発","頭の回転が速い"], health:["膝","目"]},
-  {name:"パピヨン", size:"toy", ex:"med", traits:["賢い","活発"], health:["膝","歯"]},
-  {name:"ボストンテリア", size:"small", ex:"med", traits:["陽気","人好き"], health:["目","呼吸(短頭種)"]},
-  {name:"ペキニーズ", size:"small", ex:"low", traits:["マイペース","誇り高い"], health:["呼吸(短頭種)","目","暑さに弱い"]},
-  {name:"ミックス・その他（超小型 〜4kg）", size:"toy", ex:"med", traits:[], health:[]},
-  {name:"ミックス・その他（小型 〜10kg）", size:"small", ex:"med", traits:[], health:[]},
-  {name:"ミックス・その他（中型 〜25kg）", size:"medium", ex:"high", traits:[], health:[]},
-  {name:"ミックス・その他（大型 25kg〜）", size:"large", ex:"high", traits:[], health:[]},
-];
-
-const SIZE_LABEL = {toy:"超小型犬", small:"小型犬", medium:"中型犬", large:"大型犬"};
-const EX_LABEL = {low:"控えめ", med:"普通", high:"多め", vhigh:"とても多い"};
-
-// シニア入り月齢（サイズで違う）
-const SENIOR_START_MONTHS = {toy:11*12, small:10*12, medium:8*12, large:7*12};
-
-// ライフステージ判定（月齢→ステージ）
-function getStage(months, size){
-  if(months <= 4)  return "puppyEarly";   // 〜16週前後：社会化最重要
-  if(months <= 7)  return "puppyLate";    // 〜7ヶ月：歯がわり・基礎
-  if(months <= 18) return "adolescent";   // 〜1.5歳：思春期
-  if(months >= (SENIOR_START_MONTHS[size]||96)) return "senior";
-  return "adult";
-}
-
-const STAGES = {
-  puppyEarly:{
-    icon:"🍼", title:"社会化期（〜生後16週ごろ）",
-    body:"この時期は一生の性格づくりの土台。色々な人・音・場所・他の犬に<b>こわくない形で</b>慣れさせる「社会化」が最優先です。ワクチンが完了する前でも、抱っこ散歩や子犬教室など、安全な範囲で外の世界に触れさせましょう。"
-  },
-  puppyLate:{
-    icon:"🦴", title:"子犬後期（4〜7ヶ月ごろ）",
-    body:"歯の生え変わりで噛みたい時期。噛んでよいオモチャを用意し、トイレ・名前・「おいで」など<b>ごほうびベース</b>の基礎を楽しく続けましょう。"
-  },
-  adolescent:{
-    icon:"⚡", title:"思春期・若犬期（7ヶ月〜1.5歳ごろ）",
-    body:"エネルギーが高く、今まで出来ていたことを試すように崩れることも（いわゆる反抗期）。叱るより<b>できた瞬間をほめる</b>を徹底。去勢・避妊の時期は獣医師と相談を。"
-  },
-  adult:{
-    icon:"🌳", title:"成犬期",
-    body:"心身が安定する時期。<b>体重管理</b>と、ほどよい運動・頭を使う遊びで満足度を保ちましょう。年1回以上の健康診断を。"
-  },
-  senior:{
-    icon:"🌙", title:"シニア期",
-    body:"体や感覚がゆっくり変化します。<b>段差・滑り対策</b>と、半年に1回の健康診断を。運動は無理なく、頭を使う遊びで認知機能を刺激しましょう。"
-  }
-};
-
-/* advice：appliesTo にマッチしたものを表示
-   フィルタ: stage[], size[], ex[], housing, owner[], concern[], season[]
-   いずれも未指定なら「条件なし＝全員に該当」 */
-const ADVICE = [
-  // --- 今週やりたいこと（タスク系）---
-  {cat:"task", title:"色々な“はじめて”に1日1つ慣れさせる", action:"今日は『来客のチャイム音を小さく流しながらおやつ』など、こわくない範囲で新しい刺激を1つ。", why:"生後3〜14週は社会化の感受期。この時期のよい経験が、将来の吠え・怖がり・噛みを大きく減らします。", src:"AVSAB 社会化", stage:["puppyEarly"]},
-  {cat:"task", title:"子犬教室（パピークラス）を探す", action:"近所のパピークラスや動物病院の教室を予約。ワクチン完了前でも参加できる教室が多いです。", why:"行動の問題は若い犬の死因(手放し含む)として感染症より大きいとされ、早期社会化の利益が上回ると考えられています。", src:"AVSAB 社会化", stage:["puppyEarly","puppyLate"]},
-  {cat:"task", title:"トイレは“成功をほめる”だけで覚える", action:"起きた後・食後・遊んだ後にトイレへ誘導し、できたら3秒以内にごほうび。失敗は無言で片付ける。", why:"叱ると『排泄＝隠れてする』を学習しがち。成功を強化するほうが早く確実です。", src:"陽性強化", stage:["puppyEarly","puppyLate"], concern:["toilet"]},
-  {cat:"task", title:"名前＝いいこと、を作る", action:"名前を呼んで振り向いたらごほうび、を1日数回。叱るときに名前は使わない。", why:"名前を『注目の合図＝報酬』にしておくと、呼び戻しや危険回避がしやすくなります。", src:"陽性強化", stage:["puppyEarly","puppyLate","adolescent"]},
-  {cat:"task", title:"短い“ひとりtime”の練習", action:"在宅中でも別の部屋で数分過ごす練習を少しずつ。出入りを大げさにしない。", why:"留守番への耐性は段階的な練習で育ちます。急に長時間にしないことが分離不安の予防に。", src:"行動学(分離)", stage:["puppyEarly","puppyLate","adolescent"], concern:["alone"]},
-  {cat:"task", title:"頭を使う遊びで満足度アップ", action:"知育トイ・宝探し（おやつを隠す）・短いトリック練習を1日5〜10分。", why:"運動だけでなく『嗅ぐ・考える』活動は犬の満足度を高め、退屈からの問題行動を減らします。", src:"行動学(環境エンリッチメント)", stage:["adolescent","adult","senior"]},
-  {cat:"task", title:"年1回の健康診断を予約", action:"かかりつけ獣医で健康チェック。体重・歯・関節も診てもらう。", why:"早期発見が寿命と生活の質を守ります。成犬は年1回が目安。", src:"WSAVA 予防", stage:["adult"]},
-  {cat:"task", title:"半年に1回の健康診断を", action:"シニアは半年ごとの受診を。歩き方・飲水量・夜鳴きの変化はメモして相談。", why:"高齢期は変化が早く、こまめなチェックで対処が早くなります。", src:"WSAVA 予防", stage:["senior"]},
-
-  // --- 運動・遊び（サイズ/運動量で出し分け） ---
-  {cat:"exercise", title:"散歩は“量より質”。においを嗅がせる", action:"立ち止まってにおいを嗅ぐ時間を許してあげる『サニフィン・ウォーク』を取り入れる。", why:"嗅覚を使う散歩は短くても満足度・リラックス効果が高いことが示されています。", src:"行動学(嗅覚)", },
-  {cat:"exercise", title:"運動量の目安：控えめでOK", action:"1日2回・各15〜30分の散歩＋室内遊び。関節に優しく、無理はさせない。", why:"超小型・短頭種は過度な運動より、こまめで穏やかな運動が向きます。", src:"犬種別運動", ex:["low"]},
-  {cat:"exercise", title:"運動量の目安：しっかりめ", action:"1日合計1時間以上の運動＋頭を使う遊びを。引っ張り遊びやボールも◎。", why:"運動欲求の高い犬種は、足りないと問題行動につながりやすいです。", src:"犬種別運動", ex:["high","vhigh"]},
-  {cat:"exercise", title:"頭脳系の“仕事”を毎日", action:"ノーズワーク・トリック・障害物遊びなど『考える運動』を必ず加える。", why:"作業犬種は身体運動だけでは満たされず、頭を使う活動が必須です。", src:"犬種別運動", ex:["vhigh"]},
-
-  // --- 住環境・季節 ---
-  {cat:"home", title:"集合住宅は“吠え”対策を先回り", action:"チャイム・足音などの刺激に『おやつ』を結びつけ、平気な経験を積ませる。窓に目隠しシートも有効。", why:"近隣トラブルの多くは警戒吠え。叱るより刺激への印象を良くする方が根本的です。", src:"陽性強化", housing:"apartment"},
-  {cat:"home", title:"エレベーター・共用部のマナー練習", action:"抱っこ or 短いリードで落ち着いて乗る練習を、すいている時間に少しずつ。", why:"他の住人や犬が苦手な人への配慮が、犬の安心にもつながります。", src:"日本の住環境", housing:"apartment"},
-  {cat:"home", title:"フローリングは滑り止めを", action:"よく通る所にマット・カーペットを敷くか、肉球まわりの毛・爪を整える。", why:"滑る床は関節・腰に負担。特にダックス/コーギーは椎間板ヘルニア、小型犬は膝に注意。", src:"整形外科的配慮", floor:"flooring"},
-  {cat:"home", title:"庭がなくても運動はおぎなえる", action:"室内での引っ張り遊び・階段以外の段差遊び・知育トイで運動量を補完。", why:"散歩中心でも、室内遊びと嗅覚遊びを足せば十分に満たせます。", src:"環境エンリッチメント", yard:"none"},
-  // 季節（month で判定）
-  {cat:"home", title:"【夏】熱中症と肉球やけどに注意", action:"散歩は早朝か日没後。アスファルトに手の甲を5秒当てて熱ければ歩かせない。水と日陰を確保。", why:"地面はとても高温になり、犬は人より熱に弱い。短頭種は特に危険です。", src:"季節(夏)", season:["summer"]},
-  {cat:"home", title:"【夏】短頭種は冷房を切らさない", action:"室温管理を最優先。ハアハアが激しい・舌が紫っぽい時はすぐ受診。", why:"短頭種(フレンチブル・パグ等)は呼吸での体温調節が苦手で熱中症リスクが高いです。", src:"季節(夏)", season:["summer"], safety:false},
-  {cat:"home", title:"【冬】寒さ対策を", action:"超小型・短毛種は服や暖かい寝床を。温度差での体調変化に注意。", why:"小型・短毛・子犬・シニアは寒さに弱く、体調をくずしやすいです。", src:"季節(冬)", season:["winter"]},
-
-  // --- 悩み別 ---
-  {cat:"concern", title:"甘噛みは“やめさせる”より“置きかえる”", action:"噛んできたら遊びを一旦中断→噛んでよいオモチャに誘導。歯がゆい時期は冷やせる噛むおもちゃも。", why:"罰は手・人への恐怖や攻撃につながることも。代わりの正解を教える方が安全で確実です。", src:"AVSAB 人道的トレーニング", concern:["biting"]},
-  {cat:"concern", title:"引っ張りは“ゆるんだら進む”ルール", action:"リードが張ったら立ち止まり、ゆるんだら歩く。胴を圧迫しないハーネスも助けに。", why:"引っ張って前に進めると『引っ張れば進める』と学習。一貫したルールが近道です。", src:"陽性強化", concern:["pulling"]},
-  {cat:"concern", title:"お留守番が苦手なら“少しずつ”が鉄則", action:"外出のフリ→数秒で戻る、を繰り返し時間を延ばす。出入りは静かに。破壊・粗相・過剰な吠えが続くなら専門家へ。", why:"分離不安は練習で改善しますが、強い場合は専門的な行動治療が必要なことがあります。", src:"行動学(分離)", concern:["alone"], safety:true},
-  {cat:"concern", title:"吠えは“理由”を見極めて対応を変える", action:"要求/警戒/退屈/不安のどれかを観察。要求吠えは反応しない、警戒吠えは刺激への印象を良くする等、原因別に。", why:"原因で正解が逆になります。やみくもに叱ると不安由来の吠えは悪化します。", src:"行動学", concern:["barking"]},
-  {cat:"concern", title:"他の犬・人が苦手なら“距離”から", action:"こわがらない距離を保ち、相手が見えたらおやつ。無理に近づけない。うなる/固まるは『嫌だ』のサイン。", why:"許容できる距離で良い経験を重ねるのが、苦手克服の基本です。フラッディング(無理な直面)は逆効果。", src:"行動学(脱感作)", concern:["socialize"]},
-
-  // --- 飼い主の状況別 ---
-  {cat:"concern", title:"はじめての方へ：完璧を目指さなくて大丈夫", action:"『安全・トイレ・社会化・ごほうびで教える』の4つだけ意識すればOK。困ったら早めにプロに相談を。", why:"最初から全部は無理。土台の習慣づくりが後をぐっと楽にします。", src:"実践トレーナー", owner:["firstTime"]},
-  {cat:"concern", title:"留守がちなら“出かける前後”を工夫", action:"出かける前に軽い運動と知育トイ。帰宅時は落ち着いてから挨拶。", why:"エネルギーを発散させ、出入りを淡々とすると留守番ストレスが減ります。", src:"行動学(分離)", owner:["awayOften"]},
-  {cat:"concern", title:"小さなお子さんとは“触り方ルール”を", action:"犬が食事・寝ている時はそっとしておく。子どもと犬を二人きりにしない。", why:"事故の多くは『犬が嫌がるサインを子どもが読めない』場面で起きます。大人の見守りが安全の鍵。", src:"安全(咬傷予防)", owner:["smallKids"], safety:true},
-];
-
-// グッズ（サイズ・状況でタグ付け）
-const GOODS = [
-  {name:"知育トイ（コングなど）", note:"留守番・退屈対策に。おやつを詰めて長持ちさせる。", when:a=>true},
-  {name:"滑り止めマット／カーペット", note:"フローリングの関節・腰の負担を軽減。", when:a=>a.floor==="flooring"},
-  {name:"体に合ったハーネス", note:"気管や首への負担を減らす。引っ張り対策にも。", when:a=>a.concern.includes("pulling")||a.size==="toy"||a.size==="small"},
-  {name:"クレート／サークル", note:"安心できる“自分の部屋”。留守番やトイレ習慣づくりに。", when:a=>a.stage==="puppyEarly"||a.stage==="puppyLate"||a.concern.includes("alone")},
-  {name:"噛んでよいおもちゃ（数種）", note:"歯がわり時期や甘噛みの“置きかえ”用。", when:a=>a.concern.includes("biting")||a.stage==="puppyLate"},
-  {name:"クールマット・冷感グッズ", note:"夏の暑さ対策。短頭種は特に。", when:a=>a.season==="summer"||/短頭種/.test((a.breed&&a.breed.health||[]).join(""))},
-  {name:"防音・目隠しシート", note:"集合住宅での吠え・視界刺激対策に。", when:a=>a.housing==="apartment"&&a.concern.includes("barking")},
-  {name:"歩行補助ハーネス・スロープ", note:"シニアの段差・立ち上がりをサポート。", when:a=>a.stage==="senior"},
-];
-
-// 気持ちのサイン（基礎）— カーミングシグナル等
-const FEELINGS = [
-  {sign:"あくび・舌でペロッと鼻なめ（食後でないのに）", mean:"緊張・戸惑い。『落ち着いて』のサイン。少し休ませて。"},
-  {sign:"体をブルブル（濡れていないのに）", mean:"気持ちの切り替え・ストレス解放。直前に苦手なことがなかったか振り返って。"},
-  {sign:"目をそらす・顔をそむける・固まる", mean:"『今は嫌だ／距離がほしい』。無理に近づけないで。"},
-  {sign:"しっぽを下げて速く振る／腰を低く", mean:"うれしいとは限らず、不安・緊張のことも。全身の様子で判断を。"},
-  {sign:"プレイバウ（前足を下げてお尻を上げる）", mean:"『遊ぼう！』の誘い。安心しているサインです。"},
-  {sign:"うなる・歯を見せる", mean:"『やめて』の大事な警告。罰すると“予告なし”になり危険。原因を取り除き専門家に相談を。"},
-];
-
-/* ===================== ロジック ===================== */
-const $ = s=>document.querySelector(s);
-function currentSeason(){
-  const m = new Date().getMonth()+1; // 1-12
-  if(m>=6 && m<=9) return "summer";
-  if(m===12 || m<=2) return "winter";
-  if(m>=3 && m<=5) return "spring";
-  return "autumn";
-}
-
-function initBreeds(){
-  const sel = $("#f-breed");
-  sel.innerHTML = '<option value="">選択してください</option>' +
-    BREEDS.map((b,i)=>`<option value="${i}">${b.name}</option>`).join("");
-}
-
-function readForm(){
-  const checked = name => [...document.querySelectorAll(`[data-multi="${name}"] input:checked`)].map(e=>e.value);
-  return {
-    name: $("#f-name").value.trim(),
-    breedIdx: $("#f-breed").value,
-    years: parseInt($("#f-years").value)||0,
-    months: parseInt($("#f-months").value)||0,
-    sex: $("#f-sex").value,
-    weight: parseFloat($("#f-weight").value)||0,
-    housing: (document.querySelector('input[name=housing]:checked')||{}).value||"",
-    yard: $("#f-yard").value,
-    floor: $("#f-floor").value,
-    owner: checked("owner"),
-    concern: checked("concern"),
-  };
-}
-
-function buildProfile(f){
-  const breed = BREEDS[f.breedIdx] || BREEDS[BREEDS.length-2];
-  const totalMonths = f.years*12 + f.months;
-  const stage = getStage(totalMonths, breed.size);
-  return {
-    ...f, breed,
-    totalMonths,
-    size: breed.size, ex: breed.ex,
-    neutered: /去勢済み|避妊済み/.test(f.sex||""),
-    stage, season: seasonOverride || currentSeason(),
-  };
-}
-
-function matches(a, p){
-  const ok = (key, val)=> !a[key] || a[key].length===0 ? true :
-       (Array.isArray(a[key]) ? a[key].includes(val) : a[key]===val);
-  // 配列条件（どれか一致でOK）
-  const arrOk = (key, arr)=> !a[key] ? true : a[key].some(v=>arr.includes(v));
-  return ok("stage", p.stage)
-      && ok("ex", p.ex)
-      && ok("housing", p.housing)
-      && ok("floor", p.floor)
-      && ok("yard", p.yard)
-      && (a.season ? a.season.includes(p.season) : true)
-      && arrOk("owner", p.owner)
-      && arrOk("concern", p.concern);
-}
-
-function adviceHTML(a){
-  return `<div class="advice ${a.safety?'safety':''}">
-    <div class="t">${a.safety?'⚠️ ':''}${a.title}</div>
-    <p class="a">${a.action}</p>
-    <div class="why">なぜ？ ${a.why}</div>
-    <span class="src">出典: ${a.src}</span>
-  </div>`;
-}
-function attr(s){ return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;'); }
-function taskHTML(a, isDone){
-  return `<div class="advice task ${isDone?'done':''}">
-    <div class="t"><input type="checkbox" class="task-check" data-title="${attr(a.title)}" ${isDone?'checked':''}><span class="tt">${a.title}</span></div>
-    <p class="a">${a.action}</p>
-    <div class="why">なぜ？ ${a.why}</div>
-    <span class="src">出典: ${a.src}</span>
-  </div>`;
-}
-
-function renderGuide(p){
-  // ヘッダー
-  $("#g-name").textContent = (p.name||"うちの子") + " のガイド";
-  const ageTxt = p.totalMonths<12 ? `${p.totalMonths}ヶ月` : `${Math.floor(p.totalMonths/12)}歳${p.totalMonths%12?p.totalMonths%12+"ヶ月":""}`;
-  $("#g-meta").innerHTML =
-    `<span class="pill">${p.breed.name}</span>`+
-    `<span class="pill">${SIZE_LABEL[p.size]}</span>`+
-    `<span class="pill">${ageTxt}</span>`+
-    `<span class="pill">運動: ${EX_LABEL[p.ex]}</span>`+
-    (p.breed.health&&p.breed.health.length?`<span class="pill">注意: ${p.breed.health.join("・")}</span>`:"");
-
-  // ステージ
-  const st = STAGES[p.stage];
-  $("#g-stage").innerHTML = `<div class="stage-banner">${st.icon} <b>${st.title}</b><br>${st.body}</div>`;
-
-  // カテゴリ別
-  const byCat = c => ADVICE.filter(a=>a.cat===c && matches(a,p));
-  const fill = (id,c,emptyMsg)=>{
-    const list = byCat(c);
-    $(id).innerHTML = list.length ? list.map(adviceHTML).join("") : `<div class="empty">${emptyMsg}</div>`;
-  };
-
-  // 今週やりたいこと（チェックリスト化）
-  const tasks = byCat("task");
-  const pet = currentPet();
-  const done = (pet && pet.done) || {};
-  if(tasks.length){
-    const doneCount = tasks.filter(a=>done[a.title]).length;
-    $("#g-tasks").innerHTML =
-      `<div class="progress">今週の進み具合：<b>${doneCount}</b> / ${tasks.length} 完了</div>` +
-      tasks.map(a=>taskHTML(a, !!done[a.title])).join("");
-  }else{
-    $("#g-tasks").innerHTML = `<div class="empty">このプロフィールでの今週のおすすめは準備中です。</div>`;
-  }
-  fill("#g-exercise","exercise","—");
-  fill("#g-home","home","特記事項はありません。");
-
-  // 悩み別（concern + owner系）
-  const concernList = ADVICE.filter(a=>a.cat==="concern" && matches(a,p));
-  if(p.concern.length===0 && p.owner.length===0){
-    $("#g-concern").innerHTML = `<div class="empty">気になることを選ぶと、ここにヒントが出ます。</div>`;
-  }else{
-    $("#g-concern").innerHTML = concernList.length ? concernList.map(adviceHTML).join("")
-      : `<div class="empty">選んだ項目に対する追加のヒントは準備中です。基本のしつけは「今週やりたいこと」を参考に。</div>`;
-  }
-
-  // 気持ち
-  $("#g-feelings").innerHTML = FEELINGS.map(f=>
-    `<div class="advice"><div class="t">${f.sign}</div><p class="a">${f.mean}</p></div>`).join("")
-    + `<span class="src">出典: カーミングシグナル(Rugaas)/行動学</span>`;
-
-  // フード量
-  renderFood(p);
-
-  // 体重の記録
-  renderWeight(p);
-
-  // 季節セレクトの表示を同期
-  const ss = $("#g-season"); if(ss) ss.value = seasonOverride || "";
-
-  // グッズ
-  const goods = GOODS.filter(g=>g.when(p));
-  $("#g-goods").innerHTML = goods.map(g=>
-    `<div class="advice"><div class="t">🛍️ ${g.name}</div><p class="a">${g.note}</p></div>`).join("");
-}
-
-/* ===================== フード量の計算（獣医栄養学 RER/MER） ===================== */
-function foodFactor(p){
-  if(p.stage==="puppyEarly") return 3.0;   // 子犬(離乳〜4ヶ月)
-  if(p.stage==="puppyLate")  return 2.0;   // 子犬(4〜7ヶ月)
-  if(p.stage==="adolescent") return p.neutered?1.6:1.8;
-  if(p.stage==="senior")     return p.neutered?1.3:1.4;
-  return p.neutered?1.6:1.8;                // 成犬
-}
-function calcFood(weight, factor, kcalPer100){
-  if(!weight||weight<=0) return null;
-  const rer = 70*Math.pow(weight,0.75);    // 安静時エネルギー要求量
-  const mer = rer*factor;                   // 1日に必要なカロリー
-  const grams = mer/(kcalPer100/100);
-  return {mer:Math.round(mer), grams:Math.round(grams)};
-}
-function renderFood(p){
-  const el = $("#g-food");
-  if(!p.weight || p.weight<=0){
-    el.innerHTML = `<div class="empty">プロフィールで体重(kg)を入れると、1日のフード量の目安を計算します。</div>`;
-    return;
-  }
-  window.__food = {weight:p.weight, factor:foodFactor(p)};
-  el.innerHTML = `
-    <label>フードのカロリー（袋に書いてある 100gあたり kcal）</label>
-    <input type="number" id="food-kcal" value="360" min="100" max="600" oninput="updateFood()" style="max-width:220px">
-    <div class="hint">袋の「代謝エネルギー ○○kcal/100g」を入力。一般的なドライフードは約350〜400です。</div>
-    <div id="food-result" style="margin-top:12px"></div>
-    <div class="advice"><div class="why" style="margin-top:0">なぜ？ 体重から1日に必要なカロリー（RER＝70×体重^0.75 ×活動係数）を計算し、フードのカロリーで割って量を出しています。${p.neutered?"避妊・去勢済みは太りやすいため控えめの係数":"成長・活動に合わせた係数"}を使用。</div><span class="src">出典: 獣医栄養学(RER/MER)・WSAVA</span></div>
-    <div class="advice safety"><div class="t">⚠️ あくまで目安です</div><p class="a">実際の量はフードの袋の表示と、その子の体型(やせ/太り)で調整を。理想体型(ボディコンディションスコア)・療法食・妊娠授乳期は獣医師の指示を優先。1日量は2回以上に分けて与えるのがおすすめです。${p.stage==="puppyEarly"||p.stage==="puppyLate"?"<br><b>子犬は成長が早く必要量が大きく変わります。袋の月齢別表示も必ず確認してください。</b>":""}</p></div>
-  `;
-  updateFood();
-}
-function updateFood(){
-  const f = window.__food; if(!f) return;
-  const kcal = parseFloat(($("#food-kcal")||{}).value)||360;
-  const r = calcFood(f.weight, f.factor, kcal);
-  const res = $("#food-result"); if(!res||!r) return;
-  res.innerHTML = `<div class="stage-banner" style="background:#eef7f0">
-    🍚 1日の目安：<b style="font-size:18px;color:var(--good)">約 ${r.grams} g</b>（例：約 ${Math.ceil(r.grams/2)}g を1日2回）<br>
-    <span style="font-size:12px;color:var(--sub)">必要エネルギー 約 ${r.mer} kcal/日（体重 ${f.weight}kg）</span>
-  </div>`;
-}
-
-/* ===================== 体重の記録＆グラフ ===================== */
-function todayISO(){
-  const d = new Date(), z = n=>String(n).padStart(2,"0");
-  return `${d.getFullYear()}-${z(d.getMonth()+1)}-${z(d.getDate())}`;
-}
-function renderWeight(p){
-  const el = $("#g-weight");
-  const pet = currentPet();
-  if(!pet){ el.innerHTML = ""; return; }
-  const log = (pet.weightLog||[]).slice().sort((a,b)=> a.date<b.date?-1:1);
-  el.innerHTML = `
-    <div class="wform">
-      <div class="fld"><label>日付</label><input type="date" id="w-date" value="${todayISO()}"></div>
-      <div class="fld"><label>体重 (kg)</label><input type="number" id="w-kg" min="0" max="90" step="0.1" placeholder="例：4.3"></div>
-      <button class="btn" onclick="addWeight()">記録する</button>
-    </div>
-    <div class="hint">記録すると最新の体重がプロフィール（フード量の計算）にも反映されます。</div>
-    ${log.length>=2 ? weightGraphSVG(log) : ""}
-    ${log.length ? `<ul class="wlog">${log.slice().reverse().map(e=>
-        `<li><span class="wd">${e.date}</span><span class="wk">${e.kg} kg</span><button class="wdel" title="削除" onclick="delWeight('${e.date}')">✕</button></li>`
-      ).join("")}</ul>`
-      : `<div class="empty">まだ記録がありません。体重を入れて変化を見守りましょう。</div>`}
-  `;
-}
-function weightGraphSVG(log){
-  const W=320, H=130, pad=24;
-  const kgs = log.map(e=>e.kg);
-  let min=Math.min(...kgs), max=Math.max(...kgs);
-  if(min===max){ min-=0.5; max+=0.5; } else { const m=(max-min)*0.15; min-=m; max+=m; }
-  const n=log.length;
-  const x = i => pad + (W-pad*2)*(n===1?0.5:i/(n-1));
-  const y = v => (H-pad) - (H-pad*2)*((v-min)/(max-min));
-  const pts = log.map((e,i)=>`${x(i).toFixed(1)},${y(e.kg).toFixed(1)}`).join(" ");
-  const dots = log.map((e,i)=>`<circle class="gdot" cx="${x(i).toFixed(1)}" cy="${y(e.kg).toFixed(1)}" r="3"/>`).join("");
-  return `<svg class="wgraph" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" role="img" aria-label="体重の推移">
-    <line class="gl" x1="${pad}" y1="${H-pad}" x2="${W-pad}" y2="${H-pad}"/>
-    <line class="gl" x1="${pad}" y1="${pad}" x2="${pad}" y2="${H-pad}"/>
-    <text x="2" y="${pad+3}">${max.toFixed(1)}</text>
-    <text x="2" y="${H-pad}">${min.toFixed(1)}</text>
-    <text x="${pad}" y="${H-6}">${log[0].date.slice(5)}</text>
-    <text x="${W-pad}" y="${H-6}" text-anchor="end">${log[n-1].date.slice(5)}</text>
-    <polyline class="gline" points="${pts}"/>${dots}
-  </svg>`;
-}
-function addWeight(){
-  const pet = currentPet(); if(!pet) return;
-  const date = ($("#w-date")||{}).value;
-  const kg = parseFloat(($("#w-kg")||{}).value);
-  if(!date){ alert("日付を入れてください。"); return; }
-  if(!(kg>0) || kg>90){ alert("体重は 0〜90kg の範囲で入れてください。"); return; }
-  pet.weightLog = pet.weightLog || [];
-  const ex = pet.weightLog.find(e=>e.date===date);
-  if(ex) ex.kg = kg; else pet.weightLog.push({date, kg});
-  // 最新日の体重をプロフィールへ反映
-  const latest = pet.weightLog.slice().sort((a,b)=> a.date<b.date?-1:1).pop();
-  pet.weight = latest.kg;
-  saveDB();
-  const p = buildProfile(pet);
-  renderWeight(p);
-  renderFood(p);
-}
-function delWeight(date){
-  const pet = currentPet(); if(!pet) return;
-  pet.weightLog = (pet.weightLog||[]).filter(e=>e.date!==date);
-  if(pet.weightLog.length){
-    pet.weight = pet.weightLog.slice().sort((a,b)=> a.date<b.date?-1:1).pop().kg;
-  }
-  saveDB();
-  const p = buildProfile(pet);
-  renderWeight(p);
-  renderFood(p);
-}
-
-/* ===================== チェックリスト ===================== */
-function toggleTask(title, on){
-  const pet = currentPet(); if(!pet) return;
-  pet.done = pet.done || {};
-  if(on) pet.done[title]=true; else delete pet.done[title];
-  saveDB();
-}
-
-/* ===================== 季節切替 ===================== */
-let seasonOverride = "";
-function onSeasonChange(v){
-  seasonOverride = v||"";
-  const pet = currentPet();
-  if(pet) renderGuide(buildProfile(pet));
-}
-
-/* ===================== 保存・複数頭管理・画面遷移 ===================== */
-const KEY = "uchinoko-navi-v2";
-const OLD_KEY = "uchinoko-navi-v1";
-let DB = { pets:[], currentId:null };
-let editingId = null; // 編集中のペットID（null=新規追加）
-
-function newId(){ return "p" + Date.now().toString(36) + Math.floor(Math.random()*1e4).toString(36); }
-function loadDB(){
-  try{ const o = JSON.parse(localStorage.getItem(KEY)); if(o && o.pets) DB = o; }catch(e){}
-  // v1からの移行
-  if((!DB.pets || !DB.pets.length)){
-    try{
-      const raw = localStorage.getItem(OLD_KEY);
-      if(raw){
-        const f = JSON.parse(raw);
-        DB.pets = [ Object.assign({id:newId(), weightLog:[], done:{}}, f) ];
-        DB.currentId = DB.pets[0].id;
-        saveDB();
-        localStorage.removeItem(OLD_KEY);
-      }
-    }catch(e){}
-  }
-}
-function saveDB(){ localStorage.setItem(KEY, JSON.stringify(DB)); }
-function currentPet(){ return DB.pets.find(p=>p.id===DB.currentId) || DB.pets[0] || null; }
-
-function renderPetSwitch(){
-  const sel = $("#pet-switch"); if(!sel) return;
-  sel.innerHTML = DB.pets.map(p=>
-    `<option value="${p.id}" ${p.id===DB.currentId?"selected":""}>🐕 ${p.name||"うちの子"}</option>`
-  ).join("") + `<option value="__new__">＋ 新しい子を追加</option>`;
-}
-function onPetSwitch(id){
-  if(id==="__new__"){ addNewPet(); return; }
-  DB.currentId = id; saveDB();
-  seasonOverride = "";
-  showGuide();
-}
-function addNewPet(){
-  editingId = null;
-  resetForm();
-  $("#view-guide").style.display="none";
-  $("#view-profile").style.display="block";
-  window.scrollTo(0,0);
-}
-function editPet(){
-  const pet = currentPet(); if(!pet) return;
-  editingId = pet.id;
-  fillForm(pet);
-  $("#view-guide").style.display="none";
-  $("#view-profile").style.display="block";
-  window.scrollTo(0,0);
-}
-
-function validate(f){
-  if(!f.breedIdx) return "犬種（または大きさ）を選んでください。";
-  if(f.years<0 || f.years>25) return "年齢（年）は 0〜25 の範囲で入れてください。";
-  if(f.months<0 || f.months>11) return "月齢（ヶ月）は 0〜11 の範囲で入れてください。";
-  if(f.years*12+f.months===0) return "年齢を入れてください（子犬は「0年 ○ヶ月」でOK）。";
-  if(f.weight && (f.weight<0 || f.weight>90)) return "体重は 0〜90kg の範囲で入れてください。";
-  return "";
-}
-
-function saveAndShow(){
-  const f = readForm();
-  const err = validate(f);
-  if(err){ alert(err); return; }
-  if(!f.name) f.name = "うちの子";
-  if(editingId){
-    const pet = DB.pets.find(p=>p.id===editingId);
-    Object.assign(pet, f);            // 既存の weightLog / done は保持
-    DB.currentId = pet.id;
-  }else{
-    const pet = Object.assign({id:newId(), weightLog:[], done:{}}, f);
-    DB.pets.push(pet);
-    DB.currentId = pet.id;
-  }
-  editingId = null;
-  seasonOverride = "";
-  saveDB();
-  showGuide();
-}
-
-function showGuide(){
-  const pet = currentPet();
-  if(!pet){ $("#view-guide").style.display="none"; $("#view-profile").style.display="block"; return; }
-  renderPetSwitch();
-  renderGuide(buildProfile(pet));
-  $("#view-profile").style.display="none";
-  $("#view-guide").style.display="block";
-  window.scrollTo(0,0);
-}
-
-function backToProfile(){
-  // 「プロフィールを編集」ボタン用（現在の子を編集）
-  editPet();
-}
-
-function clearAll(){
-  if(!confirm("入力フォームの内容をクリアします。よろしいですか？")) return;
-  resetForm();
-}
-
-function resetForm(){
-  ["f-name","f-breed","f-years","f-months","f-sex","f-weight","f-yard","f-floor"].forEach(id=>{ const e=$("#"+id); if(e) e.value=""; });
-  document.querySelectorAll('input[name=housing]').forEach(r=>r.checked=false);
-  document.querySelectorAll('[data-multi] input').forEach(c=>c.checked=false);
-  document.querySelectorAll('.chip.on').forEach(c=>c.classList.remove('on'));
-}
-
-function fillForm(f){
-  resetForm();
-  $("#f-name").value = f.name==="うちの子"?"":f.name||"";
-  $("#f-breed").value = f.breedIdx||"";
-  $("#f-years").value = f.years||"";
-  $("#f-months").value = f.months||"";
-  $("#f-sex").value = f.sex||"";
-  $("#f-weight").value = f.weight||"";
-  $("#f-yard").value = f.yard||"";
-  $("#f-floor").value = f.floor||"";
-  if(f.housing){ const r=document.querySelector(`input[name=housing][value="${f.housing}"]`); if(r){r.checked=true; r.closest('.chip').classList.add('on');} }
-  (f.owner||[]).forEach(v=>{ const c=document.querySelector(`[data-multi="owner"] input[value="${v}"]`); if(c){c.checked=true; c.closest('.chip').classList.add('on');} });
-  (f.concern||[]).forEach(v=>{ const c=document.querySelector(`[data-multi="concern"] input[value="${v}"]`); if(c){c.checked=true; c.closest('.chip').classList.add('on');} });
-}
-
-// チップの見た目トグル＋チェックリストのトグル
-document.addEventListener("change", e=>{
-  if(e.target.classList && e.target.classList.contains("task-check")){
-    const adv = e.target.closest(".advice");
-    if(adv) adv.classList.toggle("done", e.target.checked);
-    const tt = adv && adv.querySelector(".tt"); // 取り消し線はCSSで.doneに連動
-    toggleTask(e.target.dataset.title, e.target.checked);
-    // 進捗カウントを更新
-    const pet = currentPet();
-    if(pet){
-      const tasks = ADVICE.filter(a=>a.cat==="task" && matches(a,buildProfile(pet)));
-      const doneCount = tasks.filter(a=>pet.done&&pet.done[a.title]).length;
-      const pr = $("#g-tasks .progress");
-      if(pr) pr.innerHTML = `今週の進み具合：<b>${doneCount}</b> / ${tasks.length} 完了`;
-    }
-    return;
-  }
-  const chip = e.target.closest(".chip");
-  if(!chip) return;
-  if(e.target.type==="radio"){
-    chip.parentElement.querySelectorAll(".chip").forEach(c=>c.classList.remove("on"));
-    chip.classList.add("on");
-  }else{
-    chip.classList.toggle("on", e.target.checked);
-  }
-});
-
-/* ===================== 使い方ガイド ===================== */
-function openHelp(){ $("#help-modal").classList.add("on"); }
-function closeHelp(){ $("#help-modal").classList.remove("on"); }
-document.addEventListener("keydown", e=>{ if(e.key==="Escape") closeHelp(); });
-
-initBreeds();
-loadDB();
-if(currentPet()){
-  showGuide();
-}else{
-  // 初回（まだ登録なし）は使い方ガイドを自動表示
-  openHelp();
-}
-</script>
 </body>
 </html>
