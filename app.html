@@ -188,6 +188,8 @@
   .feel .feel-img svg{width:78px}
   .feel .feel-tx{flex:1; min-width:0}
   .feel .feel-tx .t{margin-bottom:2px}
+  .feel .good-img{flex:0 0 60px}
+  .feel .good-img svg{width:60px}
   .bcs-illust{margin:10px 0; padding:10px; background:#fffdfb; border:1px solid var(--line); border-radius:10px}
   .bcs-illust svg{width:100%; max-width:360px; margin:0 auto}
   .bcs-check{margin:6px 0; padding-left:18px; font-size:13px}
@@ -282,7 +284,7 @@
           <select id="f-breed" onchange="onBreedChange()"></select>
           <div class="hint">わからない／ミックスの場合は、近い大きさの「ミックス・その他」を選んでください。</div>
           <div class="mix-parents" id="mix-parents" style="display:none">
-            <div class="hint" style="margin-top:0">ミックスの子は、わかる範囲で<b>両親の犬種</b>を選ぶと、両親ゆずりの特性・健康の注意を表示します（わからなければ空欄でOK）。</div>
+            <div class="hint" style="margin-top:0">ミックスの子は、わかる範囲で<b>両親の犬種</b>を選ぶと、両親ゆずりの特性・健康の注意を表示します（わからなければ空欄でOK）。<br>例：プードル×マルチーズ（マルプー）、ダックス×チワワ（チワックス）、ゴールデン×プードル（ゴールデンドゥードゥル）など。</div>
             <div class="mp-row">
               <div><label>父犬の犬種</label><select id="f-sire"></select></div>
               <div><label>母犬の犬種</label><select id="f-dam"></select></div>
@@ -664,15 +666,15 @@ const ADVICE = [
 
 // グッズ（サイズ・状況でタグ付け）
 const GOODS = [
-  {name:"知育トイ（コングなど）", note:"留守番・退屈対策に。おやつを詰めて長持ちさせる。", when:a=>true},
-  {name:"嗅ぐマット（スナッフルマット）", note:"ノーズワーク用。おやつを隠して鼻で探す遊びに。雨の日の運動や早食い防止にも。", when:a=>true},
-  {name:"滑り止めマット／カーペット", note:"フローリングの関節・腰の負担を軽減。", when:a=>a.floor==="flooring"},
-  {name:"体に合ったハーネス", note:"気管や首への負担を減らす。引っ張り対策にも。", when:a=>a.concern.includes("pulling")||a.size==="toy"||a.size==="small"},
-  {name:"クレート／サークル", note:"安心できる“自分の部屋”。留守番やトイレ習慣づくりに。", when:a=>a.stage==="puppyEarly"||a.stage==="puppyLate"||a.concern.includes("alone")},
-  {name:"噛んでよいおもちゃ（数種）", note:"歯がわり時期や甘噛みの“置きかえ”用。", when:a=>a.concern.includes("biting")||a.stage==="puppyLate"},
-  {name:"クールマット・冷感グッズ", note:"夏の暑さ対策。短頭種は特に。", when:a=>a.season==="summer"||/短頭種/.test((a.breed&&a.breed.health||[]).join(""))},
-  {name:"防音・目隠しシート", note:"集合住宅での吠え・視界刺激対策に。", when:a=>a.housing==="apartment"&&a.concern.includes("barking")},
-  {name:"歩行補助ハーネス・スロープ", note:"シニアの段差・立ち上がりをサポート。", when:a=>a.stage==="senior"},
+  {key:"kong",    name:"知育トイ（コングなど）", note:"留守番・退屈対策に。おやつを詰めて長持ちさせる。", when:a=>true},
+  {key:"snuffle", name:"嗅ぐマット（スナッフルマット）", note:"ノーズワーク用。おやつを隠して鼻で探す遊びに。雨の日の運動や早食い防止にも。", when:a=>true},
+  {key:"rug",     name:"滑り止めマット／カーペット", note:"フローリングの関節・腰の負担を軽減。", when:a=>a.floor==="flooring"},
+  {key:"harness", name:"体に合ったハーネス", note:"気管や首への負担を減らす。引っ張り対策にも。", when:a=>a.concern.includes("pulling")||a.size==="toy"||a.size==="small"},
+  {key:"crate",   name:"クレート／サークル", note:"安心できる“自分の部屋”。留守番やトイレ習慣づくりに。", when:a=>a.stage==="puppyEarly"||a.stage==="puppyLate"||a.concern.includes("alone")},
+  {key:"chew",    name:"噛んでよいおもちゃ（数種）", note:"歯がわり時期や甘噛みの“置きかえ”用。", when:a=>a.concern.includes("biting")||a.stage==="puppyLate"},
+  {key:"coolmat", name:"クールマット・冷感グッズ", note:"夏の暑さ対策。短頭種は特に。", when:a=>a.season==="summer"||/短頭種/.test((a.breed&&a.breed.health||[]).join(""))},
+  {key:"blind",   name:"防音・目隠しシート", note:"集合住宅での吠え・視界刺激対策に。", when:a=>a.housing==="apartment"&&a.concern.includes("barking")},
+  {key:"ramp",    name:"歩行補助ハーネス・スロープ", note:"シニアの段差・立ち上がりをサポート。", when:a=>a.stage==="senior"},
 ];
 
 // 気持ちのサイン（基礎）— カーミングシグナル等
@@ -994,7 +996,7 @@ function renderGuide(p){
   // グッズ
   const goods = GOODS.filter(g=>g.when(p));
   $("#g-goods").innerHTML = goods.map(g=>
-    `<div class="advice"><div class="t">🛍️ ${g.name}</div><p class="a">${g.note}</p></div>`).join("");
+    `<div class="advice feel"><div class="feel-img good-img">${illust(g.key)}</div><div class="feel-tx"><div class="t">${g.name}</div><p class="a">${g.note}</p></div></div>`).join("");
 
   // 用語集
   const gl = $("#g-glossary");
@@ -1130,6 +1132,16 @@ const ILLUST = {
       <line x1="64" y1="59" x2="64" y2="70" stroke="#f4dcb8" stroke-width="5.5" stroke-linecap="round"/>
       <text x="40" y="86" text-anchor="middle" font-size="11" fill="#6f655c">肥満</text>
     </g></svg>`,
+  // 🛍️ グッズ（かわいいアイコン）
+  kong:`<svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M30 6c-9 0-7 13-9 24s3 24 9 24 11-13 9-24S39 6 30 6Z" fill="#e2574c"/><ellipse cx="30" cy="10" rx="6" ry="3.5" fill="#7a2b25"/><ellipse cx="24" cy="28" rx="3.5" ry="7" fill="#fff" opacity=".25"/></svg>`,
+  snuffle:`<svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect x="6" y="18" width="48" height="30" rx="6" fill="#74b072"/><g fill="#5d9a5b"><rect x="11" y="22" width="9" height="9" rx="3"/><rect x="26" y="22" width="9" height="9" rx="3"/><rect x="41" y="22" width="8" height="9" rx="3"/><rect x="18" y="34" width="9" height="9" rx="3"/><rect x="33" y="34" width="9" height="9" rx="3"/></g><circle cx="46" cy="40" r="3" fill="#e8a33d"/></svg>`,
+  rug:`<svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect x="8" y="20" width="44" height="26" rx="3" fill="#dcb38a" stroke="#b98a5e" stroke-width="2"/><path d="M8 27h44M8 33h44M8 40h44" stroke="#c79a6e" stroke-width="1.5"/><path d="M8 20l-3-4M52 20l3-4M8 46l-3 4M52 46l3 4" stroke="#b98a5e" stroke-width="2" stroke-linecap="round"/></svg>`,
+  harness:`<svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M18 16a12 12 0 0 1 24 0" fill="none" stroke="#e07a3c" stroke-width="6" stroke-linecap="round"/><rect x="14" y="24" width="32" height="20" rx="6" fill="#f0a35e"/><rect x="26" y="24" width="8" height="20" fill="#e07a3c"/><circle cx="30" cy="34" r="3.5" fill="#fff"/></svg>`,
+  crate:`<svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect x="10" y="14" width="40" height="6" rx="3" fill="#b9895a"/><rect x="10" y="18" width="40" height="32" rx="4" fill="#cda06f"/><rect x="14" y="22" width="32" height="24" rx="2" fill="#7c5a3a"/><g stroke="#cda06f" stroke-width="2"><path d="M21 22v24M28 22v24M35 22v24M42 22v24"/></g></svg>`,
+  chew:`<svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><g fill="#f2ead2" stroke="#d8caa0" stroke-width="2"><circle cx="17" cy="22" r="7"/><circle cx="17" cy="36" r="7"/><circle cx="43" cy="22" r="7"/><circle cx="43" cy="36" r="7"/></g><rect x="15" y="24" width="30" height="10" rx="5" fill="#f2ead2"/></svg>`,
+  coolmat:`<svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect x="8" y="18" width="44" height="28" rx="6" fill="#9fd3ec" stroke="#6db4d8" stroke-width="2"/><g stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M30 25v15M23 29l14 7M37 29l-14 7"/></g></svg>`,
+  blind:`<svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect x="12" y="10" width="36" height="40" rx="3" fill="#cdb79a"/><rect x="16" y="14" width="28" height="32" fill="#eaf2f6"/><g stroke="#c2d4dd" stroke-width="2"><path d="M16 21h28M16 27h28M16 33h28M16 39h28"/></g></svg>`,
+  ramp:`<svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M8 46h44L14 22Z" fill="#cdb79a" stroke="#a9906f" stroke-width="2" stroke-linejoin="round"/><g stroke="#a9906f" stroke-width="1.5"><path d="M22 30l8 4M30 36l8 4M38 42l6 3"/></g></svg>`,
 };
 function illust(key, cls){
   const svg = ILLUST[key];
