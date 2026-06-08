@@ -625,21 +625,21 @@ const ADVICE = [
   {cat:"task", title:"半年に1回の健康診断を", action:"シニアは半年ごとの受診を。歩き方・飲水量・夜鳴きの変化はメモして相談。", why:"高齢期は変化が早く、こまめなチェックで対処が早くなります。", src:"WSAVA 予防", stage:["senior"]},
 
   // --- 運動・遊び（サイズ/運動量で出し分け） ---
-  {cat:"exercise", title:"散歩は“量より質”。においを嗅がせる", action:"立ち止まってにおいをじっくり嗅ぐ時間を許してあげる「スニッフィング（嗅ぐ）散歩」を取り入れる。グイグイ歩かせるより満足度が上がります。", why:"嗅覚を使う散歩は短くても満足度・リラックス効果が高いことが示されています。", src:"行動学(嗅覚)", },
-  {cat:"exercise", title:"ノーズワークで“鼻の運動”を取り入れる", action:"おやつを部屋に隠して探させる・タオルや箱に隠す・嗅ぐマット(スナッフルマット)を使うなど、においを使って探す遊びを1日5〜10分。雨の日や運動制限中にもおすすめ。", why:"嗅覚を使う「ノーズワーク」は犬本来の欲求を満たし、短時間でも心地よい疲れと満足感を与えます。年齢や体力を問わず、子犬からシニアまで楽しめます。", src:"行動学(嗅覚エンリッチメント)"},
-  {cat:"exercise", title:"運動量の目安：控えめでOK", action:"1日2回・各15〜30分の散歩＋室内遊び。関節に優しく、無理はさせない。", why:"超小型・短頭種は過度な運動より、こまめで穏やかな運動が向きます。", src:"犬種別運動", ex:["low"]},
-  {cat:"exercise", title:"運動量の目安：しっかりめ", action:"1日合計1時間以上の運動＋頭を使う遊びを。引っ張り遊びやボールも◎。", why:"運動欲求の高い犬種は、足りないと問題行動につながりやすいです。", src:"犬種別運動", ex:["high","vhigh"]},
-  {cat:"exercise", title:"頭脳系の“仕事”を毎日", action:"ノーズワーク・簡単な芸（トリック：オテやクルッと回る等）・障害物遊びなど『考える運動』を必ず加える。", why:"作業犬種は身体運動だけでは満たされず、頭を使う活動が必須です。", src:"犬種別運動", ex:["vhigh"]},
+  {cat:"exercise", key:"sniff", title:"散歩は“量より質”。においを嗅がせる", action:"立ち止まってにおいをじっくり嗅ぐ時間を許してあげる「スニッフィング（嗅ぐ）散歩」を取り入れる。グイグイ歩かせるより満足度が上がります。", why:"嗅覚を使う散歩は短くても満足度・リラックス効果が高いことが示されています。", src:"行動学(嗅覚)", },
+  {cat:"exercise", key:"snuffle", title:"ノーズワークで“鼻の運動”を取り入れる", action:"おやつを部屋に隠して探させる・タオルや箱に隠す・嗅ぐマット(スナッフルマット)を使うなど、においを使って探す遊びを1日5〜10分。雨の日や運動制限中にもおすすめ。", why:"嗅覚を使う「ノーズワーク」は犬本来の欲求を満たし、短時間でも心地よい疲れと満足感を与えます。年齢や体力を問わず、子犬からシニアまで楽しめます。", src:"行動学(嗅覚エンリッチメント)"},
+  {cat:"exercise", key:"walk", title:"運動量の目安：控えめでOK", action:"1日2回・各15〜30分の散歩＋室内遊び。関節に優しく、無理はさせない。", why:"超小型・短頭種は過度な運動より、こまめで穏やかな運動が向きます。", src:"犬種別運動", ex:["low"]},
+  {cat:"exercise", key:"ball", title:"運動量の目安：しっかりめ", action:"1日合計1時間以上の運動＋頭を使う遊びを。引っ張り遊びやボールも◎。", why:"運動欲求の高い犬種は、足りないと問題行動につながりやすいです。", src:"犬種別運動", ex:["high","vhigh"]},
+  {cat:"exercise", key:"brain", title:"頭脳系の“仕事”を毎日", action:"ノーズワーク・簡単な芸（トリック：オテやクルッと回る等）・障害物遊びなど『考える運動』を必ず加える。", why:"作業犬種は身体運動だけでは満たされず、頭を使う活動が必須です。", src:"犬種別運動", ex:["vhigh"]},
 
   // --- 住環境・季節 ---
-  {cat:"home", title:"集合住宅は“吠え”対策を先回り", action:"チャイム・足音などの刺激に『おやつ』を結びつけ、平気な経験を積ませる。窓に目隠しシートも有効。", why:"近隣トラブルの多くは警戒吠え。叱るより刺激への印象を良くする方が根本的です。", src:"陽性強化", housing:"apartment"},
+  {cat:"home", key:"apartment", title:"集合住宅は“吠え”対策を先回り", action:"チャイム・足音などの刺激に『おやつ』を結びつけ、平気な経験を積ませる。窓に目隠しシートも有効。", why:"近隣トラブルの多くは警戒吠え。叱るより刺激への印象を良くする方が根本的です。", src:"陽性強化", housing:"apartment"},
   {cat:"home", title:"エレベーター・共用部のマナー練習", action:"抱っこ or 短いリードで落ち着いて乗る練習を、すいている時間に少しずつ。", why:"他の住人や犬が苦手な人への配慮が、犬の安心にもつながります。", src:"日本の住環境", housing:"apartment"},
-  {cat:"home", title:"フローリングは滑り止めを", action:"よく通る所にマット・カーペットを敷くか、肉球まわりの毛・爪を整える。", why:"滑る床は関節・腰に負担。特にダックス/コーギーは椎間板ヘルニア、小型犬は膝に注意。", src:"整形外科的配慮", floor:"flooring"},
-  {cat:"home", title:"庭がなくても運動はおぎなえる", action:"室内での引っ張り遊び・階段以外の段差遊び・知育トイで運動量を補完。", why:"散歩中心でも、室内遊びと嗅覚遊びを足せば十分に満たせます。", src:"環境エンリッチメント", yard:"none"},
+  {cat:"home", key:"rug", title:"フローリングは滑り止めを", action:"よく通る所にマット・カーペットを敷くか、肉球まわりの毛・爪を整える。", why:"滑る床は関節・腰に負担。特にダックス/コーギーは椎間板ヘルニア、小型犬は膝に注意。", src:"整形外科的配慮", floor:"flooring"},
+  {cat:"home", key:"ball", title:"庭がなくても運動はおぎなえる", action:"室内での引っ張り遊び・階段以外の段差遊び・知育トイで運動量を補完。", why:"散歩中心でも、室内遊びと嗅覚遊びを足せば十分に満たせます。", src:"環境エンリッチメント", yard:"none"},
   // 季節（month で判定）
-  {cat:"home", title:"【夏】熱中症と肉球やけどに注意", action:"散歩は早朝か日没後。アスファルトに手の甲を5秒当てて熱ければ歩かせない。水と日陰を確保。", why:"地面はとても高温になり、犬は人より熱に弱い。短頭種は特に危険です。", src:"季節(夏)", season:["summer"]},
-  {cat:"home", title:"【夏】短頭種は冷房を切らさない", action:"室温管理を最優先。ハアハアが激しい・舌が紫っぽい時はすぐ受診。", why:"短頭種(フレンチブル・パグ等)は呼吸での体温調節が苦手で熱中症リスクが高いです。", src:"季節(夏)", season:["summer"], safety:false},
-  {cat:"home", title:"【冬】寒さ対策を", action:"超小型・短毛種は服や暖かい寝床を。温度差での体調変化に注意。", why:"小型・短毛・子犬・シニアは寒さに弱く、体調をくずしやすいです。", src:"季節(冬)", season:["winter"]},
+  {cat:"home", key:"sun", title:"【夏】熱中症と肉球やけどに注意", action:"散歩は早朝か日没後。アスファルトに手の甲を5秒当てて熱ければ歩かせない。水と日陰を確保。", why:"地面はとても高温になり、犬は人より熱に弱い。短頭種は特に危険です。", src:"季節(夏)", season:["summer"]},
+  {cat:"home", key:"sun", title:"【夏】短頭種は冷房を切らさない", action:"室温管理を最優先。ハアハアが激しい・舌が紫っぽい時はすぐ受診。", why:"短頭種(フレンチブル・パグ等)は呼吸での体温調節が苦手で熱中症リスクが高いです。", src:"季節(夏)", season:["summer"], safety:false},
+  {cat:"home", key:"snow", title:"【冬】寒さ対策を", action:"超小型・短毛種は服や暖かい寝床を。温度差での体調変化に注意。", why:"小型・短毛・子犬・シニアは寒さに弱く、体調をくずしやすいです。", src:"季節(冬)", season:["winter"]},
 
   // --- 悩み別 ---
   {cat:"concern", title:"甘噛みは“やめさせる”より“置きかえる”", action:"噛んできたら遊びを一旦中断→噛んでよいオモチャに誘導。歯がゆい時期は冷やせる噛むおもちゃも。", why:"罰は手・人への恐怖や攻撃につながることも。代わりの正解を教える方が安全で確実です。", src:"AVSAB 人道的トレーニング", concern:["biting"]},
@@ -702,23 +702,23 @@ const CARE = [
 // 用語集（アプリ内で出てくる言葉のやさしい説明）
 const GLOSSARY = [
   {term:"社会化", read:"しゃかいか", def:"子犬の時期に、いろいろな人・音・場所・他の犬などに“こわくない形で”慣れさせること。将来の吠え・怖がり・噛みを減らす土台になります。特に生後〜16週ごろが大切。"},
-  {term:"ノーズワーク", def:"においを使って隠したおやつなどを探させる遊び。犬本来の「嗅ぐ」欲求を満たし、短時間でも満足感が高い。子犬からシニア、雨の日や運動制限中にもおすすめ。"},
-  {term:"スニッフィング（嗅ぐ）散歩", def:"立ち止まってにおいをじっくり嗅ぐ時間を大切にする散歩。グイグイ歩く運動より、嗅ぐ方が犬の満足度・リラックス効果が高いとされます。"},
-  {term:"知育トイ", read:"ちいくトイ", def:"中におやつを詰めたり、転がすと出てきたりする“考えて遊ぶ”おもちゃ（コングなど）。退屈・留守番対策や早食い防止に役立ちます。"},
-  {term:"トリック（芸）", def:"「オテ」「おすわり」「クルッと回る」「ゴロンと寝転がる」「ボールを持ってくる」など、言葉や合図（キュー）で犬に教える“芸”のこと。これを教える練習が「トリック練習」です。頭を使ういい運動になり、できたらほめておやつ、という遊び感覚で楽しめます。むずかしく考えず、まずは「オテ」からでOK。"},
+  {term:"ノーズワーク", key:"snuffle", def:"においを使って隠したおやつなどを探させる遊び。犬本来の「嗅ぐ」欲求を満たし、短時間でも満足感が高い。子犬からシニア、雨の日や運動制限中にもおすすめ。"},
+  {term:"スニッフィング（嗅ぐ）散歩", key:"sniff", def:"立ち止まってにおいをじっくり嗅ぐ時間を大切にする散歩。グイグイ歩く運動より、嗅ぐ方が犬の満足度・リラックス効果が高いとされます。"},
+  {term:"知育トイ", read:"ちいくトイ", key:"kong", def:"中におやつを詰めたり、転がすと出てきたりする“考えて遊ぶ”おもちゃ（コングなど）。退屈・留守番対策や早食い防止に役立ちます。"},
+  {term:"トリック（芸）", key:"playbow", def:"「オテ」「おすわり」「クルッと回る」「ゴロンと寝転がる」「ボールを持ってくる」など、言葉や合図（キュー）で犬に教える“芸”のこと。これを教える練習が「トリック練習」です。頭を使ういい運動になり、できたらほめておやつ、という遊び感覚で楽しめます。むずかしく考えず、まずは「オテ」からでOK。"},
   {term:"キュー（合図）", def:"「オテ」「おすわり」など、犬に行動をうながすための合図のこと。言葉でも手の動きでもよく、いつも同じ合図にすると犬が覚えやすくなります。"},
-  {term:"環境エンリッチメント", def:"遊び・嗅覚・探索など“暮らしの楽しみ”を増やして心を満たす工夫の総称。退屈からくる問題行動の予防になります。"},
+  {term:"環境エンリッチメント", key:"brain", def:"遊び・嗅覚・探索など“暮らしの楽しみ”を増やして心を満たす工夫の総称。退屈からくる問題行動の予防になります。"},
   {term:"陽性強化（ごほうびベース）", read:"ようせいきょうか", def:"できた行動をごほうび（おやつ・ほめる）で増やす教え方。罰を使うより安全で、信頼関係をこわしません。"},
-  {term:"カーミングシグナル", def:"あくび・顔をそむける・体をブルブルなど、犬が「落ち着いて」「今は嫌だ」と伝える小さなサイン。気持ちを読むヒントになります。"},
+  {term:"カーミングシグナル", key:"lick", def:"あくび・顔をそむける・体をブルブルなど、犬が「落ち着いて」「今は嫌だ」と伝える小さなサイン。気持ちを読むヒントになります。"},
   {term:"脱感作（だっかんさ）／拮抗条件づけ", def:"苦手なもの（音・他の犬など）に“平気な距離”から少しずつ慣らし、同時においしい経験を結びつけて「good」に変えていく方法。"},
   {term:"フラッディング", def:"苦手なものにいきなり直面させる方法。一見“慣れ”に見えても恐怖を悪化させやすく、おすすめできません。"},
   {term:"ボディコンディションスコア（BCS）", def:"見た目と触った感じで体型(やせ〜肥満)を5〜9段階で評価する指標。フード量は体重だけでなくこのBCSで微調整します。"},
   {term:"短頭種（たんとうしゅ）", def:"フレンチブルドッグ・パグなど鼻が短い犬種。呼吸で熱を逃がすのが苦手で暑さに非常に弱く、夏や運動は特に注意が必要です。"},
   {term:"ダブルコート", def:"硬い上毛(オーバーコート)と、やわらかい下毛(アンダーコート)の二重構造の毛並み。柴犬・ハスキー・ゴールデンなど。寒さに強い反面、春と秋の換毛期に下毛が大量に抜けます。バリカンで短く刈りすぎると体温調節が乱れるため、カットより抜け毛を梳くケアが向きます。"},
   {term:"シングルコート", def:"下毛(アンダーコート)がほとんどなく、一枚の毛で覆われた毛並み。プードル・マルチーズ・ヨークシャーなど。抜け毛は少ないですが毛が伸び続けるので定期的なトリミングが必要。保温力は低めで寒さに弱い傾向があります。"},
-  {term:"換毛期（かんもうき）", def:"主に春と秋、季節に合わせて被毛が大量に抜け替わる時期。ダブルコートの犬種で顕著。毎日のブラッシングで抜け毛を取り除くと、毛玉・蒸れ・皮膚トラブルを防げます。"},
+  {term:"換毛期（かんもうき）", key:"brushing", def:"主に春と秋、季節に合わせて被毛が大量に抜け替わる時期。ダブルコートの犬種で顕著。毎日のブラッシングで抜け毛を取り除くと、毛玉・蒸れ・皮膚トラブルを防げます。"},
   {term:"ハズバンダリートレーニング", def:"歯みがき・爪切り・耳掃除・診察・投薬など、ケアや治療を犬が“自分から受け入れられる”ようにする練習。おやつやほめ言葉と結びつけ、嫌がらない範囲で少しずつ慣らします。押さえつけずに行えるので、犬のストレスとケガを減らし、毎日のお手入れや通院がぐっと楽になります。"},
-  {term:"分離不安（ぶんりふあん）", def:"飼い主と離れると強い不安でパニックになる状態。留守番中の鳴き続け・破壊・粗相・過剰なよだれなどが毎回出るのが特徴です。『出かけても必ず戻る』を少しずつ教える練習で改善しますが、強い場合は獣医師・行動の専門家による治療（必要に応じ投薬）が有効です。"},
+  {term:"分離不安（ぶんりふあん）", key:"tail", def:"飼い主と離れると強い不安でパニックになる状態。留守番中の鳴き続け・破壊・粗相・過剰なよだれなどが毎回出るのが特徴です。『出かけても必ず戻る』を少しずつ教える練習で改善しますが、強い場合は獣医師・行動の専門家による治療（必要に応じ投薬）が有効です。"},
   {term:"膝蓋骨脱臼（しつがいこつだっきゅう）", def:"後ろ足の膝のお皿がずれる、小型犬に多いトラブル。スキップのような歩き方が見られたら受診を。滑らない床が予防に。"},
   {term:"椎間板ヘルニア", read:"ついかんばん", def:"背骨のクッションが神経を圧迫する病気。ダックス・コーギーなど胴長の犬に多い。段差・肥満・滑る床に注意。"},
   {term:"RER／MER", def:"RER＝安静時に必要なカロリー（70×体重^0.75）、MER＝1日に必要なカロリー（RER×活動係数）。このアプリのフード量計算の土台です。"},
@@ -838,12 +838,14 @@ function matches(a, p){
 }
 
 function adviceHTML(a){
-  return `<div class="advice ${a.safety?'safety':''}">
-    <div class="t">${a.safety?'⚠️ ':''}${a.title}</div>
+  const body = `<div class="t">${a.safety?'⚠️ ':''}${a.title}</div>
     <p class="a">${a.action}</p>
     <div class="why">なぜ？ ${a.why}</div>
-    <span class="src">出典: ${a.src}</span>
-  </div>`;
+    <span class="src">出典: ${a.src}</span>`;
+  if(a.key && ILLUST[a.key]){
+    return `<div class="advice feel ${a.safety?'safety':''}"><div class="feel-img good-img">${illust(a.key)}</div><div class="feel-tx">${body}</div></div>`;
+  }
+  return `<div class="advice ${a.safety?'safety':''}">${body}</div>`;
 }
 function attr(s){ return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;'); }
 function taskHTML(a, isDone){
@@ -878,7 +880,8 @@ function breedCareHTML(b){
 function breedSeasonTips(p){
   const b = p.breed, s = p.season, out = [];
   if(!b || !b.coat) return out;
-  const add = (title, action, why) => out.push({cat:"home", title, action, why, src:`犬種別(${b.name})×季節`});
+  const seasonKey = s==="summer"?"sun":(s==="winter"?"snow":"brushing");
+  const add = (title, action, why, key) => out.push({cat:"home", key:key||seasonKey, title, action, why, src:`犬種別(${b.name})×季節`});
 
   if(s==="summer"){
     if(b.heat==="vweak")
@@ -886,9 +889,9 @@ function breedSeasonTips(p){
     else if(b.heat==="weak")
       add(`【夏】${b.name}は暑さに弱め。無理をさせない`, "散歩は涼しい時間に短めで。室温・水・日陰を必ず確保し、こまめに休ませて。", "厚い被毛や体質的に暑さに弱い犬種は、人より早く体に熱がこもります。");
     if(b.coat==="single" && b.trim)
-      add("【夏】サマーカットは“刈りすぎない”", "毛が伸びる犬種なので夏前にトリミングを。ただし地肌が見えるほど短くすると、皮膚が薄く直射日光や熱に弱くなるため、適度な長さを残してもらいましょう。", "シングルコートの犬は被毛が日よけ・断熱の役割も果たします。刈りすぎは日焼け・皮膚トラブルのもとです。");
+      add("【夏】サマーカットは“刈りすぎない”", "毛が伸びる犬種なので夏前にトリミングを。ただし地肌が見えるほど短くすると、皮膚が薄く直射日光や熱に弱くなるため、適度な長さを残してもらいましょう。", "シングルコートの犬は被毛が日よけ・断熱の役割も果たします。刈りすぎは日焼け・皮膚トラブルのもとです。", "brushing");
     if(b.coat==="double")
-      add("【夏】ダブルコートは“刈る”より“梳く”", "抜け替わるアンダーコートをブラッシングやシャンプーで取り除き、風通しを良く。バリカンで短く刈りすぎると体温調節が乱れ、毛質が変わって戻らないことも。", "ダブルコートは二重の毛で夏は熱や紫外線も防ぎます。刈り込むより抜け毛を除く方が涼しく安全です。");
+      add("【夏】ダブルコートは“刈る”より“梳く”", "抜け替わるアンダーコートをブラッシングやシャンプーで取り除き、風通しを良く。バリカンで短く刈りすぎると体温調節が乱れ、毛質が変わって戻らないことも。", "ダブルコートは二重の毛で夏は熱や紫外線も防ぎます。刈り込むより抜け毛を除く方が涼しく安全です。", "brushing");
   }
 
   if(s==="winter"){
@@ -1000,8 +1003,12 @@ function renderGuide(p){
 
   // 用語集
   const gl = $("#g-glossary");
-  if(gl) gl.innerHTML = GLOSSARY.map(t=>
-    `<div class="advice"><div class="t">${t.term}${t.read?`<span class="tag">${t.read}</span>`:""}</div><p class="a">${t.def}</p></div>`).join("");
+  if(gl) gl.innerHTML = GLOSSARY.map(t=>{
+    const head = `<div class="t">${t.term}${t.read?`<span class="tag">${t.read}</span>`:""}</div><p class="a">${t.def}</p>`;
+    return (t.key && ILLUST[t.key])
+      ? `<div class="advice feel"><div class="feel-img good-img">${illust(t.key)}</div><div class="feel-tx">${head}</div></div>`
+      : `<div class="advice">${head}</div>`;
+  }).join("");
 }
 
 /* ===================== フード量の計算（獣医栄養学 RER/MER） ===================== */
@@ -1142,6 +1149,15 @@ const ILLUST = {
   coolmat:`<svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect x="8" y="18" width="44" height="28" rx="6" fill="#9fd3ec" stroke="#6db4d8" stroke-width="2"/><g stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M30 25v15M23 29l14 7M37 29l-14 7"/></g></svg>`,
   blind:`<svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect x="12" y="10" width="36" height="40" rx="3" fill="#cdb79a"/><rect x="16" y="14" width="28" height="32" fill="#eaf2f6"/><g stroke="#c2d4dd" stroke-width="2"><path d="M16 21h28M16 27h28M16 33h28M16 39h28"/></g></svg>`,
   ramp:`<svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M8 46h44L14 22Z" fill="#cdb79a" stroke="#a9906f" stroke-width="2" stroke-linejoin="round"/><g stroke="#a9906f" stroke-width="1.5"><path d="M22 30l8 4M30 36l8 4M38 42l6 3"/></g></svg>`,
+  // 🎾 運動・遊び ／ 🏠 季節
+  sniff:`<svg viewBox="0 0 120 80" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M94 40 q14 -3 12 -19" stroke="#f4dcb8" stroke-width="8" fill="none" stroke-linecap="round"/><ellipse cx="64" cy="44" rx="26" ry="15" fill="#f4dcb8"/><line x1="48" y1="56" x2="48" y2="68" stroke="#f4dcb8" stroke-width="6" stroke-linecap="round"/><line x1="78" y1="56" x2="78" y2="68" stroke="#f4dcb8" stroke-width="6" stroke-linecap="round"/><ellipse cx="32" cy="52" rx="16" ry="14" fill="#f4dcb8"/><ellipse cx="38" cy="44" rx="6" ry="11" fill="#c98a55"/><ellipse cx="19" cy="60" rx="6" ry="4.2" fill="#f4dcb8"/><circle cx="14" cy="62" r="2.2" fill="#5b4636"/><circle cx="30" cy="50" r="1.6" fill="#5b4636"/><g fill="#b9a98f"><circle cx="9" cy="71" r="1.3"/><circle cx="14" cy="73" r="1.3"/><circle cx="19" cy="71" r="1.3"/></g></svg>`,
+  walk:`<svg viewBox="0 0 110 80" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M86 40 q12 -3 10 -17" stroke="#f4dcb8" stroke-width="7" fill="none" stroke-linecap="round"/><ellipse cx="58" cy="44" rx="24" ry="15" fill="#f4dcb8"/><line x1="44" y1="56" x2="44" y2="70" stroke="#f4dcb8" stroke-width="6" stroke-linecap="round"/><line x1="72" y1="56" x2="72" y2="70" stroke="#f4dcb8" stroke-width="6" stroke-linecap="round"/><circle cx="26" cy="36" r="14" fill="#f4dcb8"/><ellipse cx="22" cy="26" rx="6" ry="11" fill="#c98a55"/><ellipse cx="14" cy="40" rx="6" ry="4" fill="#f4dcb8"/><circle cx="10" cy="40" r="2" fill="#5b4636"/><path d="M22 34 q3 3 6 0" stroke="#5b4636" stroke-width="2.2" fill="none" stroke-linecap="round"/><path d="M27 22 q9 -10 19 -6" stroke="#e07a3c" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg>`,
+  ball:`<svg viewBox="0 0 110 80" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M84 42 q12 -10 8 -22" stroke="#f4dcb8" stroke-width="7" fill="none" stroke-linecap="round"/><ellipse cx="58" cy="46" rx="22" ry="14" fill="#f4dcb8"/><line x1="46" y1="56" x2="44" y2="70" stroke="#f4dcb8" stroke-width="6" stroke-linecap="round"/><line x1="70" y1="56" x2="72" y2="70" stroke="#f4dcb8" stroke-width="6" stroke-linecap="round"/><circle cx="30" cy="38" r="14" fill="#f4dcb8"/><ellipse cx="26" cy="28" rx="6" ry="11" fill="#c98a55"/><ellipse cx="18" cy="42" rx="6" ry="4" fill="#f4dcb8"/><circle cx="14" cy="43" r="2" fill="#5b4636"/><path d="M26 36 q3 3 6 0" stroke="#5b4636" stroke-width="2.2" fill="none" stroke-linecap="round"/><circle cx="96" cy="64" r="9" fill="#e2574c"/><path d="M88 62 q8 -3 16 0 M96 55v18" stroke="#fff" stroke-width="1.6" fill="none"/></svg>`,
+  brain:`<svg viewBox="0 0 80 88" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><g stroke="#e8b53a" stroke-width="2.2" stroke-linecap="round"><path d="M40 4v6M24 9l3 5M56 9l-3 5"/></g><circle cx="40" cy="24" r="10" fill="#ffe08a"/><rect x="36" y="32" width="8" height="5" rx="2" fill="#d9a441"/><ellipse cx="18" cy="60" rx="9" ry="16" fill="#c98a55"/><ellipse cx="62" cy="60" rx="9" ry="16" fill="#c98a55"/><ellipse cx="40" cy="62" rx="25" ry="22" fill="#f4dcb8"/><path d="M28 58 q5 5 10 0M42 58 q5 5 10 0" stroke="#5b4636" stroke-width="2.6" fill="none" stroke-linecap="round"/><ellipse cx="40" cy="68" rx="4.5" ry="3.3" fill="#5b4636"/><circle cx="22" cy="70" r="5" fill="#f3a39a" opacity=".5"/><circle cx="58" cy="70" r="5" fill="#f3a39a" opacity=".5"/></svg>`,
+  sun:`<svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><g stroke="#f4a93c" stroke-width="3" stroke-linecap="round"><path d="M30 6v8M30 46v8M6 30h8M46 30h8M13 13l6 6M41 41l6 6M47 13l-6 6M19 41l-6 6"/></g><circle cx="30" cy="30" r="13" fill="#f6b73c"/></svg>`,
+  snow:`<svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><g stroke="#7ab8d9" stroke-width="3" stroke-linecap="round"><path d="M30 8v44M11 19l38 22M49 19L11 41M30 8l-5 6M30 8l5 6M30 52l-5-6M30 52l5-6"/></g></svg>`,
+  brushing:`<svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect x="10" y="26" width="30" height="12" rx="6" fill="#e0a25c"/><rect x="36" y="28" width="14" height="8" rx="4" fill="#c98a55"/><g stroke="#b98a5e" stroke-width="2" stroke-linecap="round"><path d="M14 38v8M20 38v8M26 38v8M32 38v8"/></g></svg>`,
+  apartment:`<svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect x="14" y="10" width="32" height="42" rx="3" fill="#cdb79a"/><g fill="#eaf2f6"><rect x="19" y="15" width="8" height="8" rx="1"/><rect x="33" y="15" width="8" height="8" rx="1"/><rect x="19" y="27" width="8" height="8" rx="1"/><rect x="33" y="27" width="8" height="8" rx="1"/></g><rect x="26" y="40" width="8" height="12" rx="1" fill="#8a6a44"/></svg>`,
 };
 function illust(key, cls){
   const svg = ILLUST[key];
