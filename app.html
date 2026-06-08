@@ -171,6 +171,24 @@
   .cal-list .cal-lt{flex:1}
   .cal-list .cal-ln{color:var(--sub); font-size:12px}
   .cal-list .wdel{margin-left:auto; border:none; background:none; color:var(--warn); cursor:pointer; font-size:15px; line-height:1}
+  /* 深掘り（開閉）＋画像スロット */
+  .deep{margin-top:10px; border:1px solid var(--line); border-radius:10px; background:#fffdfb; overflow:hidden}
+  .deep>summary{cursor:pointer; padding:10px 14px; font-weight:700; font-size:13px; color:var(--accent-dark); list-style:none}
+  .deep>summary::-webkit-details-marker{display:none}
+  .deep>summary::before{content:"▾ "}
+  .deep[open]>summary::before{content:"▴ "}
+  .deep .deep-body{padding:2px 14px 14px}
+  .media-slot{margin:10px 0; padding:20px 12px; text-align:center; font-size:12px; color:var(--sub);
+    background:#faf4ec; border:1px dashed var(--accent); border-radius:10px}
+  .media-img{display:block; max-width:100%; height:auto; margin:10px auto; border-radius:10px; border:1px solid var(--line)}
+  .bcs-check{margin:6px 0; padding-left:18px; font-size:13px}
+  .bcs-check li{margin:3px 0}
+  .bcs-scale{display:flex; flex-direction:column; gap:4px; margin:8px 0}
+  .bcs-scale > div{display:flex; gap:8px; font-size:12.5px; padding:5px 8px; border-radius:8px; background:#f7f1e8}
+  .bcs-scale > div b{flex:0 0 70px}
+  .bcs-scale > div span{color:var(--sub)}
+  .bcs-scale .ideal{background:var(--accent-soft)}
+  .bcs-scale .ideal b{color:var(--accent-dark)}
   /* 印刷 */
   @media print{
     header.appbar,.disclaimer,.row-actions,.btn,.help-btn,.modal-bg,#view-profile,.petbar,.wform,.wlog .wdel,.cal-form,.cal-head .btn,.cal-list .wdel{display:none!important}
@@ -320,6 +338,7 @@
         <label class="chip"><input type="checkbox" value="home">🏡 在宅が多い</label>
         <label class="chip"><input type="checkbox" value="smallKids">👶 小さい子どもがいる</label>
         <label class="chip"><input type="checkbox" value="senior">🧑‍🦳 高齢の家族と暮らす</label>
+        <label class="chip"><input type="checkbox" value="multi">🐕🐕 多頭飼育（2頭以上）</label>
       </div>
 
       <label>いま気になっていること <span class="tag">あてはまるもの全部</span></label>
@@ -626,6 +645,12 @@ const ADVICE = [
   {cat:"concern", title:"はじめての方へ：完璧を目指さなくて大丈夫", action:"『安全・トイレ・社会化・ごほうびで教える』の4つだけ意識すればOK。困ったら早めにプロに相談を。", why:"最初から全部は無理。土台の習慣づくりが後をぐっと楽にします。", src:"実践トレーナー", owner:["firstTime"]},
   {cat:"concern", title:"留守がちなら“出かける前後”を工夫", action:"出かける前に軽い運動と知育トイ。帰宅時は落ち着いてから挨拶。", why:"エネルギーを発散させ、出入りを淡々とすると留守番ストレスが減ります。", src:"行動学(分離)", owner:["awayOften"]},
   {cat:"concern", title:"小さなお子さんとは“触り方ルール”を", action:"犬が食事・寝ている時はそっとしておく。子どもと犬を二人きりにしない。", why:"事故の多くは『犬が嫌がるサインを子どもが読めない』場面で起きます。大人の見守りが安全の鍵。", src:"安全(咬傷予防)", owner:["smallKids"], safety:true},
+
+  // --- 多頭飼育 ---
+  {cat:"concern", title:"多頭飼育①：食事は“別々の場所”であげる", action:"フードボウルは離して置くか、別の部屋・サークルで。食べ終わるまで見守り、盗み食い・取り合いを防ぐ。各頭のフード量は体格・年齢ごとに計算を（このアプリで1頭ずつ管理できます）。", why:"食べ物は最も争いになりやすい資源です。取り合いはケンカや早食い・肥満・痩せの原因に。個別管理で健康も守れます。", src:"行動学(多頭)", owner:["multi"]},
+  {cat:"concern", title:"多頭飼育②：寝床・水・おもちゃは“頭数＋1”を目安に", action:"ベッド・水飲み・トイレ・人気のおもちゃは、頭数より1つ多めに、離して用意。", why:"限られた資源を巡る取り合い（資源ガード）を防ぐのが、多頭の平和の基本です。", src:"環境エンリッチメント", owner:["multi"]},
+  {cat:"concern", title:"多頭飼育③：1頭ずつの“特別な時間”をつくる", action:"散歩・遊び・お手入れを1頭ずつ個別に行う時間も意識して。新入りばかり構わず、先住犬を立てると安定しやすい。", why:"つねに一緒だと依存や焼きもち、けんかの原因に。個別の関係づくりが各犬の自信と落ち着きを育てます。", src:"行動学(多頭)", owner:["multi"]},
+  {cat:"concern", title:"多頭飼育④：新入りは“段階的に”迎える", action:"いきなり対面させず、においの交換→柵越し→中立な場所で短時間の対面、と少しずつ。うなり・固まりは無理させないサイン。健康な子同士でも最初は要観察。", why:"急な同居はストレスとけんかのもと。段階を踏むほど関係づくりがうまくいきます。新入りの感染症・寄生虫チェックも忘れずに。", src:"行動学(多頭導入)", owner:["multi"], safety:true},
 ];
 
 // グッズ（サイズ・状況でタグ付け）
@@ -994,6 +1019,35 @@ function calcFood(weight, factor, kcalPer100){
   const grams = mer/(kcalPer100/100);
   return {mer:Math.round(mer), grams:Math.round(grams)};
 }
+// 画像スロット（後からイラスト/写真/図を差し込む“空き枠”。src指定で画像表示に切替）
+function mediaSlot(label, src){
+  if(src) return `<img class="media-img" src="${src}" alt="${attr(label)}" loading="lazy">`;
+  return `<div class="media-slot">🖼️ ${label}（準備中）</div>`;
+}
+// 体型（BCS）の深掘り（開閉式・画像スロット付き）
+function bcsDeepHTML(){
+  return `<details class="deep">
+    <summary>📊 体型（BCS）のチェック方法を見る</summary>
+    <div class="deep-body">
+      <p class="a" style="margin:6px 0">体重の数字だけでなく、<b>触って・見て</b>体型を確かめるのが大切です。次の3つを確認しましょう。</p>
+      <ul class="bcs-check">
+        <li>🖐️ <b>肋骨を触る</b>：手のひらで軽くなでて“うっすら”骨を感じるのが理想。厚い脂肪で触れない→太りすぎ、ゴツゴツ目立つ→やせ</li>
+        <li>👀 <b>上から見る</b>：腰に“くびれ”があるか</li>
+        <li>↗️ <b>横から見る</b>：おなかが後ろに向かってキュッと吊り上がっているか</li>
+      </ul>
+      <div class="bcs-scale">
+        <div><b>やせ</b><span>肋骨や腰骨が浮いて見え、脂肪をほとんど触れない</span></div>
+        <div><b>やや細い</b><span>肋骨が簡単に触れ、くびれがはっきり</span></div>
+        <div class="ideal"><b>理想 ⭐</b><span>肋骨はうっすら触れ、上から見てくびれ・横から見て腹部が吊り上がる</span></div>
+        <div><b>やや肥満</b><span>肋骨が触りにくく、くびれがあいまい</span></div>
+        <div><b>肥満</b><span>肋骨に触れず、くびれがなくおなかが垂れる</span></div>
+      </div>
+      ${mediaSlot("ここに体型スコアのイラスト・図が入ります")}
+      <p class="hint">迷ったら動物病院で「うちの子のBCSはどのくらい？」と聞くのが確実です。</p>
+    </div>
+  </details>`;
+}
+
 function renderFood(p){
   const el = $("#g-food");
   if(!p.weight || p.weight<=0){
@@ -1013,6 +1067,7 @@ function renderFood(p){
     ${isPuppy?`<div class="advice"><div class="t">🍼 子犬の食事のポイント</div><p class="a"><b>回数は1日 ${meals} 回${p.totalMonths<=3?"（生後3ヶ月以下は3〜4回）":""}</b>に分けるのが基本。胃が小さく一度に多く食べられず、低血糖を防ぐためにも“少量をこまめに”が大切です。成長で必要量は急に増えるので、<b>2〜4週ごとに体重を量り、量を見直して</b>ください。生後2ヶ月ごろまではフードをぬるま湯でふやかすと消化しやすくなります。</p></div>`:""}
     ${isYoungSmall?`<div class="advice safety"><div class="t">⚠️ 小型・超小型の子犬は低血糖に注意</div><p class="a">食事の間隔が空くと<b>低血糖</b>(ぐったり・ふらつき・けいれん)を起こすことがあります。食事を抜かさず、元気がない時はすぐ獣医師へ。応急的に砂糖水やはちみつを少量歯ぐきに塗ると良いとされますが、必ず受診してください。</p></div>`:""}
     <div class="advice safety"><div class="t">⚠️ あくまで目安です</div><p class="a">実際の量はフードの袋の表示と、その子の体型(やせ/太り＝ボディコンディションスコア)で調整を。療法食・妊娠授乳期は獣医師の指示を優先してください。${isPuppy?"<b>子犬は袋の月齢・体重別の給与量表も必ず確認を。</b>":""}</p></div>
+    ${bcsDeepHTML()}
   `;
   updateFood();
 }
