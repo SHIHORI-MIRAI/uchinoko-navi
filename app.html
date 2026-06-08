@@ -184,7 +184,7 @@
       <div class="n">2</div>
       <div>
         <div class="st">「ガイドを見る」でおすすめを表示</div>
-        <div class="sd">いまの時期のテーマ、<b>今週やってあげたいこと</b>、運動・遊び、フード量の目安、住まい・季節の注意、悩み別ヒントなどが表示されます。各カードの「なぜ？」で根拠も確認できます。</div>
+        <div class="sd">いまの年齢期（ライフステージ）のテーマ、<b>今週やってあげたいこと</b>、運動・遊び、フード量の目安、住まい・季節の注意、悩み別ヒントなどが表示されます。各カードの「なぜ？」で根拠も確認できます。</div>
       </div>
     </div>
     <div class="step">
@@ -198,7 +198,7 @@
     <div class="tiplist">
       <div class="ti"><span>🐕</span><span><b>複数の子を登録</b>：ガイド上部のドロップダウンで切り替え。「＋新しい子を追加」で何頭でも登録できます。</span></div>
       <div class="ti"><span>📝</span><span><b>編集</b>：ガイド上部の「編集」からいつでもプロフィールを直せます。</span></div>
-      <div class="ti"><span>☀️</span><span><b>季節の切替</b>：「いまの時期のテーマ」の右上で季節を手動切替（既定は今の季節を自動表示）。</span></div>
+      <div class="ti"><span>☀️</span><span><b>季節の切替</b>：「住まい・季節に合わせた注意」の右上で季節を手動切替（既定は今の季節を自動表示）。犬種ごとの夏冬の体質アドバイスも切り替わります。</span></div>
       <div class="ti"><span>🖨️</span><span><b>印刷・PDF保存</b>：ガイド上部の「🖨️印刷」で、動物病院やご家族と共有できる形に出力できます。</span></div>
       <div class="ti"><span>🔒</span><span><b>プライバシー</b>：入力内容はこの端末の中だけに保存され、外部には送信されません。</span></div>
       <div class="ti"><span>⚠️</span><span><b>ご注意</b>：本アプリは情報提供が目的で、獣医師の診断・指導の代わりではありません。気になる症状は専門家にご相談ください。</span></div>
@@ -319,19 +319,7 @@
     </div>
 
     <div class="card">
-      <h2 class="section" style="justify-content:space-between">
-        <span><span class="em">🌱</span>いまの時期のテーマ</span>
-        <span class="petbar" style="font-size:12px">
-          <label style="margin:0">季節</label>
-          <select id="g-season" onchange="onSeasonChange(this.value)" style="font-size:12px; padding:4px 8px">
-            <option value="">自動（今の季節）</option>
-            <option value="spring">🌸 春</option>
-            <option value="summer">☀️ 夏</option>
-            <option value="autumn">🍂 秋</option>
-            <option value="winter">❄️ 冬</option>
-          </select>
-        </span>
-      </h2>
+      <h2 class="section"><span class="em">🌱</span>いまの年齢期（ライフステージ）のテーマ</h2>
       <div id="g-stage"></div>
     </div>
 
@@ -361,7 +349,19 @@
     </div>
 
     <div class="card">
-      <h2 class="section"><span class="em">🏠</span>あなたの住まい・季節に合わせた注意</h2>
+      <h2 class="section" style="justify-content:space-between">
+        <span><span class="em">🏠</span>あなたの住まい・季節に合わせた注意</span>
+        <span class="petbar" style="font-size:12px">
+          <label style="margin:0">季節</label>
+          <select id="g-season" onchange="onSeasonChange(this.value)" style="font-size:12px; padding:4px 8px">
+            <option value="">自動（今の季節）</option>
+            <option value="spring">🌸 春</option>
+            <option value="summer">☀️ 夏</option>
+            <option value="autumn">🍂 秋</option>
+            <option value="winter">❄️ 冬</option>
+          </select>
+        </span>
+      </h2>
       <div id="g-home"></div>
     </div>
 
@@ -417,7 +417,7 @@ const BREEDS = [
   {name:"ウェルシュコーギー", size:"medium", ex:"high", traits:["賢い","よく動く"], health:["椎間板ヘルニア(腰)","肥満注意"], desc:"牛の足元を追って動かす牧畜犬。賢くよく動き、興奮すると“かかとを甘噛みで追う”牧畜本能が出ることも。頭と体を使う運動で満たしてあげましょう。胴長で椎間板ヘルニアになりやすく、肥満と段差は大敵です。"},
   {name:"ゴールデンレトリバー", size:"large", ex:"high", traits:["温厚","人好き","賢い"], health:["股関節","肥満注意","がん"], desc:"撃った鳥を回収する猟犬。温厚で人好き、賢く学習意欲が高い“仕事好き”。口に物をくわえる欲求が強いので、引っ張り遊びや知育で発散を。股関節・肥満・がんに注意し、適正体重を保って。"},
   {name:"ラブラドールレトリバー", size:"large", ex:"high", traits:["温厚","食いしん坊"], health:["股関節","肥満注意"], desc:"水辺で獲物を回収した猟犬。温厚で賢い反面、とても食いしん坊で太りやすいのが最大の注意点。しっかりした運動と厳密な食事管理が健康のカギ。股関節にも配慮を。"},
-  {name:"ボーダーコリー", size:"medium", ex:"vhigh", traits:["非常に賢い","運動欲求大"], health:["股関節","目"], desc:"牧羊犬の代表で、犬界トップクラスの賢さ。運動量と頭脳の欲求が非常に大きく、満たされないと問題行動につながります。毎日“考える運動”(ノーズワーク・トリック等)が必須。動くものを追う本能への配慮を。"},
+  {name:"ボーダーコリー", size:"medium", ex:"vhigh", traits:["非常に賢い","運動欲求大"], health:["股関節","目"], desc:"牧羊犬の代表で、犬界トップクラスの賢さ。運動量と頭脳の欲求が非常に大きく、満たされないと問題行動につながります。毎日“考える運動”(ノーズワークや簡単な芸＝トリックなど)が必須。動くものを追う本能への配慮を。"},
   {name:"ビーグル", size:"medium", ex:"high", traits:["陽気","嗅覚抜群","食いしん坊"], health:["肥満注意","耳(垂れ耳)"], desc:"イギリスのウサギ狩り用の嗅覚ハウンド。陽気で嗅覚抜群、においを追い始めると夢中になり呼び戻しが効きにくいことも。よく通る声で鳴く子も。嗅覚遊びで満足度を上げ、食いしん坊ゆえの肥満と垂れ耳の蒸れに注意。"},
   {name:"キャバリア", size:"small", ex:"med", traits:["穏やか","友好的"], health:["心臓(僧帽弁)","目"], desc:"イギリスの愛玩スパニエル。穏やかで誰とでも仲良くでき、初めての方にも向く性格。心臓(僧帽弁閉鎖不全症)が多い犬種なので、定期的な心臓のチェックを大切に。"},
   {name:"ジャック・ラッセル・テリア", size:"small", ex:"vhigh", traits:["活発","頭の回転が速い"], health:["膝","目"], desc:"キツネ狩りで巣穴に入るために作られたテリア。小さな体に膨大なエネルギーと速い頭の回転を持ち、退屈すると掘る・吠える・脱走することも。たっぷりの運動と知的な遊びが欠かせません。"},
@@ -440,6 +440,56 @@ const BREEDS = [
   {name:"ミックス・その他（中型 〜25kg）", size:"medium", ex:"high", traits:[], health:[]},
   {name:"ミックス・その他（大型 25kg〜）", size:"large", ex:"high", traits:[], health:[]},
 ];
+
+// 毛質・お手入れ・暑さ/寒さ耐性（犬種ごと）— 名前で BREEDS に合流させる
+// coat: double(ダブル/換毛・抜け毛多) / single(シングル/抜け毛少・伸びる) / smooth(短毛スムース) / wire(剛毛ワイヤー)
+// trim: true=定期トリミング(カット)が必要 / false=カット不要(ブラッシング中心)
+// heat: vweak(非常に弱い)/weak(弱い)/mid(普通)   cold: weak(弱い)/mid(普通)/strong(強い)
+const BREED_CARE = {
+  "トイプードル":            {coat:"single", trim:true,  heat:"mid",   cold:"weak"},
+  "チワワ":                  {coat:"smooth", trim:false, heat:"mid",   cold:"weak"},
+  "ミニチュアダックスフンド":{coat:"smooth", trim:false, heat:"mid",   cold:"weak"},
+  "ポメラニアン":            {coat:"double", trim:false, heat:"weak",  cold:"strong"},
+  "柴犬":                    {coat:"double", trim:false, heat:"weak",  cold:"strong"},
+  "豆柴":                    {coat:"double", trim:false, heat:"weak",  cold:"strong"},
+  "ヨークシャーテリア":      {coat:"single", trim:true,  heat:"mid",   cold:"weak"},
+  "マルチーズ":              {coat:"single", trim:true,  heat:"mid",   cold:"weak"},
+  "フレンチブルドッグ":      {coat:"smooth", trim:false, heat:"vweak", cold:"weak"},
+  "パグ":                    {coat:"smooth", trim:false, heat:"vweak", cold:"weak"},
+  "シーズー":                {coat:"single", trim:true,  heat:"weak",  cold:"mid"},
+  "ミニチュアシュナウザー":  {coat:"wire",   trim:true,  heat:"mid",   cold:"mid"},
+  "ウェルシュコーギー":      {coat:"double", trim:false, heat:"weak",  cold:"strong"},
+  "ゴールデンレトリバー":    {coat:"double", trim:false, heat:"weak",  cold:"strong"},
+  "ラブラドールレトリバー":  {coat:"double", trim:false, heat:"mid",   cold:"strong"},
+  "ボーダーコリー":          {coat:"double", trim:false, heat:"weak",  cold:"strong"},
+  "ビーグル":                {coat:"smooth", trim:false, heat:"mid",   cold:"mid"},
+  "キャバリア":              {coat:"single", trim:false, heat:"mid",   cold:"weak"},
+  "ジャック・ラッセル・テリア":{coat:"smooth",trim:false, heat:"mid",   cold:"mid"},
+  "パピヨン":                {coat:"single", trim:false, heat:"mid",   cold:"weak"},
+  "ボストンテリア":          {coat:"smooth", trim:false, heat:"weak",  cold:"weak"},
+  "ペキニーズ":              {coat:"double", trim:false, heat:"vweak", cold:"mid"},
+  "スタンダードプードル":    {coat:"single", trim:true,  heat:"mid",   cold:"mid"},
+  "ミディアムプードル":      {coat:"single", trim:true,  heat:"mid",   cold:"mid"},
+  "ジャーマンシェパード":    {coat:"double", trim:false, heat:"weak",  cold:"strong"},
+  "シェットランドシープドッグ（シェルティ）":{coat:"double",trim:false,heat:"weak",cold:"strong"},
+  "ミニチュアピンシャー":    {coat:"smooth", trim:false, heat:"mid",   cold:"weak"},
+  "イタリアングレーハウンド":{coat:"smooth", trim:false, heat:"mid",   cold:"weak"},
+  "シベリアンハスキー":      {coat:"double", trim:false, heat:"weak",  cold:"strong"},
+  "バーニーズマウンテンドッグ":{coat:"double",trim:false, heat:"vweak", cold:"strong"},
+  "ドーベルマン":            {coat:"smooth", trim:false, heat:"mid",   cold:"weak"},
+  "秋田犬":                  {coat:"double", trim:false, heat:"weak",  cold:"strong"},
+  "サモエド":                {coat:"double", trim:false, heat:"weak",  cold:"strong"},
+};
+BREEDS.forEach(b=>{ const c = BREED_CARE[b.name]; if(c) Object.assign(b, c); });
+
+const COAT_LABEL = {
+  double:"ダブルコート（換毛があり抜け毛が多め）",
+  single:"シングルコート（抜け毛は少ないが毛が伸び続ける）",
+  smooth:"スムース（短毛・季節で抜け毛あり）",
+  wire:"ワイヤー（硬い剛毛）",
+};
+const HEAT_LABEL = {vweak:"🥵 暑さに非常に弱い", weak:"🥵 暑さに弱い", mid:"暑さは普通"};
+const COLD_LABEL = {weak:"🥶 寒さに弱い", mid:"寒さは普通", strong:"❄️ 寒さに強い"};
 
 const SIZE_LABEL = {toy:"超小型犬", small:"小型犬", medium:"中型犬", large:"大型犬"};
 const EX_LABEL = {low:"控えめ", med:"普通", high:"多め", vhigh:"とても多い"};
@@ -489,7 +539,7 @@ const ADVICE = [
   {cat:"task", title:"トイレは“成功をほめる”だけで覚える", action:"起きた後・食後・遊んだ後にトイレへ誘導し、できたら3秒以内にごほうび。失敗は無言で片付ける。", why:"叱ると『排泄＝隠れてする』を学習しがち。成功を強化するほうが早く確実です。", src:"陽性強化", stage:["puppyEarly","puppyLate"], concern:["toilet"]},
   {cat:"task", title:"名前＝いいこと、を作る", action:"名前を呼んで振り向いたらごほうび、を1日数回。叱るときに名前は使わない。", why:"名前を『注目の合図＝報酬』にしておくと、呼び戻しや危険回避がしやすくなります。", src:"陽性強化", stage:["puppyEarly","puppyLate","adolescent"]},
   {cat:"task", title:"短い“ひとりtime”の練習", action:"在宅中でも別の部屋で数分過ごす練習を少しずつ。出入りを大げさにしない。", why:"留守番への耐性は段階的な練習で育ちます。急に長時間にしないことが分離不安の予防に。", src:"行動学(分離)", stage:["puppyEarly","puppyLate","adolescent"], concern:["alone"]},
-  {cat:"task", title:"頭を使う遊びで満足度アップ", action:"知育トイ・宝探し（おやつを隠す）・短いトリック練習を1日5〜10分。", why:"運動だけでなく『嗅ぐ・考える』活動は犬の満足度を高め、退屈からの問題行動を減らします。", src:"行動学(環境エンリッチメント)", stage:["adolescent","adult","senior"]},
+  {cat:"task", title:"頭を使う遊びで満足度アップ", action:"知育トイ・宝探し（おやつを隠す）・「オテ」「クルッと回る」など簡単な芸（トリック）を教える練習を1日5〜10分。", why:"運動だけでなく『嗅ぐ・考える』活動は犬の満足度を高め、退屈からの問題行動を減らします。", src:"行動学(環境エンリッチメント)", stage:["adolescent","adult","senior"]},
   {cat:"task", title:"年1回の健康診断を予約", action:"かかりつけ獣医で健康チェック。体重・歯・関節も診てもらう。", why:"早期発見が寿命と生活の質を守ります。成犬は年1回が目安。", src:"WSAVA 予防", stage:["adult"]},
   {cat:"task", title:"半年に1回の健康診断を", action:"シニアは半年ごとの受診を。歩き方・飲水量・夜鳴きの変化はメモして相談。", why:"高齢期は変化が早く、こまめなチェックで対処が早くなります。", src:"WSAVA 予防", stage:["senior"]},
 
@@ -498,7 +548,7 @@ const ADVICE = [
   {cat:"exercise", title:"ノーズワークで“鼻の運動”を取り入れる", action:"おやつを部屋に隠して探させる・タオルや箱に隠す・嗅ぐマット(スナッフルマット)を使うなど、においを使って探す遊びを1日5〜10分。雨の日や運動制限中にもおすすめ。", why:"嗅覚を使う「ノーズワーク」は犬本来の欲求を満たし、短時間でも心地よい疲れと満足感を与えます。年齢や体力を問わず、子犬からシニアまで楽しめます。", src:"行動学(嗅覚エンリッチメント)"},
   {cat:"exercise", title:"運動量の目安：控えめでOK", action:"1日2回・各15〜30分の散歩＋室内遊び。関節に優しく、無理はさせない。", why:"超小型・短頭種は過度な運動より、こまめで穏やかな運動が向きます。", src:"犬種別運動", ex:["low"]},
   {cat:"exercise", title:"運動量の目安：しっかりめ", action:"1日合計1時間以上の運動＋頭を使う遊びを。引っ張り遊びやボールも◎。", why:"運動欲求の高い犬種は、足りないと問題行動につながりやすいです。", src:"犬種別運動", ex:["high","vhigh"]},
-  {cat:"exercise", title:"頭脳系の“仕事”を毎日", action:"ノーズワーク・トリック・障害物遊びなど『考える運動』を必ず加える。", why:"作業犬種は身体運動だけでは満たされず、頭を使う活動が必須です。", src:"犬種別運動", ex:["vhigh"]},
+  {cat:"exercise", title:"頭脳系の“仕事”を毎日", action:"ノーズワーク・簡単な芸（トリック：オテやクルッと回る等）・障害物遊びなど『考える運動』を必ず加える。", why:"作業犬種は身体運動だけでは満たされず、頭を使う活動が必須です。", src:"犬種別運動", ex:["vhigh"]},
 
   // --- 住環境・季節 ---
   {cat:"home", title:"集合住宅は“吠え”対策を先回り", action:"チャイム・足音などの刺激に『おやつ』を結びつけ、平気な経験を積ませる。窓に目隠しシートも有効。", why:"近隣トラブルの多くは警戒吠え。叱るより刺激への印象を良くする方が根本的です。", src:"陽性強化", housing:"apartment"},
@@ -552,6 +602,8 @@ const GLOSSARY = [
   {term:"ノーズワーク", def:"においを使って隠したおやつなどを探させる遊び。犬本来の「嗅ぐ」欲求を満たし、短時間でも満足感が高い。子犬からシニア、雨の日や運動制限中にもおすすめ。"},
   {term:"スニッフィング（嗅ぐ）散歩", def:"立ち止まってにおいをじっくり嗅ぐ時間を大切にする散歩。グイグイ歩く運動より、嗅ぐ方が犬の満足度・リラックス効果が高いとされます。"},
   {term:"知育トイ", read:"ちいくトイ", def:"中におやつを詰めたり、転がすと出てきたりする“考えて遊ぶ”おもちゃ（コングなど）。退屈・留守番対策や早食い防止に役立ちます。"},
+  {term:"トリック（芸）", def:"「オテ」「おすわり」「クルッと回る」「ゴロンと寝転がる」「ボールを持ってくる」など、言葉や合図（キュー）で犬に教える“芸”のこと。これを教える練習が「トリック練習」です。頭を使ういい運動になり、できたらほめておやつ、という遊び感覚で楽しめます。むずかしく考えず、まずは「オテ」からでOK。"},
+  {term:"キュー（合図）", def:"「オテ」「おすわり」など、犬に行動をうながすための合図のこと。言葉でも手の動きでもよく、いつも同じ合図にすると犬が覚えやすくなります。"},
   {term:"環境エンリッチメント", def:"遊び・嗅覚・探索など“暮らしの楽しみ”を増やして心を満たす工夫の総称。退屈からくる問題行動の予防になります。"},
   {term:"陽性強化（ごほうびベース）", read:"ようせいきょうか", def:"できた行動をごほうび（おやつ・ほめる）で増やす教え方。罰を使うより安全で、信頼関係をこわしません。"},
   {term:"カーミングシグナル", def:"あくび・顔をそむける・体をブルブルなど、犬が「落ち着いて」「今は嫌だ」と伝える小さなサイン。気持ちを読むヒントになります。"},
@@ -559,6 +611,9 @@ const GLOSSARY = [
   {term:"フラッディング", def:"苦手なものにいきなり直面させる方法。一見“慣れ”に見えても恐怖を悪化させやすく、おすすめできません。"},
   {term:"ボディコンディションスコア（BCS）", def:"見た目と触った感じで体型(やせ〜肥満)を5〜9段階で評価する指標。フード量は体重だけでなくこのBCSで微調整します。"},
   {term:"短頭種（たんとうしゅ）", def:"フレンチブルドッグ・パグなど鼻が短い犬種。呼吸で熱を逃がすのが苦手で暑さに非常に弱く、夏や運動は特に注意が必要です。"},
+  {term:"ダブルコート", def:"硬い上毛(オーバーコート)と、やわらかい下毛(アンダーコート)の二重構造の毛並み。柴犬・ハスキー・ゴールデンなど。寒さに強い反面、春と秋の換毛期に下毛が大量に抜けます。バリカンで短く刈りすぎると体温調節が乱れるため、カットより抜け毛を梳くケアが向きます。"},
+  {term:"シングルコート", def:"下毛(アンダーコート)がほとんどなく、一枚の毛で覆われた毛並み。プードル・マルチーズ・ヨークシャーなど。抜け毛は少ないですが毛が伸び続けるので定期的なトリミングが必要。保温力は低めで寒さに弱い傾向があります。"},
+  {term:"換毛期（かんもうき）", def:"主に春と秋、季節に合わせて被毛が大量に抜け替わる時期。ダブルコートの犬種で顕著。毎日のブラッシングで抜け毛を取り除くと、毛玉・蒸れ・皮膚トラブルを防げます。"},
   {term:"膝蓋骨脱臼（しつがいこつだっきゅう）", def:"後ろ足の膝のお皿がずれる、小型犬に多いトラブル。スキップのような歩き方が見られたら受診を。滑らない床が予防に。"},
   {term:"椎間板ヘルニア", read:"ついかんばん", def:"背骨のクッションが神経を圧迫する病気。ダックス・コーギーなど胴長の犬に多い。段差・肥満・滑る床に注意。"},
   {term:"RER／MER", def:"RER＝安静時に必要なカロリー（70×体重^0.75）、MER＝1日に必要なカロリー（RER×活動係数）。このアプリのフード量計算の土台です。"},
@@ -643,6 +698,57 @@ function taskHTML(a, isDone){
   </div>`;
 }
 
+// 犬種の毛質・お手入れ表示（犬種カード内）
+function breedCareHTML(b){
+  if(!b || !b.coat) return "";
+  const trimTxt = b.trim
+    ? "✂️ 毛が伸び続けるので、定期的なトリミング（カット）が必要です"
+    : (b.coat==="double"
+        ? "🪮 カットは基本不要。換毛期のこまめなブラッシングが大切です"
+        : "🪮 カットは基本不要。ブラッシングでお手入れしましょう");
+  const pills = [HEAT_LABEL[b.heat], COLD_LABEL[b.cold]]
+    .filter(Boolean).map(t=>`<span class="pill">${t}</span>`).join("");
+  return `<div class="advice" style="margin-top:12px">
+    <div class="t">🧴 毛質とお手入れ・季節の体質</div>
+    <p class="a" style="margin:4px 0 8px">${COAT_LABEL[b.coat]}<br>${trimTxt}</p>
+    <div class="chips">${pills}</div>
+  </div>`;
+}
+
+// 犬種 × 季節 のアドバイス（毛質・暑さ寒さ耐性から動的生成）
+function breedSeasonTips(p){
+  const b = p.breed, s = p.season, out = [];
+  if(!b || !b.coat) return out;
+  const add = (title, action, why) => out.push({cat:"home", title, action, why, src:`犬種別(${b.name})×季節`});
+
+  if(s==="summer"){
+    if(b.heat==="vweak")
+      add(`【夏】${b.name}は暑さに特に弱い犬種`, "冷房は一日中つけっぱなしに。散歩は早朝か日没後だけにし、日中は外に出さないで。ハアハアが激しい・舌が紫っぽいは熱中症のサイン、すぐ受診を。", "短頭種や暑さに弱い犬種は呼吸での体温調節が苦手で、室温が高いと命に関わります。");
+    else if(b.heat==="weak")
+      add(`【夏】${b.name}は暑さに弱め。無理をさせない`, "散歩は涼しい時間に短めで。室温・水・日陰を必ず確保し、こまめに休ませて。", "厚い被毛や体質的に暑さに弱い犬種は、人より早く体に熱がこもります。");
+    if(b.coat==="single" && b.trim)
+      add("【夏】サマーカットは“刈りすぎない”", "毛が伸びる犬種なので夏前にトリミングを。ただし地肌が見えるほど短くすると、皮膚が薄く直射日光や熱に弱くなるため、適度な長さを残してもらいましょう。", "シングルコートの犬は被毛が日よけ・断熱の役割も果たします。刈りすぎは日焼け・皮膚トラブルのもとです。");
+    if(b.coat==="double")
+      add("【夏】ダブルコートは“刈る”より“梳く”", "抜け替わるアンダーコートをブラッシングやシャンプーで取り除き、風通しを良く。バリカンで短く刈りすぎると体温調節が乱れ、毛質が変わって戻らないことも。", "ダブルコートは二重の毛で夏は熱や紫外線も防ぎます。刈り込むより抜け毛を除く方が涼しく安全です。");
+  }
+
+  if(s==="winter"){
+    if(b.cold==="weak")
+      add(`【冬】${b.name}は寒さに弱い犬種`, "散歩時は服を着せ、室内も暖かく。寝床は床から離して暖かい場所に。散歩は日中の暖かい時間帯に。", "小型・短毛・脚の細い犬種は体が冷えやすく、寒さで体調を崩しやすいです。");
+    else if(b.cold==="strong")
+      add(`【冬】${b.name}は寒さに強いが“寒暖差”に注意`, "屋外の寒さには強い犬種ですが、暖房の効いた室内との温度差は負担に。厚着のさせすぎや過度な暖めは逆効果です。", "寒冷地原産の犬種は寒さに強い一方、急な温度変化は体調をくずす原因になります。");
+    if((b.coat==="single"||b.coat==="smooth") && b.cold!=="strong")
+      add("【冬】保温力が低い毛質。防寒着を", "シングルコート・短毛は保温が苦手です。散歩時は防寒着を着せ、室内も冷えすぎないように。", "アンダーコート（下毛）が少ない毛質は外気の冷たさが体に伝わりやすいです。");
+  }
+
+  if(s==="spring" || s==="autumn"){
+    if(b.coat==="double")
+      add(`【${s==="spring"?"春":"秋"}】換毛期。毎日のブラッシングを`, "ダブルコートは春と秋に下毛が大量に抜け替わります。毎日ブラッシングして抜け毛を取り除き、皮膚を清潔に保ちましょう。", "換毛期に抜け毛を放置すると、毛玉や蒸れによる皮膚トラブル・体温調節の妨げになります。");
+  }
+
+  return out;
+}
+
 function renderGuide(p){
   // ヘッダー
   $("#g-name").textContent = (p.name||"うちの子") + " のガイド";
@@ -664,6 +770,7 @@ function renderGuide(p){
     $("#g-breed-title").textContent = `${p.breed.name} のこと`;
     const traits = (p.breed.traits&&p.breed.traits.length)?`<div class="chips" style="margin-bottom:10px">${p.breed.traits.map(t=>`<span class="pill">${t}</span>`).join("")}</div>`:"";
     $("#g-breed").innerHTML = traits + `<p class="a" style="margin:0; font-size:14px; line-height:1.85">${p.breed.desc}</p>`
+      + breedCareHTML(p.breed)
       + (p.breed.health&&p.breed.health.length?`<div class="advice" style="margin-top:12px"><div class="why" style="margin-top:0">🩺 この犬種が気をつけたいこと：<b>${p.breed.health.join("・")}</b>　気になる様子があれば早めに獣医師へ。</div></div>`:"");
     bcard.style.display = "";
   }else{
@@ -690,7 +797,11 @@ function renderGuide(p){
     $("#g-tasks").innerHTML = `<div class="empty">このプロフィールでの今週のおすすめは準備中です。</div>`;
   }
   fill("#g-exercise","exercise","—");
-  fill("#g-home","home","特記事項はありません。");
+
+  // 住まい・季節（犬種×季節のアドバイスを先頭に、一般的な季節・住環境の注意を続ける）
+  const homeList = breedSeasonTips(p).concat(byCat("home"));
+  $("#g-home").innerHTML = homeList.length ? homeList.map(adviceHTML).join("")
+    : `<div class="empty">特記事項はありません。</div>`;
 
   // 悩み別（concern + owner系）
   const concernList = ADVICE.filter(a=>a.cat==="concern" && matches(a,p));
