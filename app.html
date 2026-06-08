@@ -689,14 +689,14 @@ const FEELINGS = [
 
 // 毎日の健康ケア（歯みがき・爪・耳など）— トリマー監修の視点も
 const CARE = [
-  {icon:"🪥", part:"歯みがき", tip:"理想は毎日。3歳ごろには多くの犬が歯周病を持つと言われます。犬用の歯ブラシ・歯みがきペースト（人間用は使わない）で。いきなり口を触らず、ペーストをなめさせる→前歯から、と少しずつ慣らしましょう（ハズバンダリートレーニング）。"},
-  {icon:"✂️", part:"爪切り", tip:"目安は月1回ほど。フローリングで“カチカチ”音がしたら伸びすぎのサイン。血管（クイック）を切らないよう先端を少しずつ。黒い爪は特に慎重に。怖がる子は1日1本でもOK。歩き方や関節にも影響するので放置しないで。"},
-  {icon:"👂", part:"耳のケア", tip:"週1回ほど、見える範囲をやさしく。垂れ耳（ビーグル・キャバリア等）は蒸れやすく注意。赤い・においが強い・かゆがる・黒い耳垢が多いは外耳炎のサイン、受診を。綿棒で奥を触るのは避けて。"},
-  {icon:"🪮", part:"ブラッシング", tip:"毛質に合わせて（ダブルコートは換毛期は毎日、シングルは毛玉防止に定期的に）。抜け毛・毛玉を防ぎ、同時に皮膚のしこり・赤み・ノミダニのチェックにもなります。スキンシップにも◎。"},
-  {icon:"👀", part:"目・涙やけ", tip:"目やには湿らせたコットンでやさしく拭く。涙やけ（目の下の茶色い汚れ）はこまめに拭いて清潔に。急に目を気にする・赤い・白く濁るは受診を。"},
-  {icon:"🐾", part:"肉球・足まわり", tip:"散歩後は足を拭いて清潔に。乾燥・ひび割れに保湿、伸びた肉球まわりの毛は滑り防止にカット。夏のアスファルトはやけど、冬は乾燥に注意。"},
-  {icon:"🛁", part:"シャンプー", tip:"月1回程度が目安（犬種・皮膚で調整）。犬用シャンプーでよくすすぎ、しっかり乾かす。洗いすぎは皮膚バリアを壊すので逆効果。皮膚病がある場合は獣医の指示に従って。"},
-  {icon:"🤝", part:"お手入れに慣らす（ハズバンダリートレーニング）", tip:"体を触られる・口や足を持たれる・ケアされることを、おやつと結びつけて“良いこと”にしておくと、歯みがきも爪切りも病院もぐっと楽に。押さえつけず、嫌がらない範囲で少しずつが鉄則です。"},
+  {icon:"🪥", key:"tooth", part:"歯みがき", tip:"理想は毎日。3歳ごろには多くの犬が歯周病を持つと言われます。犬用の歯ブラシ・歯みがきペースト（人間用は使わない）で。いきなり口を触らず、ペーストをなめさせる→前歯から、と少しずつ慣らしましょう（ハズバンダリートレーニング）。"},
+  {icon:"✂️", key:"nail", part:"爪切り", tip:"目安は月1回ほど。フローリングで“カチカチ”音がしたら伸びすぎのサイン。血管（クイック）を切らないよう先端を少しずつ。黒い爪は特に慎重に。怖がる子は1日1本でもOK。歩き方や関節にも影響するので放置しないで。"},
+  {icon:"👂", key:"ear", part:"耳のケア", tip:"週1回ほど、見える範囲をやさしく。垂れ耳（ビーグル・キャバリア等）は蒸れやすく注意。赤い・においが強い・かゆがる・黒い耳垢が多いは外耳炎のサイン、受診を。綿棒で奥を触るのは避けて。"},
+  {icon:"🪮", key:"brushing", part:"ブラッシング", tip:"毛質に合わせて（ダブルコートは換毛期は毎日、シングルは毛玉防止に定期的に）。抜け毛・毛玉を防ぎ、同時に皮膚のしこり・赤み・ノミダニのチェックにもなります。スキンシップにも◎。"},
+  {icon:"👀", key:"eye", part:"目・涙やけ", tip:"目やには湿らせたコットンでやさしく拭く。涙やけ（目の下の茶色い汚れ）はこまめに拭いて清潔に。急に目を気にする・赤い・白く濁るは受診を。"},
+  {icon:"🐾", key:"paw", part:"肉球・足まわり", tip:"散歩後は足を拭いて清潔に。乾燥・ひび割れに保湿、伸びた肉球まわりの毛は滑り防止にカット。夏のアスファルトはやけど、冬は乾燥に注意。"},
+  {icon:"🛁", key:"bath", part:"シャンプー", tip:"月1回程度が目安（犬種・皮膚で調整）。犬用シャンプーでよくすすぎ、しっかり乾かす。洗いすぎは皮膚バリアを壊すので逆効果。皮膚病がある場合は獣医の指示に従って。"},
+  {icon:"🤝", key:"handling", part:"お手入れに慣らす（ハズバンダリートレーニング）", tip:"体を触られる・口や足を持たれる・ケアされることを、おやつと結びつけて“良いこと”にしておくと、歯みがきも爪切りも病院もぐっと楽に。押さえつけず、嫌がらない範囲で少しずつが鉄則です。"},
 ];
 
 // 用語集（アプリ内で出てくる言葉のやさしい説明）
@@ -981,7 +981,7 @@ function renderGuide(p){
 
   // 毎日の健康ケア
   $("#g-care").innerHTML = CARE.map(c=>
-    `<div class="advice"><div class="t">${c.icon} ${c.part}</div><p class="a">${c.tip}</p></div>`).join("")
+    `<div class="advice feel"><div class="feel-img good-img">${illust(c.key)}</div><div class="feel-tx"><div class="t">${c.icon} ${c.part}</div><p class="a">${c.tip}</p></div></div>`).join("")
     + `<span class="src">出典: 獣医歯科・日常ケア／トリミングの視点</span>`;
 
   // フード量
@@ -1158,6 +1158,14 @@ const ILLUST = {
   snow:`<svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><g stroke="#7ab8d9" stroke-width="3" stroke-linecap="round"><path d="M30 8v44M11 19l38 22M49 19L11 41M30 8l-5 6M30 8l5 6M30 52l-5-6M30 52l5-6"/></g></svg>`,
   brushing:`<svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect x="10" y="26" width="30" height="12" rx="6" fill="#e0a25c"/><rect x="36" y="28" width="14" height="8" rx="4" fill="#c98a55"/><g stroke="#b98a5e" stroke-width="2" stroke-linecap="round"><path d="M14 38v8M20 38v8M26 38v8M32 38v8"/></g></svg>`,
   apartment:`<svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect x="14" y="10" width="32" height="42" rx="3" fill="#cdb79a"/><g fill="#eaf2f6"><rect x="19" y="15" width="8" height="8" rx="1"/><rect x="33" y="15" width="8" height="8" rx="1"/><rect x="19" y="27" width="8" height="8" rx="1"/><rect x="33" y="27" width="8" height="8" rx="1"/></g><rect x="26" y="40" width="8" height="12" rx="1" fill="#8a6a44"/></svg>`,
+  // 🪥 毎日の健康ケア
+  tooth:`<svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect x="8" y="32" width="30" height="8" rx="4" fill="#7ab8d9"/><rect x="35" y="29" width="15" height="14" rx="3" fill="#eef3f5" stroke="#cfd8dc" stroke-width="1.5"/><g stroke="#bcdff0" stroke-width="2" stroke-linecap="round"><path d="M40 29v-5M44 29v-5M48 29v-5"/></g><path d="M40 22q4-5 9 0" fill="none" stroke="#9ad0a8" stroke-width="3.5" stroke-linecap="round"/></svg>`,
+  nail:`<svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M14 22l24 12M14 38l24-12" stroke="#9aa7b0" stroke-width="5" stroke-linecap="round"/><circle cx="13" cy="24" r="4.5" fill="none" stroke="#9aa7b0" stroke-width="3.5"/><circle cx="13" cy="36" r="4.5" fill="none" stroke="#9aa7b0" stroke-width="3.5"/><rect x="36" y="26" width="12" height="8" rx="2" fill="#cfd8dc"/></svg>`,
+  ear:`<svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M26 10c-9 4-13 20-9 32 3 9 13 11 17 6 3-4 2-11-2-19-4-8-3-17-6-19z" fill="#c98a55"/><rect x="40" y="36" width="16" height="3.4" rx="1.7" transform="rotate(35 40 36)" fill="#cdbfa6"/><circle cx="42" cy="38" r="6" fill="#fff" stroke="#e0d6c4" stroke-width="1.6"/></svg>`,
+  eye:`<svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><ellipse cx="30" cy="31" rx="21" ry="13" fill="#fff" stroke="#5b4636" stroke-width="2.5"/><circle cx="30" cy="31" r="8.5" fill="#5b4636"/><circle cx="33" cy="28" r="2.6" fill="#fff"/><path d="M11 21q-4 2-6 5M49 21q4 2 6 5" stroke="#c98a55" stroke-width="2" fill="none" stroke-linecap="round"/></svg>`,
+  paw:`<svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><ellipse cx="30" cy="40" rx="12" ry="10" fill="#d99a8f"/><circle cx="16" cy="27" r="5" fill="#d99a8f"/><circle cx="26" cy="20" r="5" fill="#d99a8f"/><circle cx="34" cy="20" r="5" fill="#d99a8f"/><circle cx="44" cy="27" r="5" fill="#d99a8f"/></svg>`,
+  bath:`<svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M10 33h40v7a8 8 0 0 1-8 8H18a8 8 0 0 1-8-8z" fill="#9fd3ec"/><g fill="#fff" opacity=".9" stroke="#cfeaf5" stroke-width="1"><circle cx="20" cy="22" r="5"/><circle cx="31" cy="15" r="6"/><circle cx="41" cy="22" r="5"/><circle cx="33" cy="26" r="3.5"/></g></svg>`,
+  handling:`<svg viewBox="0 0 70 70" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><ellipse cx="20" cy="40" rx="9" ry="15" fill="#c98a55"/><ellipse cx="50" cy="40" rx="9" ry="15" fill="#c98a55"/><ellipse cx="35" cy="44" rx="22" ry="20" fill="#f4dcb8"/><path d="M26 42q4 4 8 0M38 42q4 4 8 0" stroke="#5b4636" stroke-width="2.4" fill="none" stroke-linecap="round"/><ellipse cx="35" cy="50" rx="4" ry="3" fill="#5b4636"/><circle cx="20" cy="51" r="4.5" fill="#f3a39a" opacity=".5"/><circle cx="50" cy="51" r="4.5" fill="#f3a39a" opacity=".5"/><path d="M52 10c3-2 7 1 6 5 4-1 6 4 2 7l-8 6-6-8c-3-4 1-9 6-10z" fill="#f4a9a0"/></svg>`,
 };
 function illust(key, cls){
   const svg = ILLUST[key];
