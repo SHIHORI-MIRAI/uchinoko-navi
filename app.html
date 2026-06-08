@@ -335,6 +335,11 @@
       <div id="g-stage"></div>
     </div>
 
+    <div class="card" id="g-breed-card">
+      <h2 class="section"><span class="em">🧬</span><span id="g-breed-title">この犬種のこと</span></h2>
+      <div id="g-breed"></div>
+    </div>
+
     <div class="card">
       <h2 class="section"><span class="em">✅</span>今週、この子にやってあげたいこと</h2>
       <div id="g-tasks"></div>
@@ -388,39 +393,39 @@
 
 // 犬種 → サイズ・運動量・気質・健康注意
 const BREEDS = [
-  {name:"トイプードル", size:"toy", ex:"med", traits:["賢い","人好き"], health:["膝(膝蓋骨脱臼)","歯"]},
-  {name:"チワワ", size:"toy", ex:"low", traits:["愛情深い","警戒心"], health:["膝","気管","寒さに弱い"]},
-  {name:"ミニチュアダックスフンド", size:"small", ex:"med", traits:["好奇心","頑固"], health:["椎間板ヘルニア(腰)"]},
-  {name:"ポメラニアン", size:"toy", ex:"low", traits:["活発","甘えん坊"], health:["膝","気管","皮膚"]},
-  {name:"柴犬", size:"medium", ex:"high", traits:["独立心","忠実","きれい好き"], health:["皮膚(アレルギー)","認知症(高齢)"]},
-  {name:"豆柴", size:"small", ex:"med", traits:["独立心","忠実"], health:["皮膚"]},
-  {name:"ヨークシャーテリア", size:"toy", ex:"low", traits:["勇敢","甘えん坊"], health:["膝","気管","歯"]},
-  {name:"マルチーズ", size:"toy", ex:"low", traits:["穏やか","甘えん坊"], health:["涙やけ","膝"]},
-  {name:"フレンチブルドッグ", size:"small", ex:"low", traits:["陽気","人好き"], health:["呼吸(短頭種)","暑さに非常に弱い","皮膚"]},
-  {name:"パグ", size:"small", ex:"low", traits:["おだやか","おちゃめ"], health:["呼吸(短頭種)","暑さに非常に弱い","目"]},
-  {name:"シーズー", size:"small", ex:"low", traits:["穏やか","友好的"], health:["目","呼吸(短頭種)","皮膚"]},
-  {name:"ミニチュアシュナウザー", size:"small", ex:"med", traits:["賢い","活発"], health:["膵炎","目"]},
-  {name:"ウェルシュコーギー", size:"medium", ex:"high", traits:["賢い","よく動く"], health:["椎間板ヘルニア(腰)","肥満注意"]},
-  {name:"ゴールデンレトリバー", size:"large", ex:"high", traits:["温厚","人好き","賢い"], health:["股関節","肥満注意","がん"]},
-  {name:"ラブラドールレトリバー", size:"large", ex:"high", traits:["温厚","食いしん坊"], health:["股関節","肥満注意"]},
-  {name:"ボーダーコリー", size:"medium", ex:"vhigh", traits:["非常に賢い","運動欲求大"], health:["股関節","目"]},
-  {name:"ビーグル", size:"medium", ex:"high", traits:["陽気","嗅覚抜群","食いしん坊"], health:["肥満注意","耳(垂れ耳)"]},
-  {name:"キャバリア", size:"small", ex:"med", traits:["穏やか","友好的"], health:["心臓(僧帽弁)","目"]},
-  {name:"ジャック・ラッセル・テリア", size:"small", ex:"vhigh", traits:["活発","頭の回転が速い"], health:["膝","目"]},
-  {name:"パピヨン", size:"toy", ex:"med", traits:["賢い","活発"], health:["膝","歯"]},
-  {name:"ボストンテリア", size:"small", ex:"med", traits:["陽気","人好き"], health:["目","呼吸(短頭種)"]},
-  {name:"ペキニーズ", size:"small", ex:"low", traits:["マイペース","誇り高い"], health:["呼吸(短頭種)","目","暑さに弱い"]},
-  {name:"スタンダードプードル", size:"large", ex:"high", traits:["非常に賢い","活発","運動好き"], health:["股関節","胃捻転(大型)","目"]},
-  {name:"ミディアムプードル", size:"medium", ex:"high", traits:["賢い","活発"], health:["膝","目"]},
-  {name:"ジャーマンシェパード", size:"large", ex:"vhigh", traits:["非常に賢い","忠実","警戒心"], health:["股関節","変性性脊髄症","胃捻転(大型)"]},
-  {name:"シェットランドシープドッグ（シェルティ）", size:"medium", ex:"high", traits:["賢い","よく動く","よく吠える"], health:["目","皮膚","股関節"]},
-  {name:"ミニチュアピンシャー", size:"toy", ex:"med", traits:["活発","勇敢","好奇心"], health:["膝","骨折注意","寒さに弱い"]},
-  {name:"イタリアングレーハウンド", size:"small", ex:"high", traits:["甘えん坊","俊敏"], health:["骨折(脚が細い)","歯","寒さに弱い"]},
-  {name:"シベリアンハスキー", size:"large", ex:"vhigh", traits:["友好的","運動欲求大","脱走名人"], health:["目","股関節","暑さに弱い"]},
-  {name:"バーニーズマウンテンドッグ", size:"large", ex:"med", traits:["温厚","おだやか","人好き"], health:["股関節","がん","暑さに非常に弱い"]},
-  {name:"ドーベルマン", size:"large", ex:"vhigh", traits:["賢い","忠実","警戒心"], health:["心臓(拡張型心筋症)","頸椎","寒さに弱い"]},
-  {name:"秋田犬", size:"large", ex:"high", traits:["忠実","独立心","きれい好き"], health:["股関節","皮膚","甲状腺"]},
-  {name:"サモエド", size:"large", ex:"high", traits:["陽気","人好き","笑顔"], health:["股関節","目","暑さに弱い"]},
+  {name:"トイプードル", size:"toy", ex:"med", traits:["賢い","人好き"], health:["膝(膝蓋骨脱臼)","歯"], desc:"もとは水鳥を回収する作業犬プードルを愛玩用に小型化した犬種。とても賢く学習が速いので、頭を使う遊びや“ごほうび”のしつけで力を発揮します。退屈すると吠え・イタズラに出やすいので刺激を切らさないのがコツ。毛は抜けにくい分、定期的なトリミングが必要です。"},
+  {name:"チワワ", size:"toy", ex:"low", traits:["愛情深い","警戒心"], health:["膝","気管","寒さに弱い"], desc:"メキシコ原産の世界最小級の犬。勇敢で飼い主への愛情が深い一方、警戒心が強く“吠えて守ろう”とする面も。社会化で「こわくない経験」を増やすと吠えが落ち着きます。体が小さく寒さ・骨折・低血糖に弱いので、保温と段差・ケガへの配慮を。"},
+  {name:"ミニチュアダックスフンド", size:"small", ex:"med", traits:["好奇心","頑固"], health:["椎間板ヘルニア(腰)"], desc:"ドイツ発祥の「アナグマ狩り」の猟犬。胴長短足は巣穴に潜るための体型で、穴を掘る・においを追う・吠えて知らせる行動が大好きです。掘れるスペースや嗅覚遊びで本能を満たしてあげましょう。腰(椎間板ヘルニア)が弱いので、段差の上り下り・肥満・高い所からの飛び降りは要注意です。"},
+  {name:"ポメラニアン", size:"toy", ex:"low", traits:["活発","甘えん坊"], health:["膝","気管","皮膚"], desc:"そり犬スピッツを小型化した愛玩犬。活発で甘えん坊、警戒心からよく吠える傾向があります。気管が弱いので首を引っ張らないハーネスがおすすめ。豊かな被毛は換毛期のブラッシングを丁寧に。"},
+  {name:"柴犬", size:"medium", ex:"high", traits:["独立心","忠実","きれい好き"], health:["皮膚(アレルギー)","認知症(高齢)"], desc:"日本最古級の犬種で、もとは山での狩猟犬。独立心が強くきれい好きで、自分で考えて動くタイプ。しつこく構うより“適度な距離”を保つと信頼が深まります。他犬が苦手な子も多く社会化が大切。皮膚アレルギーや高齢期の認知症に気を配って。"},
+  {name:"豆柴", size:"small", ex:"med", traits:["独立心","忠実"], health:["皮膚"], desc:"柴犬を小さく改良した日本犬タイプ。気質は柴犬ゆずりで独立心が強く忠実。子犬期からの丁寧な社会化と、適度な距離感のある関わりが向いています。皮膚のケアを習慣に。"},
+  {name:"ヨークシャーテリア", size:"toy", ex:"low", traits:["勇敢","甘えん坊"], health:["膝","気管","歯"], desc:"イギリスで工場のネズミ捕り用に生まれたテリア。小さくても勇敢で好奇心旺盛、甘えん坊な一面も。気管・膝・歯が弱く、美しい被毛は毎日のケアが必要です。"},
+  {name:"マルチーズ", size:"toy", ex:"low", traits:["穏やか","甘えん坊"], health:["涙やけ","膝"], desc:"地中海地方の古い愛玩犬。穏やかで甘えん坊、人とずっと一緒にいたいタイプなので留守番が苦手なことも。少しずつ“ひとり時間”に慣らすと安心。涙やけ・膝のケアを。"},
+  {name:"フレンチブルドッグ", size:"small", ex:"low", traits:["陽気","人好き"], health:["呼吸(短頭種)","暑さに非常に弱い","皮膚"], desc:"闘犬ブルドッグを愛玩用にしたフランス生まれの短頭種。陽気で人が大好き。鼻が短く呼吸での体温調節が苦手なため暑さに非常に弱く、夏の運動・室温管理が最重要です。顔のしわや皮膚のケアもこまめに。"},
+  {name:"パグ", size:"small", ex:"low", traits:["おだやか","おちゃめ"], health:["呼吸(短頭種)","暑さに非常に弱い","目"], desc:"中国宮廷で愛された短頭種の愛玩犬。おだやかでおちゃめ、人を笑わせる愛嬌があります。暑さ・呼吸・目のトラブルに弱く、肥満も大敵。涼しい環境で穏やかな運動を。"},
+  {name:"シーズー", size:"small", ex:"low", traits:["穏やか","友好的"], health:["目","呼吸(短頭種)","皮膚"], desc:"チベット由来の愛玩犬。穏やかで誰とでも友好的。鼻が短めで目が大きいため、目のキズ・呼吸・皮膚に配慮を。長い被毛はもつれ防止のケアを習慣に。"},
+  {name:"ミニチュアシュナウザー", size:"small", ex:"med", traits:["賢い","活発"], health:["膵炎","目"], desc:"ドイツの農場でネズミ捕り・番犬をしたテリア気質の犬。賢く活発でよく学びます。脂肪分の多い食事で膵炎を起こしやすいので食事管理に注意。目の病気にも気を配って。"},
+  {name:"ウェルシュコーギー", size:"medium", ex:"high", traits:["賢い","よく動く"], health:["椎間板ヘルニア(腰)","肥満注意"], desc:"牛の足元を追って動かす牧畜犬。賢くよく動き、興奮すると“かかとを甘噛みで追う”牧畜本能が出ることも。頭と体を使う運動で満たしてあげましょう。胴長で椎間板ヘルニアになりやすく、肥満と段差は大敵です。"},
+  {name:"ゴールデンレトリバー", size:"large", ex:"high", traits:["温厚","人好き","賢い"], health:["股関節","肥満注意","がん"], desc:"撃った鳥を回収する猟犬。温厚で人好き、賢く学習意欲が高い“仕事好き”。口に物をくわえる欲求が強いので、引っ張り遊びや知育で発散を。股関節・肥満・がんに注意し、適正体重を保って。"},
+  {name:"ラブラドールレトリバー", size:"large", ex:"high", traits:["温厚","食いしん坊"], health:["股関節","肥満注意"], desc:"水辺で獲物を回収した猟犬。温厚で賢い反面、とても食いしん坊で太りやすいのが最大の注意点。しっかりした運動と厳密な食事管理が健康のカギ。股関節にも配慮を。"},
+  {name:"ボーダーコリー", size:"medium", ex:"vhigh", traits:["非常に賢い","運動欲求大"], health:["股関節","目"], desc:"牧羊犬の代表で、犬界トップクラスの賢さ。運動量と頭脳の欲求が非常に大きく、満たされないと問題行動につながります。毎日“考える運動”(ノーズワーク・トリック等)が必須。動くものを追う本能への配慮を。"},
+  {name:"ビーグル", size:"medium", ex:"high", traits:["陽気","嗅覚抜群","食いしん坊"], health:["肥満注意","耳(垂れ耳)"], desc:"イギリスのウサギ狩り用の嗅覚ハウンド。陽気で嗅覚抜群、においを追い始めると夢中になり呼び戻しが効きにくいことも。よく通る声で鳴く子も。嗅覚遊びで満足度を上げ、食いしん坊ゆえの肥満と垂れ耳の蒸れに注意。"},
+  {name:"キャバリア", size:"small", ex:"med", traits:["穏やか","友好的"], health:["心臓(僧帽弁)","目"], desc:"イギリスの愛玩スパニエル。穏やかで誰とでも仲良くでき、初めての方にも向く性格。心臓(僧帽弁閉鎖不全症)が多い犬種なので、定期的な心臓のチェックを大切に。"},
+  {name:"ジャック・ラッセル・テリア", size:"small", ex:"vhigh", traits:["活発","頭の回転が速い"], health:["膝","目"], desc:"キツネ狩りで巣穴に入るために作られたテリア。小さな体に膨大なエネルギーと速い頭の回転を持ち、退屈すると掘る・吠える・脱走することも。たっぷりの運動と知的な遊びが欠かせません。"},
+  {name:"パピヨン", size:"toy", ex:"med", traits:["賢い","活発"], health:["膝","歯"], desc:"蝶のような飾り耳を持つフランス系の愛玩犬。とても賢く活発で、トレーニングやドッグスポーツが得意。膝(膝蓋骨脱臼)・歯のケアに気を配って。"},
+  {name:"ボストンテリア", size:"small", ex:"med", traits:["陽気","人好き"], health:["目","呼吸(短頭種)"], desc:"アメリカ生まれの“タキシード”を着たような犬。陽気で人好き、室内でも飼いやすい性格。短頭気味なので暑さに配慮し、大きな目のキズにも注意を。"},
+  {name:"ペキニーズ", size:"small", ex:"low", traits:["マイペース","誇り高い"], health:["呼吸(短頭種)","目","暑さに弱い"], desc:"中国宮廷で大切にされた愛玩犬。マイペースで誇り高く、べたべたされるより自分のペースを好む面も。短頭種で暑さ・呼吸・目に弱く、穏やかな暮らしが向いています。"},
+  {name:"スタンダードプードル", size:"large", ex:"high", traits:["非常に賢い","活発","運動好き"], health:["股関節","胃捻転(大型)","目"], desc:"プードルの原型で、もとは水鳥を回収する猟犬。非常に賢く運動能力も高い大型犬です。頭と体をしっかり使う活動でこそ満たされます。大型犬に多い胃捻転(食後すぐの運動を避ける)・股関節に注意。毛は抜けにくくトリミングが必要。"},
+  {name:"ミディアムプードル", size:"medium", ex:"high", traits:["賢い","活発"], health:["膝","目"], desc:"スタンダードとトイの中間サイズのプードル。賢く活発で運動好き、学習意欲も高い犬種。頭を使う遊びとトリミングを習慣に。膝・目のケアを。"},
+  {name:"ジャーマンシェパード", size:"large", ex:"vhigh", traits:["非常に賢い","忠実","警戒心"], health:["股関節","変性性脊髄症","胃捻転(大型)"], desc:"ドイツの牧羊犬から警察犬・軍用犬へと発展した犬種。非常に賢く忠実で、明確な役割や訓練を与えられると最も輝きます。運動・頭脳の両面で十分な刺激と、子犬期からの社会化が大切。股関節・変性性脊髄症・胃捻転に注意。"},
+  {name:"シェットランドシープドッグ（シェルティ）", size:"medium", ex:"high", traits:["賢い","よく動く","よく吠える"], health:["目","皮膚","股関節"], desc:"スコットランド・シェトランド諸島の小型牧羊犬。賢く感受性が高く、よく動きよく吠えます(警戒・興奮)。早めの吠え対策と、頭を使う運動で満たすのがコツ。目・皮膚のケアを。"},
+  {name:"ミニチュアピンシャー", size:"toy", ex:"med", traits:["活発","勇敢","好奇心"], health:["膝","骨折注意","寒さに弱い"], desc:"ドイツのネズミ捕り犬。小さくても勇敢で活発、好奇心旺盛でハツラツと動きます。脚が細く骨折・寒さに弱いので、段差や防寒に配慮しつつ、十分な運動と刺激を。"},
+  {name:"イタリアングレーハウンド", size:"small", ex:"high", traits:["甘えん坊","俊敏"], health:["骨折(脚が細い)","歯","寒さに弱い"], desc:"視覚ハウンドを小型化した古い愛玩犬。甘えん坊で人に寄り添い、走ることが大好き。脚がとても細く骨折しやすい・寒さに弱いので、滑らない床・段差対策・防寒が大切です。"},
+  {name:"シベリアンハスキー", size:"large", ex:"vhigh", traits:["友好的","運動欲求大","脱走名人"], health:["目","股関節","暑さに弱い"], desc:"極寒の地でそりを引いた作業犬。友好的で運動欲求が非常に大きく、においを追って遠くまで行く“脱走名人”でもあります。毎日のたっぷりの運動と、しっかりした脱走対策が必須。暑さに弱いので夏は要注意。"},
+  {name:"バーニーズマウンテンドッグ", size:"large", ex:"med", traits:["温厚","おだやか","人好き"], health:["股関節","がん","暑さに非常に弱い"], desc:"スイスの山岳でカートを引いた作業犬。温厚でおだやか、家族に深く寄り添います。暑さに非常に弱く、がん・股関節のリスクが知られています。涼しい環境と関節にやさしい適度な運動を。"},
+  {name:"ドーベルマン", size:"large", ex:"vhigh", traits:["賢い","忠実","警戒心"], health:["心臓(拡張型心筋症)","頸椎","寒さに弱い"], desc:"ドイツ生まれの番犬・警護犬。賢く忠実で警戒心が強く、家族には甘えん坊な一面も。十分な運動・一貫したしつけ・丁寧な社会化が大切です。心臓(拡張型心筋症)・寒さに注意。"},
+  {name:"秋田犬", size:"large", ex:"high", traits:["忠実","独立心","きれい好き"], health:["股関節","皮膚","甲状腺"], desc:"日本の大型日本犬で、もとは熊猟や番犬を担いました。忠実で独立心が強くきれい好き。他の犬が苦手な子も多いため、子犬期からの社会化がとても重要です。股関節・皮膚・甲状腺に気を配って。"},
+  {name:"サモエド", size:"large", ex:"high", traits:["陽気","人好き","笑顔"], health:["股関節","目","暑さに弱い"], desc:"シベリアでトナカイの番やそりを担った犬。口角が上がった“サモエドスマイル”が特徴で、陽気で人が大好き。運動好きで暑さに弱く、豊かな被毛は毎日のブラッシングが必要です。"},
   {name:"ミックス・その他（超小型 〜4kg）", size:"toy", ex:"med", traits:[], health:[]},
   {name:"ミックス・その他（小型 〜10kg）", size:"small", ex:"med", traits:[], health:[]},
   {name:"ミックス・その他（中型 〜25kg）", size:"medium", ex:"high", traits:[], health:[]},
@@ -624,6 +629,18 @@ function renderGuide(p){
   const st = STAGES[p.stage];
   $("#g-stage").innerHTML = `<div class="stage-banner">${st.icon} <b>${st.title}</b><br>${st.body}</div>`;
 
+  // 犬種の特性
+  const bcard = $("#g-breed-card");
+  if(p.breed && p.breed.desc){
+    $("#g-breed-title").textContent = `${p.breed.name} のこと`;
+    const traits = (p.breed.traits&&p.breed.traits.length)?`<div class="chips" style="margin-bottom:10px">${p.breed.traits.map(t=>`<span class="pill">${t}</span>`).join("")}</div>`:"";
+    $("#g-breed").innerHTML = traits + `<p class="a" style="margin:0; font-size:14px; line-height:1.85">${p.breed.desc}</p>`
+      + (p.breed.health&&p.breed.health.length?`<div class="advice" style="margin-top:12px"><div class="why" style="margin-top:0">🩺 この犬種が気をつけたいこと：<b>${p.breed.health.join("・")}</b>　気になる様子があれば早めに獣医師へ。</div></div>`:"");
+    bcard.style.display = "";
+  }else{
+    bcard.style.display = "none";
+  }
+
   // カテゴリ別
   const byCat = c => ADVICE.filter(a=>a.cat===c && matches(a,p));
   const fill = (id,c,emptyMsg)=>{
@@ -677,11 +694,22 @@ function renderGuide(p){
 
 /* ===================== フード量の計算（獣医栄養学 RER/MER） ===================== */
 function foodFactor(p){
-  if(p.stage==="puppyEarly") return 3.0;   // 子犬(離乳〜4ヶ月)
-  if(p.stage==="puppyLate")  return 2.0;   // 子犬(4〜7ヶ月)
-  if(p.stage==="adolescent") return p.neutered?1.6:1.8;
+  // 子犬は月齢で成長に必要な係数が大きく変わる（WSAVA/獣医栄養学）
+  const m = p.totalMonths;
+  if(m <= 4)  return 3.0;   // 離乳〜4ヶ月（最も多い）
+  if(m <= 6)  return 2.5;   // 4〜6ヶ月
+  if(m <= 9)  return 2.0;   // 6〜9ヶ月
+  if(m <= 12) return 1.8;   // 9〜12ヶ月（成犬に近づく）
   if(p.stage==="senior")     return p.neutered?1.3:1.4;
   return p.neutered?1.6:1.8;                // 成犬
+}
+// 1日の食事回数の目安（子犬ほど低血糖・消化のためこまめに）
+function mealsPerDay(p){
+  const m = p.totalMonths;
+  if(m <= 3)  return 4;     // 〜生後3ヶ月：3〜4回
+  if(m <= 6)  return 3;     // 4〜6ヶ月：3回
+  if(m <= 12) return 2;     // 6〜12ヶ月：2〜3回（最低2回）
+  return 2;                 // 成犬・シニア：2回
 }
 function calcFood(weight, factor, kcalPer100){
   if(!weight||weight<=0) return null;
@@ -696,14 +724,19 @@ function renderFood(p){
     el.innerHTML = `<div class="empty">プロフィールで体重(kg)を入れると、1日のフード量の目安を計算します。</div>`;
     return;
   }
-  window.__food = {weight:p.weight, factor:foodFactor(p)};
+  const meals = mealsPerDay(p);
+  const isPuppy = p.totalMonths <= 12;
+  const isYoungSmall = p.totalMonths <= 4 && (p.size==="toy"||p.size==="small");
+  window.__food = {weight:p.weight, factor:foodFactor(p), meals};
   el.innerHTML = `
     <label>フードのカロリー（袋に書いてある 100gあたり kcal）</label>
-    <input type="number" id="food-kcal" value="360" min="100" max="600" oninput="updateFood()" style="max-width:220px">
-    <div class="hint">袋の「代謝エネルギー ○○kcal/100g」を入力。一般的なドライフードは約350〜400です。</div>
+    <input type="number" id="food-kcal" value="${isPuppy?380:360}" min="100" max="600" oninput="updateFood()" style="max-width:220px">
+    <div class="hint">袋の「代謝エネルギー ○○kcal/100g」を入力。${isPuppy?"子犬用フードは約380〜450と高めのことが多いです。":"一般的な成犬用ドライは約350〜400です。"}</div>
     <div id="food-result" style="margin-top:12px"></div>
-    <div class="advice"><div class="why" style="margin-top:0">なぜ？ 体重から1日に必要なカロリー（RER＝70×体重^0.75 ×活動係数）を計算し、フードのカロリーで割って量を出しています。${p.neutered?"避妊・去勢済みは太りやすいため控えめの係数":"成長・活動に合わせた係数"}を使用。</div><span class="src">出典: 獣医栄養学(RER/MER)・WSAVA</span></div>
-    <div class="advice safety"><div class="t">⚠️ あくまで目安です</div><p class="a">実際の量はフードの袋の表示と、その子の体型(やせ/太り)で調整を。理想体型(ボディコンディションスコア)・療法食・妊娠授乳期は獣医師の指示を優先。1日量は2回以上に分けて与えるのがおすすめです。${p.stage==="puppyEarly"||p.stage==="puppyLate"?"<br><b>子犬は成長が早く必要量が大きく変わります。袋の月齢別表示も必ず確認してください。</b>":""}</p></div>
+    <div class="advice"><div class="why" style="margin-top:0">なぜ？ 体重から1日に必要なカロリー（RER＝70×体重^0.75 ×係数）を計算し、フードのカロリーで割って量を出しています。${isPuppy?`いまは月齢 ${p.totalMonths}ヶ月の<b>成長期</b>のため、成長に必要な高めの係数（×${foodFactor(p)}）を使用。`:(p.neutered?"避妊・去勢済みは太りやすいため控えめの係数を使用。":"活動量に合わせた係数を使用。")}</div><span class="src">出典: 獣医栄養学(RER/MER)・WSAVA</span></div>
+    ${isPuppy?`<div class="advice"><div class="t">🍼 子犬の食事のポイント</div><p class="a"><b>回数は1日 ${meals} 回${p.totalMonths<=3?"（生後3ヶ月以下は3〜4回）":""}</b>に分けるのが基本。胃が小さく一度に多く食べられず、低血糖を防ぐためにも“少量をこまめに”が大切です。成長で必要量は急に増えるので、<b>2〜4週ごとに体重を量り、量を見直して</b>ください。生後2ヶ月ごろまではフードをぬるま湯でふやかすと消化しやすくなります。</p></div>`:""}
+    ${isYoungSmall?`<div class="advice safety"><div class="t">⚠️ 小型・超小型の子犬は低血糖に注意</div><p class="a">食事の間隔が空くと<b>低血糖</b>(ぐったり・ふらつき・けいれん)を起こすことがあります。食事を抜かさず、元気がない時はすぐ獣医師へ。応急的に砂糖水やはちみつを少量歯ぐきに塗ると良いとされますが、必ず受診してください。</p></div>`:""}
+    <div class="advice safety"><div class="t">⚠️ あくまで目安です</div><p class="a">実際の量はフードの袋の表示と、その子の体型(やせ/太り＝ボディコンディションスコア)で調整を。療法食・妊娠授乳期は獣医師の指示を優先してください。${isPuppy?"<b>子犬は袋の月齢・体重別の給与量表も必ず確認を。</b>":""}</p></div>
   `;
   updateFood();
 }
@@ -712,8 +745,10 @@ function updateFood(){
   const kcal = parseFloat(($("#food-kcal")||{}).value)||360;
   const r = calcFood(f.weight, f.factor, kcal);
   const res = $("#food-result"); if(!res||!r) return;
+  const n = f.meals||2;
+  const per = Math.round(r.grams/n);
   res.innerHTML = `<div class="stage-banner" style="background:#eef7f0">
-    🍚 1日の目安：<b style="font-size:18px;color:var(--good)">約 ${r.grams} g</b>（例：約 ${Math.ceil(r.grams/2)}g を1日2回）<br>
+    🍚 1日の目安：<b style="font-size:18px;color:var(--good)">約 ${r.grams} g</b>　→　<b>1日 ${n} 回</b>なら 1回 約 ${per} g<br>
     <span style="font-size:12px;color:var(--sub)">必要エネルギー 約 ${r.mer} kcal/日（体重 ${f.weight}kg）</span>
   </div>`;
 }
