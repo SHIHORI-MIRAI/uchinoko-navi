@@ -142,9 +142,38 @@
   .tiplist .ti{display:flex; gap:8px; margin:7px 0}
   .tiplist .ti:first-child{margin-top:0}
   .tiplist .ti span:first-child{flex:0 0 auto}
+  /* ミックス親選択 */
+  .mix-parents{margin-top:10px; padding:12px; background:var(--accent-soft); border-radius:10px}
+  .mix-parents .mp-row{display:flex; gap:8px; margin-top:6px}
+  .mix-parents .mp-row > div{flex:1}
+  .mix-parents label{margin-top:0; font-size:12px}
+  /* カレンダー */
+  .cal-next{background:var(--accent-soft); border:1px solid var(--line); border-radius:10px; padding:9px 12px; font-size:13px; margin-bottom:10px}
+  .cal-next .cal-dleft{color:var(--accent-dark); font-weight:700; margin-left:4px}
+  .cal-form{display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-bottom:12px}
+  .cal-form input[type=date],.cal-form select{width:auto}
+  .cal-form input[type=text]{flex:1; min-width:120px}
+  .cal-head{display:flex; align-items:center; justify-content:center; gap:14px; margin:4px 0 8px}
+  .cal-head .btn.ghost{padding:6px 14px; box-shadow:none}
+  .cal-title{font-weight:700; font-size:15px; min-width:120px; text-align:center}
+  .cal-grid{display:grid; grid-template-columns:repeat(7,1fr); gap:4px}
+  .cal-dow{text-align:center; font-size:11px; color:var(--sub); padding:2px 0; font-weight:600}
+  .cal-dow.sun{color:var(--warn)} .cal-dow.sat{color:#2f6fbf}
+  .cal-cell{min-height:48px; border:1px solid var(--line); border-radius:8px; padding:3px 4px; background:#fffdfb}
+  .cal-cell.empty{border:none; background:none}
+  .cal-cell .cal-d{font-size:12px; color:var(--sub)}
+  .cal-cell.today{border-color:var(--accent); background:var(--accent-soft)}
+  .cal-cell.today .cal-d{color:var(--accent-dark); font-weight:700}
+  .cal-dots{display:flex; flex-wrap:wrap; gap:1px; margin-top:1px; font-size:11px; line-height:1.1}
+  .cal-list{list-style:none; padding:0; margin:12px 0 0}
+  .cal-list li{display:flex; align-items:center; gap:10px; padding:7px 8px; border-bottom:1px dashed var(--line); font-size:13px}
+  .cal-list .cal-ld{color:var(--accent-dark); font-weight:700; width:54px; flex:0 0 auto}
+  .cal-list .cal-lt{flex:1}
+  .cal-list .cal-ln{color:var(--sub); font-size:12px}
+  .cal-list .wdel{margin-left:auto; border:none; background:none; color:var(--warn); cursor:pointer; font-size:15px; line-height:1}
   /* 印刷 */
   @media print{
-    header.appbar,.disclaimer,.row-actions,.btn,.help-btn,.modal-bg,#view-profile,.petbar,.wform,.wlog .wdel{display:none!important}
+    header.appbar,.disclaimer,.row-actions,.btn,.help-btn,.modal-bg,#view-profile,.petbar,.wform,.wlog .wdel,.cal-form,.cal-head .btn,.cal-list .wdel{display:none!important}
     body{background:#fff; font-size:13px}
     .wrap{padding:0}
     .card,.dogcard{box-shadow:none; border-color:#ccc; break-inside:avoid; page-break-inside:avoid}
@@ -223,8 +252,15 @@
         </div>
         <div>
           <label>犬種</label>
-          <select id="f-breed"></select>
-          <div class="hint">わからない／ミックスの場合は、近い大きさを選んでください。</div>
+          <select id="f-breed" onchange="onBreedChange()"></select>
+          <div class="hint">わからない／ミックスの場合は、近い大きさの「ミックス・その他」を選んでください。</div>
+          <div class="mix-parents" id="mix-parents" style="display:none">
+            <div class="hint" style="margin-top:0">ミックスの子は、わかる範囲で<b>両親の犬種</b>を選ぶと、両親ゆずりの特性・健康の注意を表示します（わからなければ空欄でOK）。</div>
+            <div class="mp-row">
+              <div><label>父犬の犬種</label><select id="f-sire"></select></div>
+              <div><label>母犬の犬種</label><select id="f-dam"></select></div>
+            </div>
+          </div>
         </div>
         <div>
           <label>年齢</label>
@@ -350,6 +386,11 @@
     <div class="card">
       <h2 class="section"><span class="em">⚖️</span>体重の記録</h2>
       <div id="g-weight"></div>
+    </div>
+
+    <div class="card">
+      <h2 class="section"><span class="em">📅</span>ケアカレンダー（予定・記録）</h2>
+      <div id="g-calendar"></div>
     </div>
 
     <div class="card">
@@ -496,6 +537,7 @@ const COAT_LABEL = {
   single:"シングルコート（抜け毛は少ないが毛が伸び続ける）",
   smooth:"スムース（短毛・季節で抜け毛あり）",
   wire:"ワイヤー（硬い剛毛）",
+  mixed:"両親で毛質が異なる（どちらが出るかは個体差）",
 };
 const HEAT_LABEL = {vweak:"🥵 暑さに非常に弱い", weak:"🥵 暑さに弱い", mid:"暑さは普通"};
 const COLD_LABEL = {weak:"🥶 寒さに弱い", mid:"寒さは普通", strong:"❄️ 寒さに強い"};
@@ -656,10 +698,57 @@ function currentSeason(){
   return "autumn";
 }
 
+function isMixName(name){ return /^ミックス/.test(name||""); }
+
 function initBreeds(){
   const sel = $("#f-breed");
   sel.innerHTML = '<option value="">選択してください</option>' +
     BREEDS.map((b,i)=>`<option value="${i}">${b.name}</option>`).join("");
+  // 父犬・母犬は「純粋犬種(=ミックス以外)」＋「わからない」から選ぶ
+  const parentOpts = '<option value="">わからない</option>' +
+    BREEDS.map((b,i)=>({b,i})).filter(o=>!isMixName(o.b.name))
+      .map(o=>`<option value="${o.i}">${o.b.name}</option>`).join("");
+  ["#f-sire","#f-dam"].forEach(id=>{ const e=$(id); if(e) e.innerHTML = parentOpts; });
+}
+
+// 犬種セレクトが「ミックス」のときだけ父母セレクトを表示
+function onBreedChange(){
+  const mp = $("#mix-parents"); if(!mp) return;
+  const b = BREEDS[$("#f-breed").value];
+  mp.style.display = (b && isMixName(b.name)) ? "block" : "none";
+}
+
+// ミックスの合成犬種を作る（両親の特性・健康・毛質・暑さ寒さを合流）
+function buildMixBreed(base, sireIdx, damIdx){
+  const sire = (sireIdx!=="" && sireIdx!=null) ? BREEDS[sireIdx] : null;
+  const dam  = (damIdx!=="" && damIdx!=null)  ? BREEDS[damIdx]  : null;
+  const parents = [sire, dam].filter(Boolean);
+  if(!parents.length) return base; // 両親とも不明 → サイズ別ミックスのまま（カード非表示）
+  const merged = Object.assign({}, base);
+  merged.name = `ミックス（父:${sire?sire.name:"不明"} × 母:${dam?dam.name:"不明"}）`;
+  merged.traits = [...new Set(parents.flatMap(p=>p.traits||[]))];
+  merged.health = [...new Set(parents.flatMap(p=>p.health||[]))];
+  // 運動量は両親の高い方に合わせる（足りない方が問題になりやすいため）
+  const exOrder = ["low","med","high","vhigh"];
+  parents.forEach(p=>{ if(p.ex && exOrder.indexOf(p.ex) > exOrder.indexOf(merged.ex)) merged.ex = p.ex; });
+  // 毛質：両親で同じならその値、違えば mixed
+  const coats = [...new Set(parents.map(p=>p.coat).filter(Boolean))];
+  merged.coat = coats.length===1 ? coats[0] : (coats.length>1 ? "mixed" : undefined);
+  merged.trim = parents.some(p=>p.trim);
+  // 暑さ・寒さは“弱い方”に合わせる（安全側）
+  const pick = (vals, order)=>{ let best=null,bi=Infinity; vals.forEach(v=>{const i=order.indexOf(v); if(i>=0&&i<bi){bi=i;best=v;}}); return best; };
+  const heats = parents.map(p=>p.heat).filter(Boolean);
+  const colds = parents.map(p=>p.cold).filter(Boolean);
+  if(heats.length) merged.heat = pick(heats, ["vweak","weak","mid"]);
+  if(colds.length) merged.cold = pick(colds, ["weak","mid","strong"]);
+  // 説明文
+  const pd = parents.map(p=>`【${p.name}】${(p.traits||[]).join("・")}`).join(" ／ ");
+  const combo = (sire&&dam) ? `この子は <b>父:${sire.name} × 母:${dam.name}</b> の組み合わせ。`
+                            : `わかっている方の親は <b>${(sire||dam).name}</b> です。`;
+  merged.desc = `ミックス犬は、両親どちらの性格・体つきが強く出るかに<b>個体差</b>があり、同じ親同士のきょうだいでも違うことがよくあります。${combo}`
+    + `両親の特徴（${pd}）のどれが出ているか、ぜひこの子自身をよく観察してみてください。下の「気をつけたいこと」は両親が持つ健康上の注意をまとめたものです（必ず出るわけではありません）。`;
+  merged._mix = true;
+  return merged;
 }
 
 function readForm(){
@@ -674,13 +763,18 @@ function readForm(){
     housing: (document.querySelector('input[name=housing]:checked')||{}).value||"",
     yard: $("#f-yard").value,
     floor: $("#f-floor").value,
+    sireIdx: ($("#f-sire")||{}).value || "",
+    damIdx: ($("#f-dam")||{}).value || "",
     owner: checked("owner"),
     concern: checked("concern"),
   };
 }
 
 function buildProfile(f){
-  const breed = BREEDS[f.breedIdx] || BREEDS[BREEDS.length-2];
+  let breed = BREEDS[f.breedIdx] || BREEDS[BREEDS.length-2];
+  if(isMixName(breed.name) && (f.sireIdx || f.damIdx)){
+    breed = buildMixBreed(breed, f.sireIdx, f.damIdx);
+  }
   const totalMonths = f.years*12 + f.months;
   const stage = getStage(totalMonths, breed.size);
   return {
@@ -728,11 +822,13 @@ function taskHTML(a, isDone){
 // 犬種の毛質・お手入れ表示（犬種カード内）
 function breedCareHTML(b){
   if(!b || !b.coat) return "";
-  const trimTxt = b.trim
-    ? "✂️ 毛が伸び続けるので、定期的なトリミング（カット）が必要です"
-    : (b.coat==="double"
-        ? "🪮 カットは基本不要。換毛期のこまめなブラッシングが大切です"
-        : "🪮 カットは基本不要。ブラッシングでお手入れしましょう");
+  const trimTxt = b.coat==="mixed"
+    ? "🪮 実際の毛を見て、伸びるタイプならトリミング、抜けるタイプならブラッシング中心に"
+    : (b.trim
+        ? "✂️ 毛が伸び続けるので、定期的なトリミング（カット）が必要です"
+        : (b.coat==="double"
+            ? "🪮 カットは基本不要。換毛期のこまめなブラッシングが大切です"
+            : "🪮 カットは基本不要。ブラッシングでお手入れしましょう"));
   const pills = [HEAT_LABEL[b.heat], COLD_LABEL[b.cold]]
     .filter(Boolean).map(t=>`<span class="pill">${t}</span>`).join("");
   return `<div class="advice" style="margin-top:12px">
@@ -854,6 +950,9 @@ function renderGuide(p){
 
   // 体重の記録
   renderWeight(p);
+
+  // ケアカレンダー
+  renderCalendar();
 
   // 季節セレクトの表示を同期
   const ss = $("#g-season"); if(ss) ss.value = seasonOverride || "";
@@ -1003,6 +1102,110 @@ function delWeight(date){
   renderFood(p);
 }
 
+/* ===================== ケアカレンダー ===================== */
+const EVENT_TYPES = [
+  {v:"vaccine",  label:"💉 ワクチン"},
+  {v:"checkup",  label:"🩺 健康診断"},
+  {v:"filaria",  label:"🦟 フィラリア・ノミダニ予防"},
+  {v:"grooming", label:"✂️ トリミング"},
+  {v:"nail",     label:"🐾 爪切り"},
+  {v:"medicine", label:"💊 投薬・くすり"},
+  {v:"birthday", label:"🎂 誕生日・記念日"},
+  {v:"other",    label:"📝 その他"},
+];
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function eventLabel(v){ const t=EVENT_TYPES.find(t=>t.v===v); return t?t.label:"📝 その他"; }
+function eventIcon(v){ return eventLabel(v).split(" ")[0]; }
+function pad2(n){ return String(n).padStart(2,"0"); }
+function daysLeftText(iso, todayStr){
+  const a=new Date(iso+"T00:00:00"), b=new Date(todayStr+"T00:00:00");
+  const diff=Math.round((a-b)/86400000);
+  if(diff===0) return "今日";
+  if(diff===1) return "明日";
+  return `あと${diff}日`;
+}
+
+let calYear=null, calMonth=null; // calMonth: 0-11
+function calNav(delta){
+  if(calYear===null){ const n=new Date(); calYear=n.getFullYear(); calMonth=n.getMonth(); }
+  calMonth += delta;
+  if(calMonth<0){ calMonth=11; calYear--; }
+  else if(calMonth>11){ calMonth=0; calYear++; }
+  renderCalendar();
+}
+function calGridHTML(y, m, events, todayStr){
+  const ym = `${y}-${pad2(m+1)}`;
+  const startDow = new Date(y, m, 1).getDay();      // 0=日
+  const daysInMonth = new Date(y, m+1, 0).getDate();
+  const byDay = {};
+  events.forEach(e=>{ if(e.date.startsWith(ym)){ const d=parseInt(e.date.slice(8,10),10); (byDay[d]=byDay[d]||[]).push(e); } });
+  const wd = ["日","月","火","水","木","金","土"];
+  let cells = "";
+  for(let i=0;i<startDow;i++) cells += `<div class="cal-cell empty"></div>`;
+  for(let d=1; d<=daysInMonth; d++){
+    const ds = `${ym}-${pad2(d)}`;
+    const evs = byDay[d]||[];
+    const dots = evs.slice(0,4).map(e=>`<span>${eventIcon(e.type)}</span>`).join("");
+    const tip = evs.map(e=>eventLabel(e.type)+(e.note?"："+e.note:"")).join(" / ");
+    cells += `<div class="cal-cell ${ds===todayStr?'today':''}" title="${esc(tip)}"><span class="cal-d">${d}</span><div class="cal-dots">${dots}</div></div>`;
+  }
+  return `<div class="cal-head">
+      <button class="btn ghost" onclick="calNav(-1)">◀</button>
+      <span class="cal-title">${y}年 ${m+1}月</span>
+      <button class="btn ghost" onclick="calNav(1)">▶</button>
+    </div>
+    <div class="cal-grid">${wd.map((w,i)=>`<div class="cal-dow ${i===0?'sun':''} ${i===6?'sat':''}">${w}</div>`).join("")}${cells}</div>`;
+}
+function renderCalendar(){
+  const el = $("#g-calendar"); if(!el) return;
+  const pet = currentPet(); if(!pet){ el.innerHTML=""; return; }
+  const events = (pet.events||[]).slice().sort((a,b)=> a.date<b.date?-1:1);
+  const now = new Date();
+  const todayStr = todayISO();
+  if(calYear===null){ calYear=now.getFullYear(); calMonth=now.getMonth(); }
+
+  const upcoming = events.filter(e=> e.date>=todayStr);
+  const nextHtml = upcoming.length
+    ? `<div class="cal-next">⏰ 次の予定：<b>${upcoming[0].date.replace(/-/g,"/")}</b>　${eventLabel(upcoming[0].type)}${upcoming[0].note?`（${esc(upcoming[0].note)}）`:""}<span class="cal-dleft">${daysLeftText(upcoming[0].date, todayStr)}</span></div>`
+    : `<div class="hint">これからの予定はまだありません。ワクチンや健診の予定を入れておくと安心です。</div>`;
+
+  const typeOpts = EVENT_TYPES.map(t=>`<option value="${t.v}">${t.label}</option>`).join("");
+  const form = `<div class="cal-form">
+      <input type="date" id="ev-date" value="${todayStr}">
+      <select id="ev-type">${typeOpts}</select>
+      <input type="text" id="ev-note" placeholder="メモ（任意）" maxlength="40">
+      <button class="btn" onclick="addEvent()">追加</button>
+    </div>`;
+
+  const ym = `${calYear}-${pad2(calMonth+1)}`;
+  const monthEvents = events.filter(e=> e.date.startsWith(ym));
+  const list = monthEvents.length
+    ? `<ul class="cal-list">${monthEvents.map(e=>
+        `<li><span class="cal-ld">${e.date.slice(5).replace("-","/")}</span><span class="cal-lt">${eventLabel(e.type)}${e.note?` <span class="cal-ln">${esc(e.note)}</span>`:""}</span><button class="wdel" title="削除" onclick="delEvent('${e.id}')">✕</button></li>`
+      ).join("")}</ul>`
+    : `<div class="empty" style="margin-top:8px">この月の予定・記録はありません。</div>`;
+
+  el.innerHTML = nextHtml + form + calGridHTML(calYear, calMonth, events, todayStr) + list;
+}
+function addEvent(){
+  const pet=currentPet(); if(!pet) return;
+  const date=($("#ev-date")||{}).value;
+  const type=($("#ev-type")||{}).value||"other";
+  const note=(($("#ev-note")||{}).value||"").trim();
+  if(!date){ alert("日付を入れてください。"); return; }
+  pet.events = pet.events||[];
+  pet.events.push({id:newId(), date, type, note});
+  saveDB();
+  const [yy,mm]=date.split("-"); calYear=parseInt(yy,10); calMonth=parseInt(mm,10)-1; // 追加した予定の月を表示
+  renderCalendar();
+}
+function delEvent(id){
+  const pet=currentPet(); if(!pet) return;
+  pet.events=(pet.events||[]).filter(e=>e.id!==id);
+  saveDB();
+  renderCalendar();
+}
+
 /* ===================== チェックリスト ===================== */
 function toggleTask(title, on){
   const pet = currentPet(); if(!pet) return;
@@ -1123,16 +1326,20 @@ function clearAll(){
 }
 
 function resetForm(){
-  ["f-name","f-breed","f-years","f-months","f-sex","f-weight","f-yard","f-floor"].forEach(id=>{ const e=$("#"+id); if(e) e.value=""; });
+  ["f-name","f-breed","f-sire","f-dam","f-years","f-months","f-sex","f-weight","f-yard","f-floor"].forEach(id=>{ const e=$("#"+id); if(e) e.value=""; });
   document.querySelectorAll('input[name=housing]').forEach(r=>r.checked=false);
   document.querySelectorAll('[data-multi] input').forEach(c=>c.checked=false);
   document.querySelectorAll('.chip.on').forEach(c=>c.classList.remove('on'));
+  const mp=$("#mix-parents"); if(mp) mp.style.display="none";
 }
 
 function fillForm(f){
   resetForm();
   $("#f-name").value = f.name==="うちの子"?"":f.name||"";
   $("#f-breed").value = f.breedIdx||"";
+  if($("#f-sire")) $("#f-sire").value = f.sireIdx||"";
+  if($("#f-dam"))  $("#f-dam").value  = f.damIdx||"";
+  onBreedChange();
   $("#f-years").value = f.years||"";
   $("#f-months").value = f.months||"";
   $("#f-sex").value = f.sex||"";
