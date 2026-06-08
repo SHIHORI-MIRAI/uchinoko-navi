@@ -130,6 +130,22 @@
   .finalcta .btn{background:#fff; color:var(--accent-dark)}
   .finalcta .btn:hover{background:#fff5ec}
 
+  /* 開発者の思い */
+  .devmsg{
+    background:var(--panel); border:1px solid var(--line); border-radius:22px;
+    padding:38px 34px; box-shadow:var(--shadow); max-width:760px; margin:0 auto; position:relative;
+  }
+  .devmsg::before{
+    content:"\201C"; position:absolute; top:6px; left:22px; font-size:80px; line-height:1;
+    color:var(--accent-soft); font-family:Georgia,serif;
+  }
+  .devmsg .body{position:relative; font-size:15.5px; color:var(--ink)}
+  .devmsg .body p{margin:0 0 14px}
+  .devmsg .body p:last-child{margin-bottom:0}
+  .devmsg .sign{display:flex; align-items:center; gap:12px; margin-top:24px; padding-top:18px; border-top:1px solid var(--line)}
+  .devmsg .sign .ava{font-size:30px; width:52px; height:52px; border-radius:50%; background:var(--accent-soft); display:flex; align-items:center; justify-content:center; flex:0 0 auto}
+  .devmsg .sign .who b{display:block; font-size:15px}
+  .devmsg .sign .who span{font-size:13px; color:var(--sub)}
   footer{padding:34px 0 50px; text-align:center; color:var(--sub); font-size:12.5px}
   footer .disc{background:var(--accent-soft); color:#8a5a22; border-radius:12px; padding:14px 18px; max-width:780px; margin:0 auto 18px; font-size:12.5px; text-align:left}
 </style>
@@ -224,6 +240,30 @@
       <div class="tcard"><div class="em">🔒</div><b>端末内に保存</b><span>入力は外部に送信しません</span></div>
       <div class="tcard"><div class="em">📱</div><b>スマホもPCも</b><span>ブラウザだけで動きます</span></div>
     </div>
+  </div>
+</section>
+
+<!-- 開発者の思い -->
+<section class="block alt">
+  <div class="wrap">
+    <h2 class="h2">このアプリに込めた思い</h2>
+    <p class="h2sub">「うちの子ナビ」を見つけてくださって、ありがとうございます。</p>
+    <!-- ▼▼ 文面・お名前はこの中を書き換えればOKです ▼▼ -->
+    <div class="devmsg">
+      <div class="body">
+        <p>犬を迎えたあの日のうれしさと同じくらい、「これで合っているのかな？」という小さな不安が、毎日いくつも訪れます。ネットを開けば情報があふれ、何を信じればいいのか分からなくなることも少なくありません。</p>
+        <p>私自身、そんな迷いの中で「その子の犬種や月齢に合わせて、“今いちばん大切なこと”だけを、やさしく教えてくれる場所があったら」と何度も思いました。このアプリは、その願いから生まれました。</p>
+        <p>難しいことは抜きにして、科学にもとづいた“今日からできる小さな一歩”を、飼い主さんとうちの子に寄り添ってお届けします。すべての犬と飼い主さんが、もっと安心して、もっと笑顔で過ごせますように——その毎日のとなりに、そっと寄り添える存在でありたいと思っています。</p>
+      </div>
+      <div class="sign">
+        <div class="ava">🐾</div>
+        <div class="who">
+          <b>うちの子ナビ 開発者より</b>
+          <span>愛犬との暮らしを応援しています</span>
+        </div>
+      </div>
+    </div>
+    <!-- ▲▲ ここまで ▲▲ -->
   </div>
 </section>
 
