@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>うちの子ナビ｜愛犬との暮らしの伴走者 — 犬種・月齢に合わせたケアを無料で</title>
+<meta name="description" content="犬種・月齢・暮らしに合わせて『今この子にいいこと』を提案する無料Webアプリ。社会化・しつけ・運動・フード量・体重管理まで、科学にもとづいてやさしく伴走します。登録不要・データは端末内のみ。">
+<meta property="og:title" content="うちの子ナビ｜愛犬との暮らしの伴走者">
+<meta property="og:description" content="犬種・月齢・暮らしに合わせた愛犬ケアを、無料・登録不要で。今この子にいいことが、すぐわかる。">
+<meta property="og:type" content="website">
+<style>
+  :root{
+    --bg:#fbf7f1; --panel:#ffffff; --ink:#2c2622; --sub:#6f655c;
+    --accent:#d97324; --accent-dark:#b85c14; --accent-soft:#fdecd9;
+    --line:#ece3d8; --good:#2f8f5b;
+    --shadow:0 6px 24px rgba(120,90,50,.10);
+    --shadow-lg:0 16px 50px rgba(120,90,50,.18);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:"Yu Gothic UI","Hiragino Sans","Hiragino Kaku Gothic ProN",Meiryo,"Segoe UI",sans-serif;
+    line-height:1.8; font-size:16px;
+  }
+  a{color:inherit}
+  .wrap{max-width:1040px; margin:0 auto; padding:0 20px}
+  .btn{
+    display:inline-flex; align-items:center; gap:9px; background:var(--accent); color:#fff;
+    border:none; padding:16px 34px; border-radius:999px; font:inherit; font-weight:800; font-size:17px;
+    cursor:pointer; box-shadow:var(--shadow); text-decoration:none; transition:transform .12s,box-shadow .12s;
+  }
+  .btn:hover{background:var(--accent-dark); transform:translateY(-2px); box-shadow:var(--shadow-lg)}
+  .btn.big{padding:18px 44px; font-size:19px}
+  .btn.ghost{background:#fff; color:var(--accent-dark); border:2px solid var(--accent); box-shadow:none}
+  .sub{color:var(--sub)}
+  .center{text-align:center}
+
+  /* ===== ナビ ===== */
+  nav.top{
+    position:sticky; top:0; z-index:20; background:rgba(251,247,241,.86); backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);
+  }
+  nav.top .inner{display:flex; align-items:center; justify-content:space-between; height:60px}
+  nav.top .logo{font-weight:800; font-size:18px}
+  nav.top .logo span{color:var(--accent)}
+  nav.top .navcta{padding:9px 20px; font-size:14px}
+  @media(max-width:520px){nav.top .navcta{padding:8px 14px; font-size:13px}}
+
+  /* ===== ヒーロー ===== */
+  .hero{
+    background:radial-gradient(1200px 500px at 75% -10%, var(--accent-soft), transparent 60%),
+               linear-gradient(180deg,#fff,var(--bg));
+    padding:64px 0 48px;
+  }
+  .hero .inner{display:grid; grid-template-columns:1.15fr .85fr; gap:30px; align-items:center}
+  @media(max-width:780px){.hero .inner{grid-template-columns:1fr; text-align:center}}
+  .badge{
+    display:inline-block; background:var(--accent-soft); color:var(--accent-dark);
+    font-size:13px; font-weight:700; padding:6px 14px; border-radius:999px; margin-bottom:18px;
+  }
+  .hero h1{font-size:42px; line-height:1.35; margin:0 0 16px; letter-spacing:.5px}
+  .hero h1 .hl{color:var(--accent); position:relative}
+  @media(max-width:520px){.hero h1{font-size:31px}}
+  .hero p.lead{font-size:18px; color:var(--sub); margin:0 0 28px}
+  .hero .cta-row{display:flex; gap:14px; flex-wrap:wrap}
+  @media(max-width:780px){.hero .cta-row{justify-content:center}}
+  .hero .note{font-size:13px; color:var(--sub); margin-top:14px}
+  .hero-card{
+    background:var(--panel); border:1px solid var(--line); border-radius:24px; padding:26px;
+    box-shadow:var(--shadow-lg); transform:rotate(-1.2deg);
+  }
+  .hero-card .dog{font-size:64px; text-align:center; margin-bottom:6px}
+  .hero-card h3{margin:0 0 4px; font-size:18px}
+  .hero-card .meta{display:flex; gap:7px; flex-wrap:wrap; margin:10px 0 14px}
+  .hero-card .pill{font-size:12px; background:var(--accent-soft); color:var(--accent-dark); padding:3px 11px; border-radius:999px}
+  .hero-card .task{display:flex; align-items:center; gap:10px; font-size:14px; padding:8px 0; border-top:1px dashed var(--line)}
+  .hero-card .task .ck{width:20px;height:20px;border-radius:6px;background:var(--good);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;flex:0 0 auto}
+  .hero-card .task .ck.off{background:#fff;border:2px solid var(--line)}
+
+  /* ===== セクション共通 ===== */
+  section.block{padding:62px 0}
+  section.block.alt{background:var(--panel); border-top:1px solid var(--line); border-bottom:1px solid var(--line)}
+  .h2{font-size:30px; text-align:center; margin:0 0 8px; letter-spacing:.5px}
+  @media(max-width:520px){.h2{font-size:24px}}
+  .h2sub{text-align:center; color:var(--sub); margin:0 auto 38px; max-width:620px}
+
+  /* 悩み */
+  .pains{display:grid; grid-template-columns:repeat(3,1fr); gap:18px}
+  @media(max-width:780px){.pains{grid-template-columns:1fr}}
+  .pain{background:var(--bg); border:1px solid var(--line); border-radius:16px; padding:22px; text-align:center}
+  .pain .em{font-size:34px}
+  .pain p{margin:8px 0 0; font-size:15px}
+
+  /* 特徴 */
+  .feats{display:grid; grid-template-columns:repeat(3,1fr); gap:20px}
+  @media(max-width:780px){.feats{grid-template-columns:1fr 1fr}}
+  @media(max-width:520px){.feats{grid-template-columns:1fr}}
+  .feat{background:var(--panel); border:1px solid var(--line); border-radius:18px; padding:24px; box-shadow:var(--shadow); transition:transform .12s}
+  section.block.alt .feat{background:var(--bg)}
+  .feat:hover{transform:translateY(-3px)}
+  .feat .ic{font-size:32px; width:58px; height:58px; border-radius:14px; background:var(--accent-soft); display:flex; align-items:center; justify-content:center; margin-bottom:14px}
+  .feat h3{margin:0 0 6px; font-size:18px}
+  .feat p{margin:0; font-size:14.5px; color:var(--sub)}
+
+  /* ステップ */
+  .steps{display:grid; grid-template-columns:repeat(3,1fr); gap:22px; counter-reset:s}
+  @media(max-width:780px){.steps{grid-template-columns:1fr}}
+  .step{position:relative; background:var(--panel); border:1px solid var(--line); border-radius:18px; padding:28px 24px 24px; box-shadow:var(--shadow)}
+  .step .num{position:absolute; top:-18px; left:24px; width:40px; height:40px; border-radius:50%; background:var(--accent); color:#fff; font-weight:800; font-size:19px; display:flex; align-items:center; justify-content:center; box-shadow:var(--shadow)}
+  .step h3{margin:10px 0 6px; font-size:18px}
+  .step p{margin:0; font-size:14.5px; color:var(--sub)}
+
+  /* 安心 */
+  .trust{display:grid; grid-template-columns:repeat(4,1fr); gap:16px}
+  @media(max-width:780px){.trust{grid-template-columns:1fr 1fr}}
+  .tcard{text-align:center; padding:18px}
+  .tcard .em{font-size:30px}
+  .tcard b{display:block; margin-top:6px; font-size:15px}
+  .tcard span{font-size:13px; color:var(--sub)}
+
+  /* 最終CTA */
+  .finalcta{
+    background:linear-gradient(135deg,var(--accent),var(--accent-dark)); color:#fff;
+    border-radius:24px; padding:48px 30px; text-align:center; box-shadow:var(--shadow-lg);
+  }
+  .finalcta h2{font-size:28px; margin:0 0 10px}
+  @media(max-width:520px){.finalcta h2{font-size:22px}}
+  .finalcta p{margin:0 0 26px; opacity:.95}
+  .finalcta .btn{background:#fff; color:var(--accent-dark)}
+  .finalcta .btn:hover{background:#fff5ec}
+
+  footer{padding:34px 0 50px; text-align:center; color:var(--sub); font-size:12.5px}
+  footer .disc{background:var(--accent-soft); color:#8a5a22; border-radius:12px; padding:14px 18px; max-width:780px; margin:0 auto 18px; font-size:12.5px; text-align:left}
+</style>
+</head>
+<body>
+
+<!-- ナビ -->
+<nav class="top">
+  <div class="wrap inner">
+    <div class="logo">🐾 うちの子<span>ナビ</span></div>
+    <a class="btn navcta" href="https://shihori-mirai.github.io/uchinoko-navi/">アプリを使う</a>
+  </div>
+</nav>
+
+<!-- ヒーロー -->
+<header class="hero">
+  <div class="wrap inner">
+    <div>
+      <span class="badge">🐶 犬種・月齢に合わせた愛犬ケア</span>
+      <h1>今この子に<br><span class="hl">いいこと</span>が、すぐわかる。</h1>
+      <p class="lead">犬種・月齢・住まい・あなたの暮らしに合わせて、<br>「いま大切なケア」を最新の科学にもとづいてやさしく提案。<br>愛犬との毎日に、頼れる伴走者を。</p>
+      <div class="cta-row">
+        <a class="btn big" href="https://shihori-mirai.github.io/uchinoko-navi/">アプリを使ってみる（無料）→</a>
+        <a class="btn ghost" href="#features">特徴を見る</a>
+      </div>
+      <p class="note">✓ 登録不要　✓ 完全無料　✓ データは端末内のみ（外部送信なし）</p>
+    </div>
+    <div class="hero-card" aria-hidden="true">
+      <div class="dog">🐕</div>
+      <h3 class="center">もも のガイド</h3>
+      <div class="meta center" style="justify-content:center">
+        <span class="pill">トイプードル</span><span class="pill">超小型犬</span><span class="pill">5ヶ月</span>
+      </div>
+      <div style="font-size:13px;font-weight:700;color:var(--accent-dark);margin-bottom:4px">✅ 今週やってあげたいこと</div>
+      <div class="task"><span class="ck">✓</span>色々な“はじめて”に1日1つ慣れさせる</div>
+      <div class="task"><span class="ck">✓</span>名前＝いいこと、を作る</div>
+      <div class="task"><span class="ck off"></span>子犬教室（パピークラス）を探す</div>
+    </div>
+  </div>
+</header>
+
+<!-- 共感・悩み -->
+<section class="block">
+  <div class="wrap">
+    <h2 class="h2">こんなお悩み、ありませんか？</h2>
+    <p class="h2sub">愛犬を迎えると、うれしさと同じくらい「これでいいのかな？」がいっぱい。</p>
+    <div class="pains">
+      <div class="pain"><div class="em">🔰</div><p>初めての子育てで、何から始めればいいか分からない</p></div>
+      <div class="pain"><div class="em">🌐</div><p>ネットの情報がバラバラで、どれを信じればいいか不安</p></div>
+      <div class="pain"><div class="em">🐾</div><p>うちの子の犬種・月齢に「ちょうどいい」ケアが知りたい</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 特徴 -->
+<section class="block alt" id="features">
+  <div class="wrap">
+    <h2 class="h2">うちの子ナビが、できること</h2>
+    <p class="h2sub">入力はかんたん。あとは、その子に合わせたケアが自動で並びます。</p>
+    <div class="feats">
+      <div class="feat"><div class="ic">🎯</div><h3>その子だけの提案</h3><p>犬種・月齢・住まい・気になることから、今いちばん大切なケアだけを表示します。</p></div>
+      <div class="feat"><div class="ic">🔬</div><h3>科学にもとづく根拠</h3><p>各アドバイスに「なぜ？」と出典タグ（AVSAB／WSAVA等）。納得して取り組めます。</p></div>
+      <div class="feat"><div class="ic">✅</div><h3>今週のチェックリスト</h3><p>やってあげたいことをチェックして、無理なく習慣化。進み具合もひと目で。</p></div>
+      <div class="feat"><div class="ic">⚖️</div><h3>体重の記録＆グラフ</h3><p>体重を記録すると推移をグラフ化。肥満予防に役立ち、フード量にも自動反映。</p></div>
+      <div class="feat"><div class="ic">🍚</div><h3>フード量の目安</h3><p>体重と活動量から1日の必要カロリーとグラム数を計算（獣医栄養学のRER/MER）。</p></div>
+      <div class="feat"><div class="ic">🐕‍🦺</div><h3>多頭飼いも安心</h3><p>何頭でも登録して切り替え。季節の注意や印刷・PDF保存にも対応しています。</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 使い方 -->
+<section class="block">
+  <div class="wrap">
+    <h2 class="h2">使い方は、3ステップ</h2>
+    <p class="h2sub">アプリのダウンロードもインストールも不要。ブラウザですぐ始められます。</p>
+    <div class="steps">
+      <div class="step"><div class="num">1</div><h3>プロフィールを入力</h3><p>名前・犬種・月齢・体重などを入力。わかる範囲でOKです。</p></div>
+      <div class="step"><div class="num">2</div><h3>ガイドを見る</h3><p>今の時期のテーマ、今週やりたいこと、運動・フード量などが一覧で表示。</p></div>
+      <div class="step"><div class="num">3</div><h3>毎日に活かす</h3><p>チェックや体重記録で、愛犬の成長と健康を楽しく見守れます。</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 安心ポイント -->
+<section class="block alt">
+  <div class="wrap">
+    <h2 class="h2">安心して使えます</h2>
+    <p class="h2sub">大切な家族のこと。だから、気軽に・安全に。</p>
+    <div class="trust">
+      <div class="tcard"><div class="em">💴</div><b>完全無料</b><span>すべての機能が無料</span></div>
+      <div class="tcard"><div class="em">🙅</div><b>登録不要</b><span>メールも会員登録もなし</span></div>
+      <div class="tcard"><div class="em">🔒</div><b>端末内に保存</b><span>入力は外部に送信しません</span></div>
+      <div class="tcard"><div class="em">📱</div><b>スマホもPCも</b><span>ブラウザだけで動きます</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 最終CTA -->
+<section class="block">
+  <div class="wrap">
+    <div class="finalcta">
+      <h2>うちの子の「いいこと」、始めてみませんか？</h2>
+      <p>入力1分。今日からできるケアが、すぐ見つかります。</p>
+      <a class="btn big" href="https://shihori-mirai.github.io/uchinoko-navi/">無料でアプリを使ってみる →</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="disc">⚠️ 本アプリは情報提供を目的としたもので、獣医師・専門家の診断や指導の代わりではありません。気になる症状や行動は専門家にご相談ください。掲載内容は代表的なケースのスターターセットです。</div>
+    🐾 うちの子ナビ — 愛犬との暮らしの伴走者
+  </div>
+</footer>
+
+</body>
+</html>
