@@ -207,6 +207,7 @@
   .care-card>summary::marker{content:""}
   .care-card>summary .good-img{flex:0 0 60px}
   .care-card>summary .good-img svg{width:60px}
+  .care-photo{width:60px; height:60px; border-radius:50%; object-fit:cover; display:block}
   .care-card>summary .feel-tx{flex:1; min-width:0}
   .care-card>summary:hover{background:#fdf7ef}
   .care-card[open]>summary{background:var(--accent-soft)}
@@ -898,6 +899,11 @@ const CARE_MORE = {
     vet:"特定の場所を触ると急に怒る・鳴く・かむようになった場合は、どこか痛い可能性があります。我慢させず受診を。",
   },
 };
+// 毎日の健康ケアのアイコン：手描き風の丸イラスト画像があればそれを、無ければSVGを使う
+const CARE_IMG = {tooth:1, nail:1, ear:1, brushing:1, eye:1, paw:1, bath:1};
+function careIcon(key){
+  return CARE_IMG[key] ? `<img class="care-photo" src="img/care-${key}.png" alt="" loading="lazy">` : illust(key);
+}
 function careBodyHTML(key){
   const m = CARE_MORE[key]; if(!m) return "";
   let h = "";
@@ -1192,8 +1198,8 @@ function renderGuide(p){
   // 毎日の健康ケア
   $("#g-care").innerHTML = CARE.map(c=>{
     const body = careBodyHTML(c.key);
-    if(!body) return `<div class="advice feel"><div class="feel-img good-img">${illust(c.key)}</div><div class="feel-tx"><div class="t">${c.icon} ${c.part}</div><p class="a">${c.tip}</p></div></div>`;
-    return `<details class="advice feel care-card"><summary><div class="feel-img good-img">${illust(c.key)}</div><div class="feel-tx"><div class="t">${c.icon} ${c.part}</div><p class="a">${c.tip}</p></div><span class="care-caret"><span class="care-arrow">▼</span><span class="care-caret-tx">くわしく</span></span></summary><div class="care-body">${body}</div></details>`;
+    if(!body) return `<div class="advice feel"><div class="feel-img good-img">${careIcon(c.key)}</div><div class="feel-tx"><div class="t">${c.icon} ${c.part}</div><p class="a">${c.tip}</p></div></div>`;
+    return `<details class="advice feel care-card"><summary><div class="feel-img good-img">${careIcon(c.key)}</div><div class="feel-tx"><div class="t">${c.icon} ${c.part}</div><p class="a">${c.tip}</p></div><span class="care-caret"><span class="care-arrow">▼</span><span class="care-caret-tx">くわしく</span></span></summary><div class="care-body">${body}</div></details>`;
   }).join("")
     + `<span class="src">出典: 獣医歯科・日常ケア／トリミングの視点</span>`;
 
