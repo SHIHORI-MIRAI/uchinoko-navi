@@ -200,6 +200,35 @@
   .bcs-scale > div span{color:var(--sub)}
   .bcs-scale .ideal{background:var(--accent-soft)}
   .bcs-scale .ideal b{color:var(--accent-dark)}
+  /* 毎日の健康ケア：カードまるごとタップで開く */
+  .advice.feel.care-card{display:block; padding:0; overflow:hidden}
+  .care-card>summary{display:flex; gap:12px; align-items:center; padding:13px 15px; cursor:pointer; list-style:none}
+  .care-card>summary::-webkit-details-marker{display:none}
+  .care-card>summary::marker{content:""}
+  .care-card>summary .good-img{flex:0 0 60px}
+  .care-card>summary .good-img svg{width:60px}
+  .care-card>summary .feel-tx{flex:1; min-width:0}
+  .care-card>summary:hover{background:#fdf7ef}
+  .care-card[open]>summary{background:var(--accent-soft)}
+  .care-caret{flex:0 0 auto; display:flex; flex-direction:column; align-items:center; gap:1px; color:var(--accent-dark); font-weight:700}
+  .care-arrow{font-size:12px; line-height:1; transition:transform .2s}
+  .care-card[open] .care-arrow{transform:rotate(180deg)}
+  .care-caret-tx{font-size:10.5px; line-height:1.2; white-space:nowrap}
+  .care-body{padding:0 15px 14px; border-top:1px dashed var(--line); margin-top:-1px}
+  .care-h{font-weight:700; font-size:12.5px; color:var(--accent-dark); margin:12px 0 4px}
+  .care-h:first-child{margin-top:6px}
+  .care-goal{margin:6px 0 2px; font-size:13px; background:var(--accent-soft); border-radius:9px; padding:9px 11px}
+  .care-steps{margin:4px 0 0; padding:0; list-style:none; counter-reset:cs}
+  .care-steps li{position:relative; padding:8px 0 8px 32px; font-size:13px; line-height:1.55; border-top:1px dashed var(--line)}
+  .care-steps li:first-child{border-top:none}
+  .care-steps li::before{counter-increment:cs; content:counter(cs); position:absolute; left:0; top:8px;
+    width:21px; height:21px; line-height:21px; text-align:center; font-size:12px; font-weight:700;
+    color:#fff; background:var(--accent); border-radius:50%}
+  .care-list{margin:4px 0 0; padding-left:0; list-style:none; font-size:13px}
+  .care-list li{position:relative; padding:3px 0 3px 22px; line-height:1.5}
+  .care-list.tip li::before{content:"💡"; position:absolute; left:0; top:3px; font-size:12px}
+  .care-list.ng li::before{content:"⚠️"; position:absolute; left:0; top:3px; font-size:12px}
+  .care-vet{margin-top:11px; font-size:12.5px; background:var(--warn-soft); border-radius:9px; padding:9px 11px}
   /* 印刷 */
   @media print{
     header.appbar,.disclaimer,.row-actions,.btn,.help-btn,.modal-bg,#view-profile,.petbar,.wform,.wlog .wdel,.cal-form,.cal-head .btn,.cal-list .wdel{display:none!important}
@@ -699,6 +728,187 @@ const CARE = [
   {icon:"🤝", key:"handling", part:"お手入れに慣らす（ハズバンダリートレーニング）", tip:"体を触られる・口や足を持たれる・ケアされることを、おやつと結びつけて“良いこと”にしておくと、歯みがきも爪切りも病院もぐっと楽に。押さえつけず、嫌がらない範囲で少しずつが鉄則です。"},
 ];
 
+// 各ケアの「もっとくわしく」— 少しずつ慣らす具体ステップ・コツ・NG・受診の目安（アプリ内で完結）
+const CARE_MORE = {
+  tooth:{
+    goal:"ゴールは「歯ブラシで歯をみがけるようになる」。でも今日いきなりは無理でOK。下のステップを1段階ずつ、数日〜数週間かけて進めます。あせらないのが一番の近道です。",
+    steps:[
+      "口のまわりを触る：おやつをあげながら、口元をそっと触るだけ。嫌がらなければ大成功。これを2〜3日くり返します。",
+      "歯みがきペーストをなめさせる：犬用ペーストを指先に少しつけてなめさせ、「これ＝おいしい・うれしい」と覚えてもらいます。",
+      "指で前歯をちょんと触る：ペーストをつけた指で前歯を1〜2秒さわる→すぐおやつ。短く終わるのがコツ。",
+      "指でやさしくこする：前歯→犬歯→さわれる奥歯へ。一度に全部でなく、1日数本でも十分です。",
+      "歯ブラシに移行：慣れたら指サック歯ブラシやガーゼ、最後にやわらかい歯ブラシへ。ペーストは引き続き使います。",
+      "毎日の習慣に：1日1回が理想。難しければ「今日は右側、明日は左側」と分けてもOKです。",
+    ],
+    tips:[
+      "1回は数十秒で切り上げ、終わったら必ずほめる・おやつをあげる。",
+      "犬が「楽しみな時間」と感じるようにするのが成功の秘訣。",
+      "1段階を数日続け、嫌がらなくなってから次へ進む。",
+    ],
+    ng:[
+      "いきなり歯ブラシを口に入れる（噛んだり、歯みがき嫌いになる原因）。",
+      "体を押さえつけたり、無理に口を開ける。",
+      "人間用の歯みがき粉を使う（犬に有害な成分が入っていることがあります）。",
+    ],
+    vet:"歯ぐきが赤い・腫れている、口がとても臭い、歯がぐらつく・抜けた、よだれや出血、固いものを食べたがらない。歯周病が進んでいるサインかもしれません。",
+  },
+  nail:{
+    goal:"ゴールは「足を持っても嫌がらず、爪を切らせてくれる」。足を触られるのが苦手な子が多いので、まずは“足を持たせてくれる”ことから始めます。",
+    steps:[
+      "足を触る練習：おやつをあげながら、肉球や足先をそっと触る。1本ずつでOK。",
+      "足を軽く持つ：足を持ち上げて1〜2秒キープ→おやつ。「持たれても怖くない」を覚えてもらう。",
+      "爪切りを見せる・においをかがせる：道具を見せておやつ。「この道具＝いいこと」と結びつける。",
+      "爪に道具を当てるだけ：切らずに当てて音や感触に慣らす→おやつ。",
+      "先端を1本だけ切る：白い爪なら血管（ピンクの部分）の手前を少しだけ。切れたら大げさにほめる。",
+      "本数を増やす：怖がる子は1日1本ペースでもOK。全部切れなくても気にしないで。",
+    ],
+    tips:[
+      "月1回ほどが目安。フローリングで“カチカチ”音がしたら伸びすぎのサイン。",
+      "黒い爪は血管が見えないので、ほんの少しずつ・慎重に。",
+      "深爪が怖い場合は、やすりで削るだけでも十分。",
+    ],
+    ng:[
+      "一度に全部切ろうとして、嫌な思い出にしてしまう。",
+      "暴れる子を押さえつけて切る（次から余計に嫌がります）。",
+      "伸ばしっぱなしで放置（歩き方や関節に悪影響、巻き爪にも）。",
+    ],
+    vet:"血管を切って出血が止まらない、爪が割れた・はがれた、足を地面につけたがらない。出血は清潔なガーゼで圧迫し、止まらなければ受診を。",
+  },
+  ear:{
+    goal:"ゴールは「耳を触らせてくれて、見える範囲を清潔に保てる」。耳掃除は“奥まで”ではなく“見える範囲だけ”が正解です。",
+    steps:[
+      "耳を触る練習：おやつをあげながら、耳のつけ根や外側をやさしくなでる。",
+      "耳をめくって見る：垂れ耳の子は耳をそっと持ち上げて中をのぞく→おやつ。",
+      "コットンで外側をふく：犬用イヤークリーナーを含ませたコットンで、見える範囲をやさしくふくだけ。",
+      "ごほうびで終わる：終わったらほめておやつ。「耳のお手入れ＝いいこと」に。",
+    ],
+    tips:[
+      "週1回ほど、汚れていなければ無理に掃除しなくてOK。",
+      "垂れ耳（ビーグル・キャバリア等）や毛が多い子は蒸れやすいので様子を見る。",
+      "綿棒で奥を触らない（汚れを押し込んだり傷つけたりします）。",
+    ],
+    ng:[
+      "綿棒で耳の奥をグリグリする。",
+      "汚れていないのに毎日ゴシゴシ掃除する。",
+      "水やオイルを耳の奥に流し込む。",
+    ],
+    vet:"耳が赤い・においが強い・かゆがって頭をふる・黒や茶の耳垢が多い・耳をしきりに気にする。外耳炎のサインなので受診を。",
+  },
+  brushing:{
+    goal:"ゴールは「ブラッシングを気持ちよさそうにさせてくれる」。スキンシップの時間にすると、犬もリラックスして好きになってくれます。",
+    steps:[
+      "ブラシを見せる：ブラシを見せておやつ。「この道具＝いいこと」に。",
+      "背中から軽くなでる：嫌がりにくい背中から、毛の流れに沿ってやさしく。",
+      "範囲を広げる：慣れたらおしり・しっぽ・足・おなかへ。嫌がる場所は無理しない。",
+      "毛玉はほぐす：もつれは少しずつ指でほぐすか、毛玉用コームで。引っぱらない。",
+      "全身チェックも兼ねる：しこり・赤み・ノミダニ・傷がないか、なでながら確認。",
+    ],
+    tips:[
+      "ダブルコート（柴・ハスキー・ゴールデン等）は換毛期は毎日、ふだんも定期的に。",
+      "シングルコート（プードル・マルチーズ等）は毛玉防止にこまめなブラッシングを。",
+      "毛質に合ったブラシ（スリッカー・コーム・ラバーブラシ）を選ぶ。",
+    ],
+    ng:[
+      "毛玉を無理に引っぱる（痛くてブラッシング嫌いに）。",
+      "強い力でゴシゴシして皮膚を傷つける。",
+      "嫌がる場所を無理やり続ける。",
+    ],
+    vet:"ブラッシング中にしこり・脱毛・赤み・かさぶた・強いかゆみ・大量のフケを見つけたら、皮膚トラブルの可能性があるので受診を。",
+  },
+  eye:{
+    goal:"ゴールは「目のまわりを清潔に保ち、異常に早く気づける」。デリケートな場所なので、やさしく短時間で。",
+    steps:[
+      "目のまわりを触る練習：おやつをあげながら、目の下や目頭をそっと触る。",
+      "湿らせたコットンでふく：ぬるま湯で湿らせたコットンで、目やにをやさしくふき取る。",
+      "涙やけをこまめにふく：目の下の茶色い汚れ（涙やけ）は、乾く前にこまめにふいて清潔に。",
+      "左右で別のコットンを使う：感染を広げないため、目ごとにコットンを替える。",
+    ],
+    tips:[
+      "目やにが少量なら正常。色や量がいつもと違わないか毎日チェック。",
+      "目に直接さわらず、まわりの汚れだけをやさしくふく。",
+      "涙やけが続く場合は、フードや涙の通り道が原因のことも。獣医に相談を。",
+    ],
+    ng:[
+      "乾いたティッシュでゴシゴシこする。",
+      "人間用の目薬を自己判断でさす。",
+      "目やにを放置して固まらせる。",
+    ],
+    vet:"急に目を気にする・しょぼしょぼする、白く濁る、充血、目やにが黄緑色や大量、まぶたが腫れる。目のトラブルは進行が早いので早めに受診を。",
+  },
+  paw:{
+    goal:"ゴールは「散歩後の足ふきや肉球ケアを嫌がらずさせてくれる」。足を触られる練習は、爪切りや病院にも役立ちます。",
+    steps:[
+      "足を触る練習：おやつをあげながら、肉球や指の間をそっと触る。",
+      "散歩後に足をふく：濡らして固く絞ったタオルや犬用ウェットシートで、肉球・指の間をやさしくふく。",
+      "しっかり乾かす：指の間に湿気が残るとトラブルのもと。乾いたタオルで水気を取る。",
+      "保湿・毛のカット：乾燥やひび割れには犬用肉球クリーム。肉球まわりの伸びた毛は滑り止めにカット。",
+    ],
+    tips:[
+      "夏のアスファルトは肉球をやけど→朝晩の涼しい時間に散歩を。",
+      "冬は乾燥・ひび割れ、雪道の融雪剤に注意（散歩後はよくふく）。",
+      "指の間をしきりになめる・かむのは、かゆみや炎症のサインかも。",
+    ],
+    ng:[
+      "濡れたまま放置（指の間が蒸れて皮膚炎の原因）。",
+      "人間用の保湿クリームを使う（なめても安全な犬用を）。",
+      "肉球まわりの毛を伸ばしっぱなし（フローリングで滑って関節を痛める）。",
+    ],
+    vet:"肉球の割れ・出血、指の間の赤み・腫れ・できもの、足を引きずる・かばう、しきりになめ続ける。けがや皮膚炎の可能性があります。",
+  },
+  bath:{
+    goal:"ゴールは「シャンプーをパニックにならず受け入れてくれる」。水やシャワー音が苦手な子が多いので、少しずつ慣らします。",
+    steps:[
+      "お風呂場に慣れる：お湯を使わず、お風呂場でおやつをあげて「怖くない場所」に。",
+      "足やお尻にぬるま湯：いきなり全身でなく、足先から少しずつ。ぬるめ（37℃前後）で。",
+      "シャワー音に慣らす：最初は弱い水流・体から離して。顔は避け、後ろから前へ。",
+      "犬用シャンプーで洗う：よく泡立て、やさしくマッサージするように。すすぎ残しがないよう念入りに流す。",
+      "しっかり乾かす：タオルで水気を取り、ドライヤーは弱風・離して。生乾きは皮膚トラブルのもと。",
+    ],
+    tips:[
+      "月1回程度が目安（犬種・皮膚の状態で調整）。",
+      "洗いすぎは皮膚バリアを壊して逆効果。",
+      "顔まわりはシャワーを避け、濡らしたタオルでふくと安心。",
+    ],
+    ng:[
+      "熱いお湯や強いシャワーをいきなり全身にかける。",
+      "人間用シャンプーを使う（犬の皮膚に合いません）。",
+      "すすぎ残し・生乾きのまま放置する。",
+    ],
+    vet:"皮膚病の治療中は、シャンプーの種類・頻度を必ず獣医の指示に従ってください。洗っても赤み・かゆみ・においが続く場合も受診を。",
+  },
+  handling:{
+    goal:"これは歯みがき・爪切り・病院など、すべてのケアの土台になる練習です。「体を触られる・持たれる＝いいこと」と教えておくと、あらゆるお手入れがぐっと楽になります。",
+    steps:[
+      "好きな場所から：背中や胸など、嫌がりにくい場所をなでながらおやつ。",
+      "少しずつ部位を広げる：足・口・耳・しっぽなど、ケアでさわる場所へ。1か所ずつ。",
+      "“持つ”に進む：足を持ち上げる、口元をめくる、耳をめくるを1〜2秒→おやつ。",
+      "道具も登場させる：歯ブラシ・爪切り・ブラシを見せておやつ。当てるだけ→おやつ。",
+      "本番のケアへ：嫌がらなくなったら実際のケアを少しずつ。いつもごほうびとセットで。",
+    ],
+    tips:[
+      "嫌がる手前でやめる・短く終わるのが鉄則。",
+      "「触る→おやつ」の順番が大事（おやつが先だと意味が薄れます）。",
+      "毎日1〜2分でOK。あせらず犬のペースで。",
+    ],
+    ng:[
+      "嫌がるのに押さえつけて続ける（恐怖が強まり逆効果）。",
+      "痛いこと・怖いことをいきなりする。",
+      "うまくいかない日に叱る。",
+    ],
+    vet:"特定の場所を触ると急に怒る・鳴く・かむようになった場合は、どこか痛い可能性があります。我慢させず受診を。",
+  },
+};
+function careBodyHTML(key){
+  const m = CARE_MORE[key]; if(!m) return "";
+  let h = "";
+  if(m.goal) h += `<p class="care-goal">🎯 ${m.goal}</p>`;
+  if(m.steps&&m.steps.length) h += `<div class="care-h">少しずつ慣らすステップ</div><ol class="care-steps">${m.steps.map(s=>`<li>${s}</li>`).join("")}</ol>`;
+  if(m.tips&&m.tips.length) h += `<div class="care-h">成功のコツ</div><ul class="care-list tip">${m.tips.map(s=>`<li>${s}</li>`).join("")}</ul>`;
+  if(m.ng&&m.ng.length) h += `<div class="care-h">やりがちなNG</div><ul class="care-list ng">${m.ng.map(s=>`<li>${s}</li>`).join("")}</ul>`;
+  if(m.vet) h += `<div class="care-vet"><b>🏥 こんな時は受診を</b><br>${m.vet}</div>`;
+  return h;
+}
+
 // 用語集（アプリ内で出てくる言葉のやさしい説明）
 const GLOSSARY = [
   {term:"社会化", read:"しゃかいか", def:"子犬の時期に、いろいろな人・音・場所・他の犬などに“こわくない形で”慣れさせること。将来の吠え・怖がり・噛みを減らす土台になります。特に生後〜16週ごろが大切。"},
@@ -980,8 +1190,11 @@ function renderGuide(p){
     + `<span class="src">出典: カーミングシグナル(Rugaas)/行動学</span>`;
 
   // 毎日の健康ケア
-  $("#g-care").innerHTML = CARE.map(c=>
-    `<div class="advice feel"><div class="feel-img good-img">${illust(c.key)}</div><div class="feel-tx"><div class="t">${c.icon} ${c.part}</div><p class="a">${c.tip}</p></div></div>`).join("")
+  $("#g-care").innerHTML = CARE.map(c=>{
+    const body = careBodyHTML(c.key);
+    if(!body) return `<div class="advice feel"><div class="feel-img good-img">${illust(c.key)}</div><div class="feel-tx"><div class="t">${c.icon} ${c.part}</div><p class="a">${c.tip}</p></div></div>`;
+    return `<details class="advice feel care-card"><summary><div class="feel-img good-img">${illust(c.key)}</div><div class="feel-tx"><div class="t">${c.icon} ${c.part}</div><p class="a">${c.tip}</p></div><span class="care-caret"><span class="care-arrow">▼</span><span class="care-caret-tx">くわしく</span></span></summary><div class="care-body">${body}</div></details>`;
+  }).join("")
     + `<span class="src">出典: 獣医歯科・日常ケア／トリミングの視点</span>`;
 
   // フード量
