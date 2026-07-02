@@ -80,6 +80,11 @@
   .empty{color:var(--sub); font-size:13px; padding:6px 2px}
   .stage-banner{background:var(--accent-soft); border-radius:10px; padding:12px 16px; margin-bottom:8px}
   .stage-banner b{color:var(--accent-dark)}
+  .human-age{display:flex; align-items:center; gap:13px; background:var(--accent-soft); border-radius:12px; padding:12px 15px; margin-bottom:8px}
+  .human-age .ha-emoji{font-size:27px; line-height:1; flex:0 0 auto}
+  .human-age .ha-num{font-size:22px; font-weight:800; color:var(--accent-dark); line-height:1.15}
+  .human-age .ha-num small{font-size:12px; font-weight:700; color:var(--sub)}
+  .human-age .ha-tx{font-size:11.5px; color:var(--sub); line-height:1.55; margin-top:4px}
   footer{text-align:center; color:var(--sub); font-size:11.5px; margin-top:30px}
   .pill{display:inline-block; font-size:11px; padding:2px 9px; border-radius:999px; background:var(--accent-soft); color:var(--accent-dark); margin-right:6px}
   /* ペット切替 */
@@ -618,6 +623,19 @@ function getStage(months, size){
   return "adult";
 }
 
+// 犬の年齢 → 人間年齢の目安（大型ほど歳の重ね方が速い）
+// 基準：1歳=約15歳、2歳=約24歳。2歳以降のペースをサイズ別に。
+function humanAge(totalMonths, size){
+  const y = totalMonths/12;
+  if(y <= 0) return null;
+  const perYear = size==="large" ? 6 : size==="medium" ? 5 : 4; // 大型:6 中型:5 超小型・小型:4
+  let h;
+  if(y < 1)      h = y*15;                // 生後〜1歳：0→約15歳
+  else if(y < 2) h = 15 + (y-1)*9;        // 1〜2歳：約15→24歳
+  else           h = 24 + (y-2)*perYear;  // 2歳以降：サイズ別のペース
+  return Math.round(h);
+}
+
 const STAGES = {
   puppyEarly:{
     icon:"🍼", title:"社会化期（〜生後16週ごろ）",
@@ -641,6 +659,14 @@ const STAGES = {
   }
 };
 
+// 運動・遊びの「今週のチャレンジ」（運動量レベル別・チェックで達成）
+const EXERCISE_GOALS = {
+  low:  {title:"スニッフィング散歩を1日1回", action:"散歩で立ち止まり、においをじっくり嗅ぐ時間を毎日つくってみましょう。グイグイ歩くより短時間で満足できます。", why:"嗅覚を使う散歩は、短くてもリラックス効果と満足度が高いことが示されています。控えめ運動の子にぴったりです。", src:"行動学(嗅覚)"},
+  med:  {title:"「おすわり→アイコンタクト3秒」を遊びの前に1日5回", action:"ボールやごはんの前に「おすわり→目を合わせて3秒」を1セット。できたらすぐ遊び開始＝ごほうびに。", why:"日常に小さな“できた”を挟むと集中力と信頼関係が育ち、練習が習慣になります。", src:"陽性強化"},
+  high: {title:"1日合計1時間の運動＋知育トイを1つ", action:"散歩や引っ張り遊びで体を、知育トイやノーズワークで頭を満たす。今週は毎日達成を目標に。", why:"運動欲求の高い子は、足りないと問題行動につながりがち。体と頭の両方を満たすのがコツです。", src:"犬種別運動/環境エンリッチメント"},
+  vhigh:{title:"毎日10分「考える運動」＋今週じゅうに新しい芸を1つ", action:"おやつ探し・新しいトリック・障害物遊びなど“頭を使う課題”を毎日1つ。今週で1つ新しい技を覚えるのを目標に。", why:"作業犬種は身体運動だけでは満たされません。頭を使う課題が落ち着きと満足度を大きく高めます。", src:"犬種別運動/行動学"},
+};
+
 /* advice：appliesTo にマッチしたものを表示
    フィルタ: stage[], size[], ex[], housing, owner[], concern[], season[]
    いずれも未指定なら「条件なし＝全員に該当」 */
@@ -652,6 +678,7 @@ const ADVICE = [
   {cat:"task", title:"名前＝いいこと、を作る", action:"名前を呼んで振り向いたらごほうび、を1日数回。叱るときに名前は使わない。", why:"名前を『注目の合図＝報酬』にしておくと、呼び戻しや危険回避がしやすくなります。", src:"陽性強化", stage:["puppyEarly","puppyLate","adolescent"]},
   {cat:"task", title:"短い“ひとりtime”の練習", action:"在宅中でも別の部屋で数分過ごす練習を少しずつ。出入りを大げさにしない。", why:"留守番への耐性は段階的な練習で育ちます。急に長時間にしないことが分離不安の予防に。", src:"行動学(分離)", stage:["puppyEarly","puppyLate","adolescent"], concern:["alone"]},
   {cat:"task", title:"頭を使う遊びで満足度アップ", action:"知育トイ・宝探し（おやつを隠す）・「オテ」「クルッと回る」など簡単な芸（トリック）を教える練習を1日5〜10分。", why:"運動だけでなく『嗅ぐ・考える』活動は犬の満足度を高め、退屈からの問題行動を減らします。", src:"行動学(環境エンリッチメント)", stage:["adolescent","adult","senior"]},
+  {cat:"task", title:"歯がわり期は“噛んでいいもの”を用意（硬すぎる物は避ける）", action:"乳歯から永久歯に生え変わる4〜7ヶ月ごろは歯茎がむずがゆく、噛みたい欲求が高まります。犬用の噛むおもちゃや、凍らせて冷やせるおもちゃを常備し、噛んだら褒めて誘導を。ただし<b>ひづめ・硬い天然骨・鹿の角など硬すぎる物は歯が折れる原因</b>になるので避け、適度にしなる犬用おもちゃを選びましょう。", why:"噛みたい欲求は自然なもの。正しい対象を用意すると家具や手への甘噛みが減ります。一方、硬すぎる物での歯の破折は痛みや抜歯につながるため注意が必要です。", src:"行動学/獣医歯科", stage:["puppyLate"]},
   {cat:"task", title:"年1回の健康診断を予約", action:"かかりつけ獣医で健康チェック。体重・歯・関節も診てもらう。", why:"早期発見が寿命と生活の質を守ります。成犬は年1回が目安。", src:"WSAVA 予防", stage:["adult"]},
   {cat:"task", title:"半年に1回の健康診断を", action:"シニアは半年ごとの受診を。歩き方・飲水量・夜鳴きの変化はメモして相談。", why:"高齢期は変化が早く、こまめなチェックで対処が早くなります。", src:"WSAVA 予防", stage:["senior"]},
 
@@ -673,7 +700,7 @@ const ADVICE = [
   {cat:"home", key:"snow", title:"【冬】寒さ対策を", action:"超小型・短毛種は服や暖かい寝床を。温度差での体調変化に注意。", why:"小型・短毛・子犬・シニアは寒さに弱く、体調をくずしやすいです。", src:"季節(冬)", season:["winter"]},
 
   // --- 悩み別 ---
-  {cat:"concern", title:"甘噛みは“やめさせる”より“置きかえる”", action:"噛んできたら遊びを一旦中断→噛んでよいオモチャに誘導。歯がゆい時期は冷やせる噛むおもちゃも。", why:"罰は手・人への恐怖や攻撃につながることも。代わりの正解を教える方が安全で確実です。", src:"AVSAB 人道的トレーニング", concern:["biting"]},
+  {cat:"concern", title:"甘噛みは“やめさせる”より“置きかえる”", action:"噛んできたら遊びを一旦中断→噛んでよいオモチャに誘導。歯がゆい時期は冷やせる噛むおもちゃも（ひづめ・鹿の角など硬すぎる物は歯が折れるので避けて）。", why:"罰は手・人への恐怖や攻撃につながることも。代わりの正解を教える方が安全で確実です。", src:"AVSAB 人道的トレーニング", concern:["biting"]},
   {cat:"concern", title:"引っ張りは“ゆるんだら進む”ルール", action:"リードが張ったら立ち止まり、ゆるんだら歩く。胴を圧迫しないハーネスも助けに。", why:"引っ張って前に進めると『引っ張れば進める』と学習。一貫したルールが近道です。", src:"陽性強化", concern:["pulling"]},
   {cat:"concern", title:"お留守番が苦手なら“少しずつ”が鉄則", action:"外出のフリ→数秒で戻る、を繰り返し時間を延ばす。出入りは静かに。破壊・粗相・過剰な吠えが続くなら専門家へ。", why:"分離不安は練習で改善しますが、強い場合は専門的な行動治療が必要なことがあります。", src:"行動学(分離)", concern:["alone"], safety:true},
   {cat:"concern", title:"吠えは“理由”を見極めて対応を変える", action:"要求/警戒/退屈/不安のどれかを観察。要求吠えは反応しない、警戒吠えは刺激への印象を良くする等、原因別に。", why:"原因で正解が逆になります。やみくもに叱ると不安由来の吠えは悪化します。", src:"行動学", concern:["barking"]},
@@ -1146,7 +1173,15 @@ function renderGuide(p){
 
   // ステージ
   const st = STAGES[p.stage];
-  $("#g-stage").innerHTML = `<div class="stage-banner">${st.icon} <b>${st.title}</b><br>${st.body}</div>`;
+  const hAge = humanAge(p.totalMonths, p.size);
+  const paceTx = p.size==="large" ? "大型犬は歳を重ねるのが速く、シニア入りも早めです"
+              : p.size==="medium" ? "中型犬は標準的なペースで歳を重ねます"
+              : "小さい子はゆっくり歳を重ね、長く一緒にいられる傾向です";
+  const hAgeHTML = hAge ? `<div class="human-age"><div class="ha-emoji">🎂</div><div>`+
+      `<div class="ha-num">${p.name||"この子"}は 人間でいうと 約${hAge}歳 <small>（${SIZE_LABEL[p.size]}の目安）</small></div>`+
+      `<div class="ha-tx">犬は最初の2年で一気に大人に（1歳＝約15歳／2歳＝約24歳）。${paceTx}。<br>※品種・個体差があるおおよその目安です。</div>`+
+      `</div></div>` : "";
+  $("#g-stage").innerHTML = hAgeHTML + `<div class="stage-banner">${st.icon} <b>${st.title}</b><br>${st.body}</div>`;
 
   // 犬種の特性
   const bcard = $("#g-breed-card");
@@ -1180,7 +1215,17 @@ function renderGuide(p){
   }else{
     $("#g-tasks").innerHTML = `<div class="empty">このプロフィールでの今週のおすすめは準備中です。</div>`;
   }
-  fill("#g-exercise","exercise","—");
+  // 運動・遊び（先頭に「今週のチャレンジ」＝運動量レベル別の目標／チェックで達成）
+  const exList = ADVICE.filter(a=>a.cat==="exercise" && matches(a,p));
+  const goal = EXERCISE_GOALS[p.ex] || EXERCISE_GOALS.med;
+  const goalDone = !!done[goal.title];
+  const goalHTML = `<div class="advice task ${goalDone?'done':''}">
+    <div class="t"><input type="checkbox" class="task-check" data-title="${attr(goal.title)}" ${goalDone?'checked':''}><span class="tt">🎯 今週のチャレンジ：${goal.title}</span></div>
+    <p class="a">${goal.action}</p>
+    <div class="why">なぜ？ ${goal.why}</div>
+    <span class="src">出典: ${goal.src}</span>
+  </div>`;
+  $("#g-exercise").innerHTML = goalHTML + (exList.length ? exList.map(adviceHTML).join("") : "");
 
   // 住まい・季節（犬種×季節のアドバイスを先頭に、一般的な季節・住環境の注意を続ける）
   const homeList = breedSeasonTips(p).concat(byCat("home"));
@@ -1420,8 +1465,25 @@ function bcsDeepHTML(){
         <div><b>やや肥満</b><span>肋骨が触りにくく、くびれがあいまい</span></div>
         <div><b>肥満</b><span>肋骨に触れず、くびれがなくおなかが垂れる</span></div>
       </div>
-      ${illust("bcs","bcs-illust")}
+      ${mediaSlot("犬のボディコンディションスコア（BCS）と体型（出典：環境省パンフレット）", "img/bcs.jpg")}
       <p class="hint">迷ったら動物病院で「うちの子のBCSはどのくらい？」と聞くのが確実です。</p>
+    </div>
+  </details>`;
+}
+// おやつの与え方・使い方・考え方（開閉式）
+function oyatsuDeepHTML(){
+  return `<details class="deep">
+    <summary>🦴 おやつの与え方・考え方を見る</summary>
+    <div class="deep-body">
+      <p class="a" style="margin:6px 0">おやつは“悪者”ではなく、しつけの心強い道具。ただし<b>あげ方にコツ</b>があります。</p>
+      <ul class="bcs-check">
+        <li>📏 <b>1日の量は「総カロリーの10%まで」</b>を目安に。超える日はその分フードを少し減らして調整（10%ルール）。</li>
+        <li>🔥 <b>ジャーキーやガムもカロリーがあります</b>。“おやつ＝ノーカロリー”ではなく、あげすぎは肥満の落とし穴に。</li>
+        <li>✂️ <b>小柄な子は大きな1本より、小さくちぎって</b>回数を稼ぐと、満足度そのままでカロリー控えめ。トレーニングのごほうびは米粒〜小豆大でOK。</li>
+        <li>⏱️ <b>“量”より“タイミング”</b>。できた瞬間に小さく1粒＝いちばん効く使い方です。</li>
+      </ul>
+      <div class="advice safety" style="margin-top:10px"><div class="t">⚠️ 犬に与えてはいけない食べ物</div><p class="a"><b>ネギ類（玉ねぎ・長ねぎ・にら等）／チョコレート／ぶどう・レーズン／キシリトール入りの物／アルコール</b>などは中毒を起こし危険です。誤って口にしたら量が少なくても早めに獣医師へ。</p></div>
+      <p class="hint">療法食中・持病がある子は、おやつの種類も含めてかかりつけ獣医師に相談を。</p>
     </div>
   </details>`;
 }
@@ -1446,6 +1508,7 @@ function renderFood(p){
     ${isYoungSmall?`<div class="advice safety"><div class="t">⚠️ 小型・超小型の子犬は低血糖に注意</div><p class="a">食事の間隔が空くと<b>低血糖</b>(ぐったり・ふらつき・けいれん)を起こすことがあります。食事を抜かさず、元気がない時はすぐ獣医師へ。応急的に砂糖水やはちみつを少量歯ぐきに塗ると良いとされますが、必ず受診してください。</p></div>`:""}
     <div class="advice safety"><div class="t">⚠️ あくまで目安です</div><p class="a">実際の量はフードの袋の表示と、その子の体型(やせ/太り＝ボディコンディションスコア)で調整を。療法食・妊娠授乳期は獣医師の指示を優先してください。${isPuppy?"<b>子犬は袋の月齢・体重別の給与量表も必ず確認を。</b>":""}</p></div>
     ${bcsDeepHTML()}
+    ${oyatsuDeepHTML()}
   `;
   updateFood();
 }
