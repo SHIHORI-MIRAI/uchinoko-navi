@@ -63,7 +63,17 @@
     border:1px solid var(--line); border-radius:14px; padding:16px 20px; margin-bottom:18px; box-shadow:var(--shadow);
   }
   .dogcard .avatar{font-size:38px; background:var(--accent-soft); width:60px; height:60px; border-radius:50%;
-    display:flex; align-items:center; justify-content:center}
+    display:flex; align-items:center; justify-content:center; overflow:hidden; flex:none}
+  .dogcard .avatar.has-photo{background:none}
+  .dogcard .avatar img{width:100%; height:100%; object-fit:cover; display:block}
+  /* プロフィールの顔写真ピッカー */
+  .photo-field{display:flex; align-items:center; gap:12px}
+  .photo-preview{width:76px; height:76px; border-radius:50%; background:var(--accent-soft); border:1px dashed var(--line);
+    display:flex; align-items:center; justify-content:center; cursor:pointer; overflow:hidden; flex:none;
+    text-align:center; font-size:12px; color:var(--sub); line-height:1.25}
+  .photo-preview.has-photo{border-style:solid; border-color:var(--accent)}
+  .photo-preview img{width:100%; height:100%; object-fit:cover; display:block}
+  .photo-actions{display:flex; gap:8px; flex-wrap:wrap}
   .dogcard h2{margin:0; font-size:19px}
   .dogcard .meta{font-size:13px; color:var(--sub); margin-top:2px}
   .advice{
@@ -316,6 +326,20 @@
           <input type="text" id="f-name" placeholder="例：もも">
         </div>
         <div>
+          <label>顔写真（任意）</label>
+          <div class="photo-field">
+            <div class="photo-preview" id="f-photo-preview" onclick="document.getElementById('f-photo').click()" title="写真を選ぶ">
+              <span>＋<br>写真</span>
+            </div>
+            <input type="file" id="f-photo" accept="image/*" style="display:none" onchange="onPhotoPick(this)">
+            <div class="photo-actions">
+              <button type="button" class="btn ghost" onclick="document.getElementById('f-photo').click()">📷 写真を選ぶ</button>
+              <button type="button" class="btn ghost" id="f-photo-clear" onclick="clearPhoto()" style="display:none">削除</button>
+            </div>
+          </div>
+          <div class="hint">スマホなら撮影も選べます。丸くトリミングされ、ガイド画面のアイコンになります。</div>
+        </div>
+        <div>
           <label>犬種</label>
           <select id="f-breed" onchange="onBreedChange()"></select>
           <div class="hint">わからない／ミックスの場合は、近い大きさの「ミックス・その他」を選んでください。</div>
@@ -412,7 +436,7 @@
   <!-- ============ ガイド ============ -->
   <section id="view-guide" style="display:none">
     <div class="dogcard">
-      <div class="avatar">🐕</div>
+      <div class="avatar" id="g-avatar">🐕</div>
       <div style="flex:1">
         <h2 id="g-name">—</h2>
         <div class="meta" id="g-meta">—</div>
@@ -1036,9 +1060,63 @@ function buildMixBreed(base, sireIdx, damIdx){
   return merged;
 }
 
+/* ===================== 顔写真 ===================== */
+let currentPhoto = ""; // 編集中の子の顔写真（dataURL）。保存前に圧縮済み。
+
+function onPhotoPick(input){
+  const file = input.files && input.files[0];
+  if(!file){ return; }
+  if(!/^image\//.test(file.type)){ alert("画像ファイルを選んでください。"); input.value=""; return; }
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = new Image();
+    img.onload = () => {
+      // 中央を正方形に切り出し、最大400pxに縮小してJPEG保存（容量節約）
+      const side = Math.min(img.width, img.height);
+      const sx = (img.width - side)/2, sy = (img.height - side)/2;
+      const MAX = 400, out = Math.min(MAX, side);
+      const cv = document.createElement("canvas");
+      cv.width = out; cv.height = out;
+      cv.getContext("2d").drawImage(img, sx, sy, side, side, 0, 0, out, out);
+      try{
+        currentPhoto = cv.toDataURL("image/jpeg", 0.85);
+      }catch(err){
+        alert("画像を処理できませんでした。別の写真をお試しください。");
+        return;
+      }
+      setPhotoPreview(currentPhoto);
+    };
+    img.onerror = () => alert("画像を読み込めませんでした。別の写真をお試しください。");
+    img.src = e.target.result;
+  };
+  reader.onerror = () => alert("ファイルを読み込めませんでした。");
+  reader.readAsDataURL(file);
+  input.value = ""; // 同じファイルを選び直せるようにリセット
+}
+
+function clearPhoto(){
+  currentPhoto = "";
+  setPhotoPreview("");
+}
+
+function setPhotoPreview(dataUrl){
+  const box = $("#f-photo-preview"), clr = $("#f-photo-clear");
+  if(!box) return;
+  if(dataUrl){
+    box.innerHTML = '<img src="'+dataUrl+'" alt="顔写真プレビュー">';
+    box.classList.add("has-photo");
+    if(clr) clr.style.display = "";
+  }else{
+    box.innerHTML = '<span>＋<br>写真</span>';
+    box.classList.remove("has-photo");
+    if(clr) clr.style.display = "none";
+  }
+}
+
 function readForm(){
   const checked = name => [...document.querySelectorAll(`[data-multi="${name}"] input:checked`)].map(e=>e.value);
   return {
+    photo: currentPhoto,
     name: $("#f-name").value.trim(),
     breedIdx: $("#f-breed").value,
     years: parseInt($("#f-years").value)||0,
@@ -1162,6 +1240,11 @@ function breedSeasonTips(p){
 
 function renderGuide(p){
   // ヘッダー
+  const av = $("#g-avatar");
+  if(av){
+    if(p.photo){ av.innerHTML = '<img src="'+p.photo+'" alt="顔写真">'; av.classList.add("has-photo"); }
+    else{ av.textContent = "🐕"; av.classList.remove("has-photo"); }
+  }
   $("#g-name").textContent = (p.name||"うちの子") + " のガイド";
   const ageTxt = p.totalMonths<12 ? `${p.totalMonths}ヶ月` : `${Math.floor(p.totalMonths/12)}歳${p.totalMonths%12?p.totalMonths%12+"ヶ月":""}`;
   $("#g-meta").innerHTML =
@@ -1827,10 +1910,13 @@ function resetForm(){
   document.querySelectorAll('[data-multi] input').forEach(c=>c.checked=false);
   document.querySelectorAll('.chip.on').forEach(c=>c.classList.remove('on'));
   const mp=$("#mix-parents"); if(mp) mp.style.display="none";
+  clearPhoto();
 }
 
 function fillForm(f){
   resetForm();
+  currentPhoto = f.photo || "";
+  setPhotoPreview(currentPhoto);
   $("#f-name").value = f.name==="うちの子"?"":f.name||"";
   $("#f-breed").value = f.breedIdx||"";
   if($("#f-sire")) $("#f-sire").value = f.sireIdx||"";
