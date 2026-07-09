@@ -577,6 +577,17 @@
       </details>
     </div>
 
+    <div class="card">
+      <h2 class="section"><span class="em">💾</span>データのバックアップ・引っ越し</h2>
+      <div class="hint" style="margin-top:0">プロフィール・顔写真・日記アルバムを、まるごと1つのファイルに保存できます。機種変更や、別のスマホ・パソコンへの引っ越しにも使えます。大切な思い出が消えないよう、ときどき保存しておくと安心です 🐾</div>
+      <div class="row-actions" style="margin-top:12px">
+        <button class="btn" onclick="exportData()">💾 書き出し（バックアップ保存）</button>
+        <button class="btn ghost" onclick="document.getElementById('import-file').click()">📂 読み込み（復元）</button>
+        <input type="file" id="import-file" accept="application/json,.json" style="display:none" onchange="onImportFile(this)">
+      </div>
+      <div class="hint">※「読み込み」をすると、今このアプリにあるデータは置き換わります。心配な時は先に「書き出し」をしておくと安心です。スマホでは保存先（ファイル／共有）を選ぶ画面が出ることがあります。</div>
+    </div>
+
     <footer>
       出典タグは内容の根拠の目安です（AVSAB＝米国獣医動物行動学会、WSAVA＝世界小動物獣医師会 ほか）。<br>
       ※v1試作のため、掲載内容は代表的なケースのスターターセットです。最終的には専門家のレビューを受けてご利用ください。
@@ -1445,6 +1456,65 @@ function renderDiaryTeaser(pet){
     '<div class="dt-thumbs">'+thumbHtml+'</div>'+
     '<div class="dt-info">'+info+'</div>'+
     '<div class="dt-go">開く ›</div>';
+}
+
+/* ===================== バックアップ（書き出し・読み込み） ===================== */
+function exportData(){
+  if(!DB.pets || !DB.pets.length){ alert("まだ登録データがありません。プロフィールを保存してからお試しください。"); return; }
+  const payload = { app:"uchinoko-navi", version:2, exportedAt:new Date().toISOString(), data:DB };
+  let json;
+  try{ json = JSON.stringify(payload); }
+  catch(e){ alert("データの書き出しに失敗しました。"); return; }
+  const blob = new Blob([json], {type:"application/json"});
+  const url = URL.createObjectURL(blob);
+  const d = new Date(), z = n => String(n).padStart(2,"0");
+  const fname = "うちの子ナビ_backup_" + d.getFullYear() + z(d.getMonth()+1) + z(d.getDate()) + ".json";
+  const a = document.createElement("a");
+  a.href = url; a.download = fname;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(()=>URL.revokeObjectURL(url), 1000);
+}
+
+function onImportFile(input){
+  const file = input.files && input.files[0];
+  input.value = "";
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    let parsed;
+    try{ parsed = JSON.parse(e.target.result); }
+    catch(err){ alert("このファイルは読み込めませんでした。うちの子ナビで書き出したバックアップファイル（.json）を選んでください。"); return; }
+    // 形式に寛容：{data:{pets}} でも {pets} でも受ける
+    const data = (parsed && parsed.data && Array.isArray(parsed.data.pets)) ? parsed.data
+               : (parsed && Array.isArray(parsed.pets)) ? parsed : null;
+    if(!data){ alert("このファイルは、うちの子ナビのバックアップではないようです。"); return; }
+    // 各ペットのデータを健全化（欠けている項目を補う）
+    data.pets.forEach(p=>{
+      if(!p.id) p.id = newId();
+      if(!Array.isArray(p.weightLog)) p.weightLog = [];
+      if(!p.done || typeof p.done!=="object") p.done = {};
+      if(!Array.isArray(p.diary)) p.diary = [];
+    });
+    const petCount = data.pets.length;
+    const diaryCount = data.pets.reduce((n,p)=> n + p.diary.length, 0);
+    if(!confirm("このバックアップには「"+petCount+"匹分・日記"+diaryCount+"件」が入っています。\n読み込むと、今このアプリにあるデータは置き換わります。よろしいですか？")) return;
+    // currentId を健全化
+    if(!data.currentId || !data.pets.some(p=>p.id===data.currentId)){
+      data.currentId = data.pets[0] ? data.pets[0].id : null;
+    }
+    const prevDB = DB;
+    DB = data;
+    if(!trySaveDB()){
+      DB = prevDB; trySaveDB();
+      alert("保存容量が足りず、読み込めませんでした。ブラウザの空き容量を確認してください。");
+      return;
+    }
+    seasonOverride = "";
+    showGuide();
+    alert("読み込みが完了しました 🐾");
+  };
+  reader.onerror = () => alert("ファイルを読み込めませんでした。");
+  reader.readAsText(file);
 }
 
 function readForm(){
