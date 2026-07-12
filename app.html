@@ -1064,12 +1064,12 @@ const CARE_MORE = {
   },
 };
 // 毎日の健康ケアのアイコン：手描き風の丸イラスト画像があればそれを、無ければSVGを使う
-const CARE_IMG = {tooth:1, nail:1, ear:1, brushing:1, eye:1, paw:1, bath:1};
+const CARE_IMG = {tooth:1, nail:1, ear:1, brushing:1, eye:1, paw:1, bath:1, handling:1};
 function careIcon(key){
   return CARE_IMG[key] ? `<img class="care-photo" src="img/care-${key}.png" alt="" loading="lazy">` : illust(key);
 }
 // 気持ちのサインのアイコン：手描き風の丸イラスト画像があればそれを、無ければSVGを使う
-const FEEL_IMG = {lick:1, shake:1, playbow:1, tail:1};
+const FEEL_IMG = {lick:1, shake:1, playbow:1, tail:1, lookaway:1, growl:1};
 function feelIcon(key){
   return FEEL_IMG[key] ? `<img class="feel-photo" src="img/feel-${key}.png" alt="" loading="lazy">` : illust(key);
 }
