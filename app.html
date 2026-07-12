@@ -63,7 +63,9 @@
     border:1px solid var(--line); border-radius:14px; padding:16px 20px; margin-bottom:18px; box-shadow:var(--shadow);
   }
   .dogcard .avatar{font-size:38px; background:var(--accent-soft); width:60px; height:60px; border-radius:50%;
-    display:flex; align-items:center; justify-content:center; overflow:hidden; flex:none}
+    display:flex; align-items:center; justify-content:center; overflow:hidden; flex:none; flex-direction:column; cursor:pointer}
+  .dogcard .avatar .av-dog{font-size:26px; line-height:1.2}
+  .dogcard .avatar .av-hint{font-size:9.5px; font-weight:700; color:var(--sub); line-height:1.1}
   .dogcard .avatar.has-photo{background:none}
   .dogcard .avatar img{width:100%; height:100%; object-fit:cover; display:block}
   /* プロフィールの顔写真ピッカー */
@@ -290,7 +292,7 @@
   .care-vet{margin-top:11px; font-size:12.5px; background:var(--warn-soft); border-radius:9px; padding:9px 11px}
   /* 印刷 */
   @media print{
-    header.appbar,.disclaimer,.row-actions,.btn,.help-btn,.modal-bg,#view-profile,.petbar,.wform,.wlog .wdel,.cal-form,.cal-head .btn,.cal-list .wdel{display:none!important}
+    header.appbar,.disclaimer,.row-actions,.btn,.help-btn,.modal-bg,#view-profile,.petbar,.wform,.wlog .wdel,.cal-form,.cal-head .btn,.cal-list .wdel,.av-hint{display:none!important}
     body{background:#fff; font-size:13px}
     .wrap{padding:0}
     .card,.dogcard{box-shadow:none; border-color:#ccc; break-inside:avoid; page-break-inside:avoid}
@@ -342,8 +344,9 @@
     </div>
 
     <div class="tiplist">
+      <div class="ti"><span>📷</span><span><b>アイコンを愛犬の写真に</b>：プロフィールの「顔写真（任意）」で「📷 写真を選ぶ」を押すと、丸いアイコンになってガイドや日記に表示されます。あとから設定するときは、ガイド上部の<b>丸いアイコンをタップ</b>するか「編集」→「顔写真」から。スマホならその場で撮影もできます。</span></div>
       <div class="ti"><span>🐕</span><span><b>複数の子を登録</b>：ガイド上部のドロップダウンで切り替え。「＋新しい子を追加」で何頭でも登録できます。</span></div>
-      <div class="ti"><span>📝</span><span><b>編集</b>：ガイド上部の「編集」からいつでもプロフィールを直せます。</span></div>
+      <div class="ti"><span>📝</span><span><b>編集</b>：ガイド上部の「編集」からいつでもプロフィール・顔写真を直せます。</span></div>
       <div class="ti"><span>☀️</span><span><b>季節の切替</b>：「住まい・季節に合わせた注意」の右上で季節を手動切替（既定は今の季節を自動表示）。犬種ごとの夏冬の体質アドバイスも切り替わります。</span></div>
       <div class="ti"><span>🖨️</span><span><b>印刷・PDF保存</b>：ガイド上部の「🖨️印刷」で、動物病院やご家族と共有できる形に出力できます。</span></div>
       <div class="ti"><span>🔒</span><span><b>プライバシー</b>：入力内容はこの端末の中だけに保存され、外部には送信されません。</span></div>
@@ -478,7 +481,7 @@
   <!-- ============ ガイド ============ -->
   <section id="view-guide" style="display:none">
     <div class="dogcard">
-      <div class="avatar" id="g-avatar">🐕</div>
+      <div class="avatar" id="g-avatar" onclick="editPet()" title="タップして写真を設定・変更">🐕</div>
       <div style="flex:1">
         <h2 id="g-name">—</h2>
         <div class="meta" id="g-meta">—</div>
@@ -1647,7 +1650,7 @@ function renderGuide(p){
   const av = $("#g-avatar");
   if(av){
     if(p.photo){ av.innerHTML = '<img src="'+p.photo+'" alt="顔写真">'; av.classList.add("has-photo"); }
-    else{ av.textContent = "🐕"; av.classList.remove("has-photo"); }
+    else{ av.innerHTML = '<span class="av-dog">🐕</span><span class="av-hint">＋写真</span>'; av.classList.remove("has-photo"); }
   }
   $("#g-name").textContent = (p.name||"うちの子") + " のガイド";
   renderDiaryTeaser(currentPet());
