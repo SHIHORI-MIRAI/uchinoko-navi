@@ -218,13 +218,20 @@
   .cal-cell{min-height:56px; border:1px solid var(--line); border-radius:8px; padding:4px 5px; background:#fffdfb}
   .cal-cell.empty{border:none; background:none}
   .cal-cell .cal-d{font-size:14px; font-weight:600; color:var(--ink)}
+  .cal-cell.sun .cal-d{color:var(--warn)}
+  .cal-cell.sat .cal-d{color:#2f6fbf}
+  .cal-cell.past{background:#faf8f5}
+  .cal-cell.past .cal-d{color:var(--sub); font-weight:500}
   .cal-cell.today{border-color:var(--accent); border-width:2px; background:var(--accent-soft)}
   .cal-cell.today .cal-d{display:inline-flex; align-items:center; justify-content:center; min-width:23px; height:23px; padding:0 5px;
     background:var(--accent); color:#fff; border-radius:999px; font-weight:800; box-shadow:var(--shadow)}
-  .cal-dots{display:flex; flex-wrap:wrap; gap:2px; margin-top:3px; font-size:18px; line-height:1.1}
+  .cal-dots{display:flex; flex-wrap:wrap; gap:3px; margin-top:4px; line-height:1}
+  .cal-ev{display:inline-flex; align-items:center; justify-content:center; width:19px; height:19px;
+    border-radius:6px; font-size:12px; line-height:1}
   .cal-list{list-style:none; padding:0; margin:12px 0 0}
   .cal-list li{display:flex; align-items:center; gap:10px; padding:7px 8px; border-bottom:1px dashed var(--line); font-size:13px}
-  .cal-list .cal-ld{color:var(--accent-dark); font-weight:700; width:54px; flex:0 0 auto}
+  .cal-list .cal-ld{color:var(--accent-dark); font-weight:700; width:48px; flex:0 0 auto}
+  .cal-list .cal-dot{width:9px; height:9px; border-radius:50%; flex:0 0 auto}
   .cal-list .cal-lt{flex:1}
   .cal-list .cal-ln{color:var(--sub); font-size:12px}
   .cal-list .wdel{margin-left:auto; border:none; background:none; color:var(--warn); cursor:pointer; font-size:15px; line-height:1}
@@ -234,7 +241,8 @@
   .cal-cell.day{cursor:pointer; -webkit-tap-highlight-color:transparent; transition:background .12s, border-color .12s, transform .08s}
   .cal-cell.day:hover{border-color:var(--accent); background:var(--accent-soft)}
   .cal-cell.day:active{transform:scale(.96)}
-  .cal-more{font-size:11px; font-weight:700; color:var(--accent-dark)}
+  .cal-more{display:inline-flex; align-items:center; font-size:11px; font-weight:700; color:var(--sub)}
+  .cal-today-btn{font-size:12px; color:var(--accent-dark); font-weight:700}
   /* 日付ポップアップ */
   .modal.day-modal{max-width:460px}
   .dm-date{font-size:20px; font-weight:800; margin:0; padding-right:28px}
@@ -245,7 +253,16 @@
   .dm-list .dm-ic{font-size:22px; flex:0 0 auto; line-height:1}
   .dm-list .dm-tx{flex:1; min-width:0; font-size:14.5px; font-weight:600}
   .dm-list .dm-nt{display:block; color:var(--sub); font-size:12.5px; font-weight:400; margin-top:2px; word-break:break-word}
+  .dm-list .dm-edit{flex:0 0 auto; border:none; background:none; cursor:pointer; font-size:16px; line-height:1; padding:4px; opacity:.85}
+  .dm-list .dm-edit:hover{opacity:1}
   .dm-list .wdel{flex:0 0 auto; border:none; background:none; color:var(--warn); cursor:pointer; font-size:17px; line-height:1; padding:4px}
+  /* 編集モードの行 */
+  .dm-list li.dm-edit-row{flex-direction:column; align-items:stretch; gap:8px; background:var(--accent-soft)}
+  .dm-list li.dm-edit-row select,.dm-list li.dm-edit-row input[type=text],.dm-list li.dm-edit-row input[type=date]{width:100%}
+  .dm-edit-row .ee-datel{font-size:12px; color:var(--sub); display:flex; align-items:center; gap:8px}
+  .dm-edit-row .ee-datel input{flex:1}
+  .dm-edit-row .ee-actions{display:flex; gap:8px; margin-top:2px}
+  .dm-edit-row .ee-actions .btn{flex:1 1 0}
   .dm-empty{font-size:13px; color:var(--sub); background:var(--accent-soft); border-radius:11px;
     padding:16px 12px; text-align:center; margin:0}
   .dm-add{border-top:1px dashed var(--line); margin-top:16px; padding-top:14px}
@@ -2128,18 +2145,21 @@ function delWeight(date){
 
 /* ===================== ケアカレンダー ===================== */
 const EVENT_TYPES = [
-  {v:"vaccine",  label:"💉 ワクチン"},
-  {v:"checkup",  label:"🩺 健康診断"},
-  {v:"filaria",  label:"🦟 フィラリア・ノミダニ予防"},
-  {v:"grooming", label:"✂️ トリミング"},
-  {v:"nail",     label:"🐾 爪切り"},
-  {v:"medicine", label:"💊 投薬・くすり"},
-  {v:"birthday", label:"🎂 誕生日・記念日"},
-  {v:"other",    label:"📝 その他"},
+  {v:"vaccine",  label:"💉 ワクチン",              c:"#3f7fd6", cs:"#e9f1fb"},
+  {v:"checkup",  label:"🩺 健康診断",              c:"#2fa39a", cs:"#e3f4f2"},
+  {v:"filaria",  label:"🦟 フィラリア・ノミダニ予防", c:"#6b9b2f", cs:"#eef5e2"},
+  {v:"grooming", label:"✂️ トリミング",            c:"#d664a6", cs:"#fbe9f3"},
+  {v:"nail",     label:"🐾 爪切り",                c:"#8a6bd6", cs:"#efeafb"},
+  {v:"medicine", label:"💊 投薬・くすり",          c:"#d9664a", cs:"#fcebe4"},
+  {v:"birthday", label:"🎂 誕生日・記念日",         c:"#d9a518", cs:"#fcf3dc"},
+  {v:"other",    label:"📝 その他",                c:"#8a8178", cs:"#efece8"},
 ];
 function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-function eventLabel(v){ const t=EVENT_TYPES.find(t=>t.v===v); return t?t.label:"📝 その他"; }
+function eventType(v){ return EVENT_TYPES.find(t=>t.v===v) || EVENT_TYPES[EVENT_TYPES.length-1]; }
+function eventLabel(v){ return eventType(v).label; }
 function eventIcon(v){ return eventLabel(v).split(" ")[0]; }
+function eventColor(v){ return eventType(v).c; }
+function eventSoft(v){ return eventType(v).cs; }
 function pad2(n){ return String(n).padStart(2,"0"); }
 function daysLeftText(iso, todayStr){
   const a=new Date(iso+"T00:00:00"), b=new Date(todayStr+"T00:00:00");
@@ -2157,6 +2177,7 @@ function calNav(delta){
   else if(calMonth>11){ calMonth=0; calYear++; }
   renderCalendar();
 }
+function calToday(){ const n=new Date(); calYear=n.getFullYear(); calMonth=n.getMonth(); renderCalendar(); }
 function calGridHTML(y, m, events, todayStr){
   const ym = `${y}-${pad2(m+1)}`;
   const startDow = new Date(y, m, 1).getDay();      // 0=日
@@ -2168,16 +2189,21 @@ function calGridHTML(y, m, events, todayStr){
   for(let i=0;i<startDow;i++) cells += `<div class="cal-cell empty"></div>`;
   for(let d=1; d<=daysInMonth; d++){
     const ds = `${ym}-${pad2(d)}`;
+    const dow = new Date(y, m, d).getDay();
     const evs = byDay[d]||[];
-    const dots = evs.slice(0,4).map(e=>`<span>${eventIcon(e.type)}</span>`).join("")
+    const dots = evs.slice(0,4).map(e=>`<span class="cal-ev" style="background:${eventSoft(e.type)}">${eventIcon(e.type)}</span>`).join("")
       + (evs.length>4?`<span class="cal-more">+${evs.length-4}</span>`:"");
     const tip = evs.length ? esc(evs.map(e=>eventLabel(e.type)+(e.note?"："+e.note:"")).join(" / ")) : "タップして予定を追加";
-    cells += `<div class="cal-cell day ${ds===todayStr?'today':''}" onclick="openDay('${ds}')" title="${tip}"><span class="cal-d">${d}</span><div class="cal-dots">${dots}</div></div>`;
+    const cls = ["cal-cell","day", ds===todayStr?"today":"", ds<todayStr?"past":"", dow===0?"sun":"", dow===6?"sat":""].filter(Boolean).join(" ");
+    cells += `<div class="${cls}" onclick="openDay('${ds}')" title="${tip}"><span class="cal-d">${d}</span><div class="cal-dots">${dots}</div></div>`;
   }
+  const curYm = todayStr.slice(0,7);
+  const todayBtn = (ym!==curYm) ? `<button class="btn ghost cal-today-btn" onclick="calToday()">今日へ</button>` : "";
   return `<div class="cal-head">
-      <button class="btn ghost" onclick="calNav(-1)">◀</button>
+      <button class="btn ghost" onclick="calNav(-1)" aria-label="前の月">◀</button>
       <span class="cal-title">${y}年 ${m+1}月</span>
-      <button class="btn ghost" onclick="calNav(1)">▶</button>
+      <button class="btn ghost" onclick="calNav(1)" aria-label="次の月">▶</button>
+      ${todayBtn}
     </div>
     <div class="cal-grid">${wd.map((w,i)=>`<div class="cal-dow ${i===0?'sun':''} ${i===6?'sat':''}">${w}</div>`).join("")}${cells}</div>`;
 }
@@ -2200,7 +2226,7 @@ function renderCalendar(){
   const monthEvents = events.filter(e=> e.date.startsWith(ym));
   const list = monthEvents.length
     ? `<ul class="cal-list">${monthEvents.map(e=>
-        `<li><span class="cal-ld">${e.date.slice(5).replace("-","/")}</span><span class="cal-lt">${eventLabel(e.type)}${e.note?` <span class="cal-ln">${esc(e.note)}</span>`:""}</span><button class="wdel" title="削除" onclick="delEvent('${e.id}')">✕</button></li>`
+        `<li><span class="cal-ld">${e.date.slice(5).replace("-","/")}</span><span class="cal-dot" style="background:${eventColor(e.type)}"></span><span class="cal-lt">${eventLabel(e.type)}${e.note?` <span class="cal-ln">${esc(e.note)}</span>`:""}</span><button class="wdel" title="削除" onclick="delEvent('${e.id}')">✕</button></li>`
       ).join("")}</ul>`
     : `<div class="empty" style="margin-top:8px">この月の予定・記録はありません。</div>`;
 
@@ -2208,6 +2234,7 @@ function renderCalendar(){
 }
 // ---- 日付タップ：その日の予定ポップアップ ----
 let openDayISO = null;
+let editingEventId = null;   // ポップアップ内で編集中の予定ID
 function dayTitle(ds){
   const [y,m,d] = ds.split("-").map(Number);
   const wd = ["日","月","火","水","木","金","土"][new Date(y, m-1, d).getDay()];
@@ -2226,10 +2253,24 @@ function renderDayModal(ds){
   const pet = currentPet(); if(!pet){ closeDay(); return; }
   const todayStr = todayISO();
   const evs = (pet.events||[]).filter(e=>e.date===ds);
+  const itemHtml = e=>{
+    if(e.id===editingEventId){
+      const opts = EVENT_TYPES.map(t=>`<option value="${t.v}" ${t.v===e.type?"selected":""}>${t.label}</option>`).join("");
+      return `<li class="dm-edit-row" style="border-left:4px solid ${eventColor(e.type)}">
+          <select id="ee-type">${opts}</select>
+          <input type="text" id="ee-note" value="${esc(e.note||"")}" maxlength="40" placeholder="メモ（任意）">
+          <label class="ee-datel">日付 <input type="date" id="ee-date" value="${e.date}"></label>
+          <div class="ee-actions">
+            <button class="btn" onclick="saveEditEvent()">保存</button>
+            <button class="btn ghost" onclick="cancelEditEvent()">やめる</button>
+          </div>
+        </li>`;
+    }
+    const name = eventLabel(e.type).split(" ").slice(1).join(" ");
+    return `<li class="dm-item" style="border-left:4px solid ${eventColor(e.type)}"><span class="dm-ic">${eventIcon(e.type)}</span><span class="dm-tx">${name}${e.note?`<span class="dm-nt">${esc(e.note)}</span>`:""}</span><button class="dm-edit" title="編集" onclick="startEditEvent('${e.id}')">✏️</button><button class="wdel" title="削除" onclick="delEvent('${e.id}')">✕</button></li>`;
+  };
   const listHtml = evs.length
-    ? `<ul class="dm-list">${evs.map(e=>
-        `<li><span class="dm-ic">${eventIcon(e.type)}</span><span class="dm-tx">${eventLabel(e.type).split(" ").slice(1).join(" ")}${e.note?`<span class="dm-nt">${esc(e.note)}</span>`:""}</span><button class="wdel" title="削除" onclick="delEvent('${e.id}')">✕</button></li>`
-      ).join("")}</ul>`
+    ? `<ul class="dm-list">${evs.map(itemHtml).join("")}</ul>`
     : `<div class="dm-empty">この日の予定はまだありません。<br>下から追加できます。</div>`;
   const typeOpts = EVENT_TYPES.map(t=>`<option value="${t.v}">${t.label}</option>`).join("");
   body.innerHTML =
@@ -2247,11 +2288,13 @@ function renderDayModal(ds){
 }
 function openDay(ds){
   openDayISO = ds;
+  editingEventId = null;
   renderDayModal(ds);
   $("#day-modal").classList.add("on");
 }
 function closeDay(){
   openDayISO = null;
+  editingEventId = null;
   $("#day-modal").classList.remove("on");
 }
 function addEventForDay(){
@@ -2260,13 +2303,35 @@ function addEventForDay(){
   const note=(($("#dm-note")||{}).value||"").trim();
   pet.events = pet.events||[];
   pet.events.push({id:newId(), date:openDayISO, type, note});
+  editingEventId = null;
   saveDB();
   renderDayModal(openDayISO);   // ポップアップの一覧を更新
   renderCalendar();             // カレンダー本体の印も更新
 }
+function startEditEvent(id){
+  editingEventId = id;
+  if(openDayISO) renderDayModal(openDayISO);
+}
+function cancelEditEvent(){
+  editingEventId = null;
+  if(openDayISO) renderDayModal(openDayISO);
+}
+function saveEditEvent(){
+  const pet=currentPet(); if(!pet || !editingEventId) return;
+  const ev=(pet.events||[]).find(x=>x.id===editingEventId); if(!ev){ editingEventId=null; return; }
+  const date=($("#ee-date")||{}).value;
+  ev.type=($("#ee-type")||{}).value||"other";
+  ev.note=(($("#ee-note")||{}).value||"").trim();
+  if(date) ev.date=date;   // 日付変更（延期など）にも対応
+  editingEventId=null;
+  saveDB();
+  renderCalendar();
+  if(openDayISO) renderDayModal(openDayISO);  // 別日に移した場合はこの日の一覧から消える
+}
 function delEvent(id){
   const pet=currentPet(); if(!pet) return;
   pet.events=(pet.events||[]).filter(e=>e.id!==id);
+  if(id===editingEventId) editingEventId=null;
   saveDB();
   renderCalendar();
   if(openDayISO) renderDayModal(openDayISO);  // ポップアップが開いていれば更新
