@@ -209,9 +209,6 @@
   /* カレンダー */
   .cal-next{background:var(--accent-soft); border:1px solid var(--line); border-radius:10px; padding:9px 12px; font-size:13px; margin-bottom:10px}
   .cal-next .cal-dleft{color:var(--accent-dark); font-weight:700; margin-left:4px}
-  .cal-form{display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-bottom:12px}
-  .cal-form input[type=date],.cal-form select{width:auto}
-  .cal-form input[type=text]{flex:1; min-width:120px}
   .cal-head{display:flex; align-items:center; justify-content:center; gap:14px; margin:4px 0 8px}
   .cal-head .btn.ghost{padding:6px 14px; box-shadow:none}
   .cal-title{font-weight:700; font-size:15px; min-width:120px; text-align:center}
@@ -231,6 +228,32 @@
   .cal-list .cal-lt{flex:1}
   .cal-list .cal-ln{color:var(--sub); font-size:12px}
   .cal-list .wdel{margin-left:auto; border:none; background:none; color:var(--warn); cursor:pointer; font-size:15px; line-height:1}
+  /* カレンダー：日付タップUI */
+  .cal-hint{font-size:12.5px; color:var(--accent-dark); background:var(--accent-soft); border:1px solid var(--line);
+    border-radius:10px; padding:10px 12px; margin-bottom:12px; text-align:center; line-height:1.5}
+  .cal-cell.day{cursor:pointer; -webkit-tap-highlight-color:transparent; transition:background .12s, border-color .12s, transform .08s}
+  .cal-cell.day:hover{border-color:var(--accent); background:var(--accent-soft)}
+  .cal-cell.day:active{transform:scale(.96)}
+  .cal-more{font-size:11px; font-weight:700; color:var(--accent-dark)}
+  /* 日付ポップアップ */
+  .modal.day-modal{max-width:460px}
+  .dm-date{font-size:20px; font-weight:800; margin:0; padding-right:28px}
+  .dm-rel{font-size:12.5px; color:var(--accent-dark); font-weight:700; margin:2px 0 16px}
+  .dm-list{list-style:none; padding:0; margin:0 0 4px}
+  .dm-list li{display:flex; align-items:center; gap:11px; padding:11px 12px; border:1px solid var(--line);
+    border-radius:11px; background:#fffdfb; margin-bottom:8px}
+  .dm-list .dm-ic{font-size:22px; flex:0 0 auto; line-height:1}
+  .dm-list .dm-tx{flex:1; min-width:0; font-size:14.5px; font-weight:600}
+  .dm-list .dm-nt{display:block; color:var(--sub); font-size:12.5px; font-weight:400; margin-top:2px; word-break:break-word}
+  .dm-list .wdel{flex:0 0 auto; border:none; background:none; color:var(--warn); cursor:pointer; font-size:17px; line-height:1; padding:4px}
+  .dm-empty{font-size:13px; color:var(--sub); background:var(--accent-soft); border-radius:11px;
+    padding:16px 12px; text-align:center; margin:0}
+  .dm-add{border-top:1px dashed var(--line); margin-top:16px; padding-top:14px}
+  .dm-add .dm-h{font-weight:700; font-size:13px; color:var(--accent-dark); margin:0 0 9px}
+  .dm-add .dm-row{display:flex; gap:8px; flex-wrap:wrap; align-items:center}
+  .dm-add select{width:auto}
+  .dm-add input[type=text]{flex:1 1 130px; min-width:120px}
+  .dm-add .btn{flex:0 0 auto}
   /* 深掘り（開閉）＋画像スロット */
   .deep{margin-top:10px; border:1px solid var(--line); border-radius:10px; background:#fffdfb; overflow:hidden}
   .deep>summary{cursor:pointer; padding:10px 14px; font-weight:700; font-size:13px; color:var(--accent-dark); list-style:none}
@@ -293,7 +316,7 @@
   .care-vet{margin-top:11px; font-size:12.5px; background:var(--warn-soft); border-radius:9px; padding:9px 11px}
   /* 印刷 */
   @media print{
-    header.appbar,.disclaimer,.row-actions,.btn,.help-btn,.modal-bg,#view-profile,.petbar,.wform,.wlog .wdel,.cal-form,.cal-head .btn,.cal-list .wdel,.av-hint{display:none!important}
+    header.appbar,.disclaimer,.row-actions,.btn,.help-btn,.modal-bg,#view-profile,.petbar,.wform,.wlog .wdel,.cal-form,.cal-hint,.cal-head .btn,.cal-list .wdel,.av-hint{display:none!important}
     body{background:#fff; font-size:13px}
     .wrap{padding:0}
     .card,.dogcard{box-shadow:none; border-color:#ccc; break-inside:avoid; page-break-inside:avoid}
@@ -357,6 +380,14 @@
     <div class="row-actions" style="margin-top:18px">
       <button class="btn" onclick="closeHelp()">使ってみる 🐾</button>
     </div>
+  </div>
+</div>
+
+<!-- ============ 日付タップで開く：その日の予定ポップアップ ============ -->
+<div class="modal-bg" id="day-modal" onclick="if(event.target===this)closeDay()">
+  <div class="modal day-modal" role="dialog" aria-modal="true" aria-label="その日の予定">
+    <button class="x" onclick="closeDay()" aria-label="閉じる">×</button>
+    <div id="day-modal-body"></div>
   </div>
 </div>
 
@@ -2138,9 +2169,10 @@ function calGridHTML(y, m, events, todayStr){
   for(let d=1; d<=daysInMonth; d++){
     const ds = `${ym}-${pad2(d)}`;
     const evs = byDay[d]||[];
-    const dots = evs.slice(0,4).map(e=>`<span>${eventIcon(e.type)}</span>`).join("");
-    const tip = evs.map(e=>eventLabel(e.type)+(e.note?"："+e.note:"")).join(" / ");
-    cells += `<div class="cal-cell ${ds===todayStr?'today':''}" title="${esc(tip)}"><span class="cal-d">${d}</span><div class="cal-dots">${dots}</div></div>`;
+    const dots = evs.slice(0,4).map(e=>`<span>${eventIcon(e.type)}</span>`).join("")
+      + (evs.length>4?`<span class="cal-more">+${evs.length-4}</span>`:"");
+    const tip = evs.length ? esc(evs.map(e=>eventLabel(e.type)+(e.note?"："+e.note:"")).join(" / ")) : "タップして予定を追加";
+    cells += `<div class="cal-cell day ${ds===todayStr?'today':''}" onclick="openDay('${ds}')" title="${tip}"><span class="cal-d">${d}</span><div class="cal-dots">${dots}</div></div>`;
   }
   return `<div class="cal-head">
       <button class="btn ghost" onclick="calNav(-1)">◀</button>
@@ -2162,13 +2194,7 @@ function renderCalendar(){
     ? `<div class="cal-next">⏰ 次の予定：<b>${upcoming[0].date.replace(/-/g,"/")}</b>　${eventLabel(upcoming[0].type)}${upcoming[0].note?`（${esc(upcoming[0].note)}）`:""}<span class="cal-dleft">${daysLeftText(upcoming[0].date, todayStr)}</span></div>`
     : `<div class="hint">これからの予定はまだありません。ワクチンや健診の予定を入れておくと安心です。</div>`;
 
-  const typeOpts = EVENT_TYPES.map(t=>`<option value="${t.v}">${t.label}</option>`).join("");
-  const form = `<div class="cal-form">
-      <input type="date" id="ev-date" value="${todayStr}">
-      <select id="ev-type">${typeOpts}</select>
-      <input type="text" id="ev-note" placeholder="メモ（任意）" maxlength="40">
-      <button class="btn" onclick="addEvent()">追加</button>
-    </div>`;
+  const hint = `<div class="cal-hint">📅 カレンダーの<b>日にちをタップ</b>すると、その日の予定を追加・確認できます。</div>`;
 
   const ym = `${calYear}-${pad2(calMonth+1)}`;
   const monthEvents = events.filter(e=> e.date.startsWith(ym));
@@ -2178,25 +2204,72 @@ function renderCalendar(){
       ).join("")}</ul>`
     : `<div class="empty" style="margin-top:8px">この月の予定・記録はありません。</div>`;
 
-  el.innerHTML = nextHtml + form + calGridHTML(calYear, calMonth, events, todayStr) + list;
+  el.innerHTML = nextHtml + hint + calGridHTML(calYear, calMonth, events, todayStr) + list;
 }
-function addEvent(){
-  const pet=currentPet(); if(!pet) return;
-  const date=($("#ev-date")||{}).value;
-  const type=($("#ev-type")||{}).value||"other";
-  const note=(($("#ev-note")||{}).value||"").trim();
-  if(!date){ alert("日付を入れてください。"); return; }
+// ---- 日付タップ：その日の予定ポップアップ ----
+let openDayISO = null;
+function dayTitle(ds){
+  const [y,m,d] = ds.split("-").map(Number);
+  const wd = ["日","月","火","水","木","金","土"][new Date(y, m-1, d).getDay()];
+  return `${m}月${d}日(${wd})`;
+}
+function dayRelText(ds, todayStr){
+  const diff = Math.round((new Date(ds+"T00:00:00") - new Date(todayStr+"T00:00:00"))/86400000);
+  if(diff===0) return "今日";
+  if(diff===1) return "明日";
+  if(diff===-1) return "昨日";
+  if(diff>1) return `あと${diff}日`;
+  return `${-diff}日前`;
+}
+function renderDayModal(ds){
+  const body = $("#day-modal-body"); if(!body) return;
+  const pet = currentPet(); if(!pet){ closeDay(); return; }
+  const todayStr = todayISO();
+  const evs = (pet.events||[]).filter(e=>e.date===ds);
+  const listHtml = evs.length
+    ? `<ul class="dm-list">${evs.map(e=>
+        `<li><span class="dm-ic">${eventIcon(e.type)}</span><span class="dm-tx">${eventLabel(e.type).split(" ").slice(1).join(" ")}${e.note?`<span class="dm-nt">${esc(e.note)}</span>`:""}</span><button class="wdel" title="削除" onclick="delEvent('${e.id}')">✕</button></li>`
+      ).join("")}</ul>`
+    : `<div class="dm-empty">この日の予定はまだありません。<br>下から追加できます。</div>`;
+  const typeOpts = EVENT_TYPES.map(t=>`<option value="${t.v}">${t.label}</option>`).join("");
+  body.innerHTML =
+    `<h2 class="dm-date">${dayTitle(ds)}</h2>
+     <p class="dm-rel">${dayRelText(ds, todayStr)}</p>
+     ${listHtml}
+     <div class="dm-add">
+       <div class="dm-h">＋ この日に予定を追加</div>
+       <div class="dm-row">
+         <select id="dm-type">${typeOpts}</select>
+         <input type="text" id="dm-note" placeholder="メモ（任意）" maxlength="40">
+         <button class="btn" onclick="addEventForDay()">追加</button>
+       </div>
+     </div>`;
+}
+function openDay(ds){
+  openDayISO = ds;
+  renderDayModal(ds);
+  $("#day-modal").classList.add("on");
+}
+function closeDay(){
+  openDayISO = null;
+  $("#day-modal").classList.remove("on");
+}
+function addEventForDay(){
+  const pet=currentPet(); if(!pet || !openDayISO) return;
+  const type=($("#dm-type")||{}).value||"other";
+  const note=(($("#dm-note")||{}).value||"").trim();
   pet.events = pet.events||[];
-  pet.events.push({id:newId(), date, type, note});
+  pet.events.push({id:newId(), date:openDayISO, type, note});
   saveDB();
-  const [yy,mm]=date.split("-"); calYear=parseInt(yy,10); calMonth=parseInt(mm,10)-1; // 追加した予定の月を表示
-  renderCalendar();
+  renderDayModal(openDayISO);   // ポップアップの一覧を更新
+  renderCalendar();             // カレンダー本体の印も更新
 }
 function delEvent(id){
   const pet=currentPet(); if(!pet) return;
   pet.events=(pet.events||[]).filter(e=>e.id!==id);
   saveDB();
   renderCalendar();
+  if(openDayISO) renderDayModal(openDayISO);  // ポップアップが開いていれば更新
 }
 
 /* ===================== チェックリスト ===================== */
