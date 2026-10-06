@@ -2,8 +2,17 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>うちの子ナビ（仮） — 愛犬との暮らしの伴走者</title>
+<!-- PWA（ホーム画面に追加＝アプリ化。データが消えにくくなる・オフラインでも開ける） -->
+<meta name="theme-color" content="#d97324">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="img/icon-192.png">
+<link rel="apple-touch-icon" href="img/icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="うちの子ナビ">
 <style>
   :root{
     --bg:#fbf7f1; --panel:#ffffff; --ink:#2c2622; --sub:#6f655c;
@@ -331,13 +340,89 @@
   .care-list.tip li::before{content:"💡"; position:absolute; left:0; top:3px; font-size:12px}
   .care-list.ng li::before{content:"⚠️"; position:absolute; left:0; top:3px; font-size:12px}
   .care-vet{margin-top:11px; font-size:12.5px; background:var(--warn-soft); border-radius:9px; padding:9px 11px}
+  /* 入力エリア（textarea）をinputとそろえる */
+  textarea{width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:10px;
+    font:inherit; background:#fffdfb; color:var(--ink); line-height:1.6; resize:vertical}
+  textarea:focus{outline:2px solid var(--accent-soft); border-color:var(--accent)}
+  /* 保存しました等のトースト */
+  .toast{position:fixed; left:50%; bottom:26px; transform:translate(-50%,16px); z-index:1000;
+    background:var(--ink); color:#fff; padding:11px 20px; border-radius:999px; font-size:14px; font-weight:700;
+    box-shadow:0 6px 20px rgba(0,0,0,.22); opacity:0; pointer-events:none; transition:opacity .22s, transform .22s; max-width:90vw}
+  .toast.on{opacity:1; transform:translate(-50%,0)}
+  /* 緊急・医療メモ */
+  .emlist{list-style:none; padding:0; margin:0}
+  .emlist li{display:flex; gap:10px; padding:8px 2px; border-bottom:1px dashed var(--line); font-size:14px}
+  .emlist li:last-child{border-bottom:none}
+  .emlist .emk{color:var(--sub); font-weight:700; flex:0 0 118px}
+  .emlist .emv{flex:1; word-break:break-word; white-space:pre-wrap}
+  .emlist .emv.tel a{color:var(--accent-dark); font-weight:700; text-decoration:none}
+  /* うんちピッカー（日記） */
+  .poop-picker{display:flex; gap:6px; flex-wrap:wrap; margin:6px 0}
+  .poop-picker button{font-size:13px; padding:7px 11px; border-radius:999px; border:1px solid var(--line);
+    background:#fff; cursor:pointer; font:inherit; color:var(--ink)}
+  .poop-picker button.on{border-color:var(--accent); background:var(--accent-soft); color:var(--accent-dark); font-weight:700}
+  .diary-entry .de-poop{font-size:12px; background:#f3ead9; color:#8a5a22; padding:2px 10px; border-radius:999px; font-weight:700}
+  /* 防災・備え */
+  .linkbtns{display:flex; gap:8px; flex-wrap:wrap; margin:10px 0}
+  .linkbtns a{display:inline-flex; align-items:center; gap:6px; padding:9px 14px; border-radius:10px;
+    border:1px solid var(--accent); background:#fff; color:var(--accent-dark); font-weight:700; font-size:13px; text-decoration:none}
+  .linkbtns a:hover{background:var(--accent-soft)}
+  .checklist{list-style:none; padding:0; margin:10px 0 0}
+  .checklist li{display:flex; align-items:flex-start; gap:10px; padding:8px 4px; border-bottom:1px dashed var(--line)}
+  .checklist li:last-child{border-bottom:none}
+  .checklist input{width:19px; height:19px; margin-top:1px; accent-color:var(--accent); cursor:pointer; flex:0 0 auto}
+  .checklist label{margin:0; font-size:14px; color:var(--ink); font-weight:500; cursor:pointer; line-height:1.5}
+  .checklist li.done label{color:var(--sub); text-decoration:line-through}
+  .save-tip{background:var(--accent-soft); border:1px solid var(--line); border-radius:12px; padding:12px 15px; font-size:13px; line-height:1.7; margin-top:10px}
+  .save-tip b{color:var(--accent-dark)}
+  .backup-reminder{background:var(--warn-soft); border:1px solid #f3cfc9; border-radius:12px; padding:11px 14px; font-size:13px; line-height:1.6; margin-top:10px}
+  .backup-reminder b{color:var(--warn)}
+  /* アプリ化（ホーム画面に追加）バナー */
+  .install-banner{display:flex; align-items:center; gap:12px; background:linear-gradient(135deg,#fff,#fdf3e8);
+    border:1px solid var(--accent); border-radius:14px; padding:12px 14px; margin-bottom:16px; box-shadow:var(--shadow); position:relative}
+  .install-banner .ib-ic{font-size:26px; flex:none}
+  .install-banner .ib-tx{flex:1; font-size:13px; line-height:1.5}
+  .install-banner .ib-tx b{color:var(--accent-dark); font-size:14px}
+  .install-banner .btn{padding:9px 16px; flex:none}
+  .install-banner .ib-x{position:absolute; top:4px; right:8px; border:none; background:none; font-size:20px; color:var(--sub); cursor:pointer; line-height:1}
+  @media(max-width:520px){ .install-banner{flex-wrap:wrap} .install-banner .ib-tx{flex:1 1 60%} .install-banner .btn{flex:1 1 100%} }
+  /* 追加のやり方ガイド（ステップ） */
+  .steps{counter-reset:st; margin:14px 0 4px; padding:0; list-style:none}
+  .steps li{position:relative; padding:10px 0 10px 44px; border-top:1px solid var(--line); min-height:30px; font-size:14px; line-height:1.6}
+  .steps li:first-child{border-top:none}
+  .steps li::before{counter-increment:st; content:counter(st); position:absolute; left:4px; top:10px;
+    width:28px; height:28px; line-height:28px; text-align:center; font-weight:800; color:#fff; background:var(--accent); border-radius:50%}
+  .steps .sico{display:inline-flex; align-items:center; justify-content:center; vertical-align:middle;
+    width:30px; height:30px; border:1px solid var(--line); border-radius:7px; background:#f4f8ff; margin:0 4px; transform:translateY(-2px)}
+  .steps b{color:var(--accent-dark)}
+  .install-hero{display:flex; align-items:center; gap:12px; margin-bottom:4px}
+  .install-hero img{width:56px; height:56px; border-radius:14px; flex:none}
   /* 印刷 */
+  #print-sheet{display:none}
   @media print{
-    header.appbar,.disclaimer,.row-actions,.btn,.help-btn,.modal-bg,#view-profile,.petbar,.wform,.wlog .wdel,.cal-form,.cal-hint,.cal-head .btn,.cal-list .wdel,.av-hint{display:none!important}
+    header.appbar,.disclaimer,.row-actions,.btn,.help-btn,.modal-bg,#view-profile,.petbar,.wform,.wlog .wdel,.cal-form,.cal-hint,.cal-head .btn,.cal-list .wdel,.av-hint,.linkbtns,.toast{display:none!important}
     body{background:#fff; font-size:13px}
     .wrap{padding:0}
     .card,.dogcard{box-shadow:none; border-color:#ccc; break-inside:avoid; page-break-inside:avoid}
     .advice .why{background:#f6f6f6}
+    .checklist input{-webkit-appearance:none; appearance:none; border:1.3px solid #888; border-radius:4px; position:relative}
+    .checklist input:checked::after{content:"✓"; position:absolute; left:2px; top:-3px; font-size:15px; color:#000}
+    /* もしもの時シート（PDF）印刷モード */
+    body.sheet-mode > *{display:none!important}
+    body.sheet-mode #print-sheet{display:block!important; padding:4mm 2mm}
+    #print-sheet{color:#111; font-size:12.5px; line-height:1.6}
+    #print-sheet .sh-title{font-size:19px; font-weight:800; margin:0 0 2px}
+    #print-sheet .sh-sub{font-size:11px; color:#555; margin:0 0 12px}
+    #print-sheet .sh-top{display:flex; gap:14px; align-items:flex-start; margin-bottom:12px}
+    #print-sheet .sh-photo{width:92px; height:92px; border-radius:10px; object-fit:cover; border:1px solid #bbb; flex:0 0 auto}
+    #print-sheet .sh-photo.ph{display:flex; align-items:center; justify-content:center; background:#f3f3f3; font-size:38px}
+    #print-sheet table{width:100%; border-collapse:collapse; margin:0 0 12px}
+    #print-sheet th,#print-sheet td{border:1px solid #bbb; padding:6px 9px; text-align:left; vertical-align:top; font-size:12.5px}
+    #print-sheet th{background:#f3f3f3; white-space:nowrap; width:34%; font-weight:700}
+    #print-sheet h3{font-size:14px; margin:14px 0 6px; border-left:4px solid #888; padding-left:8px}
+    #print-sheet .sh-kit{columns:2; font-size:12.5px; margin:0; padding:0; list-style:none}
+    #print-sheet .sh-kit li{padding:2px 0; break-inside:avoid}
+    #print-sheet .sh-foot{margin-top:16px; font-size:10.5px; color:#666; border-top:1px solid #ccc; padding-top:6px}
   }
 </style>
 </head>
@@ -397,6 +482,14 @@
     <div class="row-actions" style="margin-top:18px">
       <button class="btn" onclick="closeHelp()">使ってみる 🐾</button>
     </div>
+  </div>
+</div>
+
+<!-- ============ アプリとして追加する方法（端末別ガイド） ============ -->
+<div class="modal-bg" id="install-modal" onclick="if(event.target===this)closeInstallGuide()">
+  <div class="modal" role="dialog" aria-modal="true" aria-label="ホーム画面に追加する方法">
+    <button class="x" onclick="closeInstallGuide()" aria-label="閉じる">×</button>
+    <div id="install-modal-body"></div>
   </div>
 </div>
 
@@ -520,15 +613,35 @@
         <label class="chip"><input type="checkbox" value="none">😊 特になし</label>
       </div>
 
+      <h2 class="section" style="font-size:15px; margin-top:24px"><span class="em">🆘</span>緊急・医療情報（もしもの時に）</h2>
+      <div class="hint" style="margin-top:0">迷子・災害・急な通院のときに役立つ情報です。わかる範囲でOK、あとから追加もできます。この端末の中だけに保存されます。</div>
+      <div class="grid" style="margin-top:8px">
+        <div><label>保護者（飼い主）のお名前</label><input type="text" id="f-guardian" placeholder="例：山田 花子"></div>
+        <div><label>連絡先（電話・携帯）</label><input type="text" id="f-guardian-tel" placeholder="例：090-1234-5678"></div>
+        <div><label>マイクロチップ番号</label><input type="text" id="f-microchip" placeholder="15桁の番号（任意）"></div>
+        <div><label>登録（鑑札）番号</label><input type="text" id="f-registration" placeholder="市区町村の犬の登録番号"></div>
+        <div><label>かかりつけの病院</label><input type="text" id="f-vet" placeholder="例：〇〇動物病院"></div>
+        <div><label>病院の連絡先</label><input type="text" id="f-vet-tel" placeholder="例：03-1234-5678"></div>
+      </div>
+      <label>飲んでいるお薬・サプリ（名前・量・回数など）</label>
+      <textarea id="f-meds" rows="2" placeholder="例：アポキル錠 5.4mg 1日1回 ／ 関節サプリ 朝晩1粒 など"></textarea>
+
       <div class="row-actions">
-        <button class="btn" onclick="saveAndShow()">この子のガイドを見る 🐾</button>
+        <button class="btn" onclick="saveAndShow()">💾 保存してガイドを見る 🐾</button>
         <button class="btn ghost" onclick="clearAll()">入力をクリア</button>
       </div>
+      <div class="hint">👆「保存して…」を押すと、この端末にデータが保存されます。次に開いたときも残ります。</div>
     </div>
   </section>
 
   <!-- ============ ガイド ============ -->
   <section id="view-guide" style="display:none">
+    <div id="install-banner" class="install-banner" style="display:none">
+      <span class="ib-ic">📲</span>
+      <div class="ib-tx"><b>アプリとして追加できます</b><br>ホーム画面に置くと、データが消えにくく・一発で開けます。</div>
+      <button class="btn" id="ib-add" onclick="onInstallClick()">追加する</button>
+      <button class="ib-x" onclick="dismissInstallBanner()" aria-label="閉じる">×</button>
+    </div>
     <div class="dogcard">
       <div class="avatar" id="g-avatar" onclick="editPet()" title="タップして写真を設定・変更">🐕</div>
       <div style="flex:1">
@@ -629,15 +742,40 @@
       </details>
     </div>
 
+    <div class="card" id="g-emergency-card">
+      <h2 class="section"><span class="em">🆘</span>緊急・医療メモ（もしもの時に）</h2>
+      <div id="g-emergency"></div>
+    </div>
+
     <div class="card">
-      <h2 class="section"><span class="em">💾</span>データのバックアップ・引っ越し</h2>
-      <div class="hint" style="margin-top:0">プロフィール・顔写真・日記アルバムを、まるごと1つのファイルに保存できます。機種変更や、別のスマホ・パソコンへの引っ越しにも使えます。大切な思い出が消えないよう、ときどき保存しておくと安心です 🐾</div>
-      <div class="row-actions" style="margin-top:12px">
+      <h2 class="section"><span class="em">🧳</span>防災・備え（避難・非常持ち出し）</h2>
+      <div class="hint" style="margin-top:0">災害は犬にとっても大きなストレスです。環境省は、飼い主が責任を持って「ペットと一緒に避難する（同行避難）」ことを基本としています。日ごろの備えが、いざという時に愛犬を守ります 🐾</div>
+      <div id="g-disaster"></div>
+    </div>
+
+    <div class="card">
+      <h2 class="section"><span class="em">💾</span>データの保存・バックアップ・引っ越し</h2>
+      <div id="backup-reminder"></div>
+      <div class="save-tip">
+        <b>📌 データが消えないために</b><br>
+        入力した内容は、この端末（ブラウザ）の中に自動で保存されます。ただし、スマホの設定やブラウザの掃除で<b>消えてしまうことがあります</b>。大切な記録を守るために、次の2つがおすすめです。<br>
+        ①このアプリを<b>ホーム画面に追加</b>しておく（アプリのように開けて、データが消えにくくなります）<br>
+        ②ときどき下の「<b>書き出し（バックアップ保存）</b>」でファイルに保存する
+        <div class="row-actions" style="margin-top:10px">
+          <button class="btn" onclick="onInstallClick()">📲 ホーム画面に追加する（やり方）</button>
+        </div>
+      </div>
+      <div class="hint" style="margin-top:12px">プロフィール・顔写真・日記アルバム・緊急メモを、まるごと1つのファイルに保存できます。機種変更や、別のスマホ・パソコンへの引っ越しにも使えます。</div>
+      <div class="row-actions" style="margin-top:10px">
         <button class="btn" onclick="exportData()">💾 書き出し（バックアップ保存）</button>
         <button class="btn ghost" onclick="document.getElementById('import-file').click()">📂 読み込み（復元）</button>
         <input type="file" id="import-file" accept="application/json,.json" style="display:none" onchange="onImportFile(this)">
       </div>
       <div class="hint">※「読み込み」をすると、今このアプリにあるデータは置き換わります。心配な時は先に「書き出し」をしておくと安心です。スマホでは保存先（ファイル／共有）を選ぶ画面が出ることがあります。</div>
+      <div class="row-actions" style="margin-top:16px">
+        <button class="btn ghost" onclick="printSheet()">📄 PDFで保存（もしもの時シート）</button>
+      </div>
+      <div class="hint">プロフィール・緊急メモ・非常持ち出しリストを1枚にまとめて印刷／PDF保存できます。首輪に付けたり、避難バッグや病院に入れておくと安心。保存先の画面で「PDF」を選んでください。</div>
     </div>
 
     <footer>
@@ -669,6 +807,8 @@
       <input type="date" id="de-date">
       <label>きょうの気分（任意）</label>
       <div class="mood-picker" id="de-mood"></div>
+      <label>うんちの様子（任意）</label>
+      <div class="poop-picker" id="de-poop"></div>
       <label>写真（任意）</label>
       <div class="diary-photo-box" id="de-photo-box" onclick="document.getElementById('de-photo').click()">
         <span>＋ 写真を選ぶ</span>
@@ -700,6 +840,9 @@
   </section>
 
 </div>
+
+<!-- もしもの時シート（通常は非表示・印刷/PDF時のみ表示） -->
+<div id="print-sheet"></div>
 
 <script>
 /* ===================== 知識ベース（後から増やせる） ===================== */
@@ -1304,7 +1447,21 @@ function setPhotoPreview(dataUrl){
 
 /* ===================== 日記・アルバム ===================== */
 const MOODS = ["😊","😴","🍖","🚶","🐾","💛","😢","🤒","🎉"];
+const POOPS = ["😊 快調","🟤 ふつう","💧 やわらかい","🚿 下痢","🧱 便秘","🩸 血が混じる"];
 const WEEKDAYS = ["日","月","火","水","木","金","土"];
+
+/* 画面下に「保存しました」などを一瞬出す */
+let _toastTimer = null;
+function toast(msg){
+  let el = document.getElementById("toast");
+  if(!el){ el = document.createElement("div"); el.id = "toast"; el.className = "toast"; document.body.appendChild(el); }
+  el.textContent = msg;
+  // reflow を挟んでアニメーションを確実に
+  void el.offsetWidth;
+  el.classList.add("on");
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(()=> el.classList.remove("on"), 1900);
+}
 let diaryTab = "timeline";     // "timeline" | "album"
 let diaryEditingId = null;     // 編集中の記録ID（null=新規）
 let diaryDraftPhoto = "";      // 編集中の写真（dataURL, 圧縮済み）
@@ -1385,6 +1542,7 @@ function renderDiary(){
           (e.mood?'<span class="de-mood">'+e.mood+'</span>':'')+
           '<span class="de-actions"><button class="btn ghost" onclick="startDiaryEntry(\''+e.id+'\')">編集</button></span>'+
         '</div>'+
+        (e.poop?'<div style="margin:2px 0 6px"><span class="de-poop">💩 '+esc(e.poop)+'</span></div>':'')+
         (e.photo?'<img class="de-photo" src="'+e.photo+'" alt="">':'')+
         (e.text?'<div class="de-text">'+esc(e.text)+'</div>':'')+
       '</div>'
@@ -1405,6 +1563,7 @@ function startDiaryEntry(id){
     diaryDraftPhoto = e.photo || "";
     $("#de-text").value = e.text || "";
     renderMoodPicker(e.mood||"");
+    renderPoopPicker(e.poop||"");
     $("#de-delete").style.display = "";
   }else{
     $("#de-editor-title").textContent = "今日の記録";
@@ -1412,6 +1571,7 @@ function startDiaryEntry(id){
     diaryDraftPhoto = "";
     $("#de-text").value = "";
     renderMoodPicker("");
+    renderPoopPicker("");
     $("#de-delete").style.display = "none";
   }
   renderDiaryPhotoPreview();
@@ -1436,6 +1596,16 @@ function pickMood(btn){
 }
 function selectedMood(){
   const on = $("#de-mood .on");
+  return on ? on.textContent : "";
+}
+function renderPoopPicker(sel){
+  const box = $("#de-poop"); if(!box) return;
+  box.innerHTML = POOPS.map(p=>
+    '<button type="button" class="'+(p===sel?"on":"")+'" onclick="pickMood(this)">'+p+'</button>'
+  ).join("");
+}
+function selectedPoop(){
+  const on = $("#de-poop .on");
   return on ? on.textContent : "";
 }
 function onDiaryPhotoPick(input){
@@ -1468,15 +1638,16 @@ function saveDiaryEntry(){
   const date = $("#de-date").value || todayISO();
   const text = $("#de-text").value.trim();
   const mood = selectedMood();
+  const poop = selectedPoop();
   const photo = diaryDraftPhoto;
-  if(!text && !photo){ alert("写真かメモのどちらかを入れてください。"); return; }
+  if(!text && !photo && !mood && !poop){ alert("写真・メモ・気分・うんちの様子のどれかを入れてください。"); return; }
   const diary = petDiary(pet);
   const backup = diary.slice();               // 失敗時に戻す控え
   if(diaryEditingId){
     const e = diary.find(x=>x.id===diaryEditingId);
-    if(e){ e.date=date; e.text=text; e.mood=mood; e.photo=photo; }
+    if(e){ e.date=date; e.text=text; e.mood=mood; e.poop=poop; e.photo=photo; }
   }else{
-    diary.push({id:newId(), date:date, text:text, mood:mood, photo:photo});
+    diary.push({id:newId(), date:date, text:text, mood:mood, poop:poop, photo:photo});
   }
   if(!trySaveDB()){
     pet.diary = backup;                       // ロールバック（写真を保存しない）
@@ -1486,6 +1657,7 @@ function saveDiaryEntry(){
   }
   cancelDiaryEntry();
   renderDiary();
+  toast("保存しました ✓");
 }
 function deleteDiaryEntry(){
   const pet = currentPet(); if(!pet || !diaryEditingId) return;
@@ -1530,6 +1702,10 @@ function exportData(){
   a.href = url; a.download = fname;
   document.body.appendChild(a); a.click(); document.body.removeChild(a);
   setTimeout(()=>URL.revokeObjectURL(url), 1000);
+  // 最後にバックアップした日時を記録（保存リマインドに反映）
+  appMeta().lastBackup = Date.now(); trySaveDB();
+  if($("#backup-reminder")) renderBackupReminder();
+  toast("バックアップを書き出しました ✓");
 }
 
 function onImportFile(input){
@@ -1576,9 +1752,17 @@ function onImportFile(input){
 
 function readForm(){
   const checked = name => [...document.querySelectorAll(`[data-multi="${name}"] input:checked`)].map(e=>e.value);
+  const txt = id => { const e=$("#"+id); return e ? e.value.trim() : ""; };
   return {
     photo: currentPhoto,
     name: $("#f-name").value.trim(),
+    guardian: txt("f-guardian"),
+    guardianTel: txt("f-guardian-tel"),
+    microchip: txt("f-microchip"),
+    registration: txt("f-registration"),
+    vet: txt("f-vet"),
+    vetTel: txt("f-vet-tel"),
+    meds: txt("f-meds"),
     breedIdx: $("#f-breed").value,
     years: parseInt($("#f-years").value)||0,
     months: parseInt($("#f-months").value)||0,
@@ -1808,6 +1992,13 @@ function renderGuide(p){
   // ケアカレンダー
   renderCalendar();
 
+  // 緊急・医療メモ／防災・備え
+  renderEmergency(p);
+  renderDisaster();
+
+  // 保存リマインド
+  renderBackupReminder();
+
   // 季節セレクトの表示を同期
   const ss = $("#g-season"); if(ss) ss.value = seasonOverride || "";
 
@@ -1825,6 +2016,125 @@ function renderGuide(p){
       : `<div class="advice">${head}</div>`;
   }).join("");
 }
+
+/* ===================== 緊急・医療メモ ===================== */
+function renderEmergency(p){
+  const box = $("#g-emergency"); if(!box) return;
+  const telHtml = v => '<span class="emv tel"><a href="tel:'+String(v).replace(/[^0-9+]/g,'')+'">'+esc(v)+'</a></span>';
+  const rows = [];
+  const add = (k, v, isTel) => { if(v) rows.push('<li><span class="emk">'+k+'</span>'+(isTel?telHtml(v):'<span class="emv">'+esc(v)+'</span>')+'</li>'); };
+  add("保護者名", p.guardian);
+  add("連絡先", p.guardianTel, true);
+  add("マイクロチップ", p.microchip);
+  add("登録（鑑札）番号", p.registration);
+  add("かかりつけ病院", p.vet);
+  add("病院の連絡先", p.vetTel, true);
+  add("お薬・サプリ", p.meds);
+  if(!rows.length){
+    box.innerHTML = '<div class="empty">まだ登録がありません。上部の「編集」から、保護者の連絡先・マイクロチップ番号・かかりつけ病院・お薬などを登録できます。迷子や災害、急な通院のときに役立ちます。</div>';
+    return;
+  }
+  box.innerHTML = '<ul class="emlist">'+rows.join("")+'</ul>'
+    + '<div class="hint" style="margin-top:10px">内容の変更は上部の「編集」から。下の「💾 データの保存…」カードにある「📄 PDFで保存（もしもの時シート）」で、この情報を1枚にまとめて印刷・保存できます。</div>';
+}
+
+/* ===================== 防災・備え（避難・非常持ち出し） ===================== */
+const KIT = [
+  {key:"food",    label:"フード（5〜7日分）"},
+  {key:"water",   label:"水（犬用）"},
+  {key:"meds",    label:"薬・療法食・サプリ"},
+  {key:"leash",   label:"予備の首輪・リード・ハーネス"},
+  {key:"bowl",    label:"折りたたみ食器"},
+  {key:"toilet",  label:"トイレ用品（ペットシーツ・うんち袋）"},
+  {key:"crate",   label:"キャリー／クレート"},
+  {key:"towel",   label:"タオル・毛布"},
+  {key:"photo",   label:"飼い主と一緒に写った写真（迷子対策）"},
+  {key:"vaccine", label:"ワクチン証明・健康手帳のコピー"},
+  {key:"tape",    label:"ガムテープ・油性ペン（ケージ補修・名前書き）"},
+  {key:"comfort", label:"おもちゃ・慣れたにおいのもの"},
+];
+function disasterDB(){
+  if(!DB.disaster || typeof DB.disaster!=="object") DB.disaster = {city:"", kit:{}};
+  if(!DB.disaster.kit || typeof DB.disaster.kit!=="object") DB.disaster.kit = {};
+  return DB.disaster;
+}
+function renderDisaster(){
+  const box = $("#g-disaster"); if(!box) return;
+  const d = disasterDB();
+  const city = d.city || "";
+  const q  = encodeURIComponent((city? city+" ":"") + "ペット 避難所");
+  const qh = encodeURIComponent((city? city+" ":"") + "ハザードマップ");
+  const links = [
+    {href:"https://www.google.com/search?q="+q,  t:"🔎 近くの避難所を調べる"},
+    {href:"https://www.google.com/search?q="+qh, t:"🗺️ ハザードマップ"},
+    {href:"https://www.jma.go.jp/bosai/",         t:"⛅ 気象庁 防災情報"},
+    {href:"https://www.env.go.jp/nature/dobutsu/aigo/2_data/pamph/h3009.html", t:"🐾 環境省 ペット防災"},
+  ];
+  const kitRows = KIT.map(it=>{
+    const on = !!d.kit[it.key];
+    return '<li class="'+(on?"done":"")+'"><input type="checkbox" id="kit-'+it.key+'" '+(on?"checked":"")+' onchange="toggleKit(\''+it.key+'\', this)"><label for="kit-'+it.key+'">'+it.label+'</label></li>';
+  }).join("");
+  const doneN = KIT.filter(it=>d.kit[it.key]).length;
+  box.innerHTML =
+    '<label>お住まいの市区町村</label>'+
+    '<input type="text" id="d-city" value="'+attr(city)+'" placeholder="例：横浜市／渋谷区" oninput="saveDisasterCity(this.value)">'+
+    '<div class="hint">入れておくと、下のボタンでその地域の避難所・ハザードマップをすぐ調べられます。（検索ページが新しいタブで開きます）</div>'+
+    '<div class="linkbtns">'+links.map(l=>'<a href="'+l.href+'" target="_blank" rel="noopener">'+l.t+'</a>').join("")+'</div>'+
+    '<div class="advice"><div class="t">🐕 ペットとの同行避難の備え</div><p class="a">①首輪・迷子札・マイクロチップで「この子の身元」が分かるように ②クレートやキャリーに普段から慣らしておく ③人の食料とは別に、ペット用の備蓄を用意 ④避難所でのルールやペットの受け入れ可否を事前に確認。災害時は驚いて逃げやすいので、日ごろの備えが命を守ります。</p><span class="src">出典: 環境省「人とペットの災害対策ガイドライン」</span></div>'+
+    '<h2 class="section" style="font-size:14px; margin:18px 0 4px"><span class="em">🧳</span>非常持ち出しリスト（犬用）<span class="tag" id="kit-count">'+doneN+' / '+KIT.length+'</span></h2>'+
+    '<ul class="checklist">'+kitRows+'</ul>'+
+    '<div class="hint" style="margin-top:8px">チェックは自動で保存されます。上の「📄 PDFで保存」で、このリストも一緒に印刷・保存できます。</div>';
+}
+function saveDisasterCity(v){ disasterDB().city = (v||"").trim(); trySaveDB(); }
+function toggleKit(key, el){
+  const d = disasterDB();
+  if(el.checked) d.kit[key]=true; else delete d.kit[key];
+  trySaveDB();
+  const li = el.closest("li"); if(li) li.classList.toggle("done", el.checked);
+  const tag = $("#kit-count");
+  if(tag){ const doneN = KIT.filter(it=>d.kit[it.key]).length; tag.textContent = doneN+" / "+KIT.length; }
+}
+
+/* ===================== もしもの時シート（印刷・PDF保存） ===================== */
+function printSheet(){
+  const pet = currentPet();
+  if(!pet){ alert("先にプロフィールを保存してください。"); return; }
+  const p = buildProfile(pet);
+  const sheet = $("#print-sheet"); if(!sheet) return;
+  const ageTxt = p.totalMonths<12 ? p.totalMonths+"ヶ月"
+    : Math.floor(p.totalMonths/12)+"歳"+(p.totalMonths%12?(p.totalMonths%12)+"ヶ月":"");
+  const latestW = (pet.weightLog && pet.weightLog.length)
+    ? pet.weightLog.slice().sort((a,b)=>a.date<b.date?-1:1).pop().kg+" kg"
+    : (p.weight? p.weight+" kg" : "—");
+  const row = (k,v)=> '<tr><th>'+k+'</th><td>'+(v?esc(v):"—")+'</td></tr>';
+  const photoHtml = p.photo ? '<img class="sh-photo" src="'+p.photo+'" alt="">' : '<div class="sh-photo ph">🐕</div>';
+  const d = disasterDB();
+  const kitHtml = KIT.map(it=> '<li>'+(d.kit[it.key]?"☑":"☐")+' '+it.label+'</li>').join("");
+  const now = new Date(), z = n=>String(n).padStart(2,"0");
+  const stamp = now.getFullYear()+"/"+z(now.getMonth()+1)+"/"+z(now.getDate());
+  sheet.innerHTML =
+    '<div class="sh-title">🐾 '+esc(p.name||"うちの子")+' のもしもの時シート</div>'+
+    '<div class="sh-sub">迷子・災害・急な通院のときに。'+stamp+' 時点の情報です。</div>'+
+    '<div class="sh-top">'+photoHtml+
+      '<table style="margin:0">'+
+        '<tr><th>名前</th><td>'+esc(p.name||"うちの子")+'</td></tr>'+
+        '<tr><th>犬種</th><td>'+esc(p.breed?p.breed.name:"—")+'</td></tr>'+
+        '<tr><th>年齢・性別</th><td>'+esc(ageTxt)+' ／ '+esc(p.sex||"—")+'</td></tr>'+
+        '<tr><th>体重</th><td>'+esc(latestW)+'</td></tr>'+
+      '</table>'+
+    '</div>'+
+    '<h3>身元・連絡先</h3>'+
+    '<table>'+row("保護者名", p.guardian)+row("連絡先（電話・携帯）", p.guardianTel)+
+      row("マイクロチップ番号", p.microchip)+row("登録（鑑札）番号", p.registration)+'</table>'+
+    '<h3>医療</h3>'+
+    '<table>'+row("かかりつけ病院", p.vet)+row("病院の連絡先", p.vetTel)+row("お薬・サプリ", p.meds)+'</table>'+
+    '<h3>非常持ち出しリスト（犬用）'+(d.city?'　／　お住まい：'+esc(d.city):'')+'</h3>'+
+    '<ul class="sh-kit">'+kitHtml+'</ul>'+
+    '<div class="sh-foot">うちの子ナビ（データはこの端末内に保存）　※迷子札・首輪にこのシートの連絡先を控えておくと安心です。</div>';
+  document.body.classList.add("sheet-mode");
+  window.print();
+}
+window.addEventListener("afterprint", ()=> document.body.classList.remove("sheet-mode"));
 
 /* ===================== フード量の計算（獣医栄養学 RER/MER） ===================== */
 function foodFactor(p){
@@ -2130,6 +2440,7 @@ function addWeight(){
   const p = buildProfile(pet);
   renderWeight(p);
   renderFood(p);
+  toast("体重を記録しました ✓");
 }
 function delWeight(date){
   const pet = currentPet(); if(!pet) return;
@@ -2362,6 +2673,8 @@ let editingId = null; // 編集中のペットID（null=新規追加）
 function newId(){ return "p" + Date.now().toString(36) + Math.floor(Math.random()*1e4).toString(36); }
 function loadDB(){
   try{ const o = JSON.parse(localStorage.getItem(KEY)); if(o && o.pets) DB = o; }catch(e){}
+  if(!DB.disaster || typeof DB.disaster!=="object") DB.disaster = {city:"", kit:{}};
+  if(!DB.meta || typeof DB.meta!=="object") DB.meta = {};
   // v1からの移行
   if((!DB.pets || !DB.pets.length)){
     try{
@@ -2436,6 +2749,7 @@ function saveAndShow(){
   seasonOverride = "";
   saveDB();
   showGuide();
+  toast("保存しました ✓");
 }
 
 function showGuide(){
@@ -2460,7 +2774,7 @@ function clearAll(){
 }
 
 function resetForm(){
-  ["f-name","f-breed","f-sire","f-dam","f-years","f-months","f-sex","f-weight","f-yard","f-floor"].forEach(id=>{ const e=$("#"+id); if(e) e.value=""; });
+  ["f-name","f-breed","f-sire","f-dam","f-years","f-months","f-sex","f-weight","f-yard","f-floor","f-guardian","f-guardian-tel","f-microchip","f-registration","f-vet","f-vet-tel","f-meds"].forEach(id=>{ const e=$("#"+id); if(e) e.value=""; });
   document.querySelectorAll('input[name=housing]').forEach(r=>r.checked=false);
   document.querySelectorAll('[data-multi] input').forEach(c=>c.checked=false);
   document.querySelectorAll('.chip.on').forEach(c=>c.classList.remove('on'));
@@ -2483,6 +2797,14 @@ function fillForm(f){
   $("#f-weight").value = f.weight||"";
   $("#f-yard").value = f.yard||"";
   $("#f-floor").value = f.floor||"";
+  const setv = (id,v)=>{ const e=$("#"+id); if(e) e.value = v||""; };
+  setv("f-guardian", f.guardian);
+  setv("f-guardian-tel", f.guardianTel);
+  setv("f-microchip", f.microchip);
+  setv("f-registration", f.registration);
+  setv("f-vet", f.vet);
+  setv("f-vet-tel", f.vetTel);
+  setv("f-meds", f.meds);
   if(f.housing){ const r=document.querySelector(`input[name=housing][value="${f.housing}"]`); if(r){r.checked=true; r.closest('.chip').classList.add('on');} }
   (f.owner||[]).forEach(v=>{ const c=document.querySelector(`[data-multi="owner"] input[value="${v}"]`); if(c){c.checked=true; c.closest('.chip').classList.add('on');} });
   (f.concern||[]).forEach(v=>{ const c=document.querySelector(`[data-multi="concern"] input[value="${v}"]`); if(c){c.checked=true; c.closest('.chip').classList.add('on');} });
@@ -2518,7 +2840,123 @@ document.addEventListener("change", e=>{
 /* ===================== 使い方ガイド ===================== */
 function openHelp(){ $("#help-modal").classList.add("on"); }
 function closeHelp(){ $("#help-modal").classList.remove("on"); }
-document.addEventListener("keydown", e=>{ if(e.key==="Escape") closeHelp(); });
+document.addEventListener("keydown", e=>{ if(e.key==="Escape"){ closeHelp(); closeInstallGuide(); } });
+
+/* ===================== アプリ化（ホーム画面に追加）＆保存リマインド ===================== */
+let deferredInstall = null;
+function isStandalone(){
+  return window.matchMedia && window.matchMedia('(display-mode: standalone)').matches
+      || window.navigator.standalone === true;
+}
+function isIOS(){
+  const ua = navigator.userAgent || "";
+  return /iphone|ipad|ipod/i.test(ua)
+      || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1); // iPadOS
+}
+function isAndroid(){ return /android/i.test(navigator.userAgent || ""); }
+
+// Androidなどはブラウザが「追加できるよ」と教えてくれる → ワンタップ用に保持
+window.addEventListener('beforeinstallprompt', e=>{
+  e.preventDefault();
+  deferredInstall = e;
+  showInstallBanner();
+  const btn = $("#ib-add"); if(btn) btn.textContent = "追加する";
+});
+window.addEventListener('appinstalled', ()=>{
+  deferredInstall = null;
+  hideInstallBanner();
+  toast("ホーム画面に追加しました 🎉");
+});
+
+function showInstallBanner(){
+  if(isStandalone()) return;                       // すでにアプリとして開いている
+  try{ if(localStorage.getItem('uchinoko-install-dismissed')==='1') return; }catch(e){}
+  const b = $("#install-banner"); if(b) b.style.display = "flex";
+}
+function hideInstallBanner(){ const b=$("#install-banner"); if(b) b.style.display="none"; }
+function dismissInstallBanner(){
+  hideInstallBanner();
+  try{ localStorage.setItem('uchinoko-install-dismissed','1'); }catch(e){}
+}
+function onInstallClick(){
+  if(deferredInstall){                              // Android等：公式の追加ダイアログ
+    deferredInstall.prompt();
+    deferredInstall.userChoice.then(r=>{
+      if(r && r.outcome==='accepted'){ hideInstallBanner(); }
+      deferredInstall = null;
+    }).catch(()=>{});
+    return;
+  }
+  openInstallGuide();                               // iPhone等：やり方を絵つきで案内
+}
+
+const SHARE_ICON = '<svg class="sico" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#007aff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V4"/><path d="M8.5 7.5 12 4l3.5 3.5"/><path d="M6 11v7a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-7"/></svg>';
+const MENU_ICON  = '<span class="sico" style="font-size:18px;font-weight:800;color:#444">⋮</span>';
+function openInstallGuide(){
+  const body = $("#install-modal-body"); if(!body) return;
+  const hero = '<div class="install-hero"><img src="img/icon-192.png" alt=""><div><h2 style="margin:0">📲 ホーム画面に追加</h2><p class="lead" style="margin:2px 0 0">アプリのように開けて、<b>データが消えにくく</b>なります。無料のまま、この端末の中だけに保存されます。</p></div></div>';
+  let steps;
+  if(isIOS()){
+    steps = '<ol class="steps">'+
+      '<li>画面下（Safari）の<b>共有ボタン</b>'+SHARE_ICON+'（四角から↑が出たマーク）をタップ</li>'+
+      '<li>メニューを下にスクロールして<b>「ホーム画面に追加」</b>をタップ</li>'+
+      '<li>右上の<b>「追加」</b>をタップ → 完成！ホーム画面にアイコン'+
+        '<img src="img/icon-192.png" alt="" style="width:22px;height:22px;border-radius:6px;vertical-align:middle;margin:0 2px"> が出ます</li>'+
+      '</ol>'+
+      '<div class="hint">※ Chromeなど別のアプリで開いている場合は、まず<b>Safari</b>でこのページを開いてからお試しください。</div>';
+  }else if(isAndroid()){
+    steps = '<ol class="steps">'+
+      '<li>画面右上の<b>メニュー</b>'+MENU_ICON+'をタップ</li>'+
+      '<li><b>「ホーム画面に追加」</b>（または「アプリをインストール」）をタップ</li>'+
+      '<li><b>「追加」</b>をタップ → 完成！ホーム画面にアイコンが出ます</li>'+
+      '</ol>'+
+      '<div class="hint">※「追加する」ボタンから、ワンタップで追加できる場合もあります。</div>';
+  }else{
+    steps = '<ol class="steps">'+
+      '<li>ブラウザのアドレスバー右の<b>インストールのマーク</b>（⊕や画面＋）をクリック、または<b>メニュー</b>'+MENU_ICON+'から「アプリをインストール」「ショートカットを作成」を選ぶ</li>'+
+      '<li><b>「インストール」</b>をクリック → 完成！</li>'+
+      '</ol>'+
+      '<div class="hint">※ スマホ（iPhone・Android）だと、より簡単に追加できます。</div>';
+  }
+  body.innerHTML = hero + steps;
+  $("#install-modal").classList.add("on");
+}
+function closeInstallGuide(){ const m=$("#install-modal"); if(m) m.classList.remove("on"); }
+
+function initInstall(){
+  if(isStandalone()){ hideInstallBanner(); return; }
+  // iPhoneは beforeinstallprompt が来ないので、こちらから案内を出す
+  if(isIOS()) showInstallBanner();
+  // Android等は beforeinstallprompt を受け取った時に出る
+}
+
+// 保存リマインド（最後のバックアップからの日数で出し分け）
+function appMeta(){ if(!DB.meta || typeof DB.meta!=="object") DB.meta = {}; return DB.meta; }
+function hasDataWorthSaving(){
+  if(!DB.pets || !DB.pets.length) return false;
+  return DB.pets.some(p=>
+    (p.diary && p.diary.length) || (p.weightLog && p.weightLog.length) ||
+    p.guardian || p.microchip || p.vet || p.meds || p.photo
+  );
+}
+function renderBackupReminder(){
+  const box = $("#backup-reminder"); if(!box) return;
+  const last = appMeta().lastBackup;
+  if(!hasDataWorthSaving()){ box.innerHTML = ""; return; }
+  let msg = "";
+  if(!last){
+    msg = "まだ一度もバックアップしていません。万一に備えて、下の「書き出し」で保存しておくと安心です。";
+  }else{
+    const days = Math.floor((Date.now()-last)/86400000);
+    if(days >= 14) msg = "前回のバックアップから <b>"+days+"日</b> たちました。消えてしまう前に、下の「書き出し」で保存しておきましょう。";
+  }
+  box.innerHTML = msg ? ('<div class="backup-reminder"><b>🔔 バックアップのおすすめ</b><br>'+msg+'</div>') : "";
+}
+
+/* ===================== サービスワーカー登録（PWA／オフライン対応） ===================== */
+if('serviceWorker' in navigator){
+  window.addEventListener('load', ()=>{ navigator.serviceWorker.register('sw.js').catch(()=>{}); });
+}
 
 initBreeds();
 loadDB();
@@ -2528,6 +2966,7 @@ if(currentPet()){
   // 初回（まだ登録なし）は使い方ガイドを自動表示
   openHelp();
 }
+initInstall();
 </script>
 </body>
 </html>
