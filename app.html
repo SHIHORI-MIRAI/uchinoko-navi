@@ -3105,9 +3105,22 @@ document.addEventListener("click", e=>{
   if(m && m.style.display==="block" && nav && !nav.contains(e.target)) closeFabMenu();
 });
 
-/* ===================== サービスワーカー登録（PWA／オフライン対応） ===================== */
+/* ===================== サービスワーカー登録（PWA／オフライン対応・自動更新） ===================== */
 if('serviceWorker' in navigator){
-  window.addEventListener('load', ()=>{ navigator.serviceWorker.register('sw.js').catch(()=>{}); });
+  window.addEventListener('load', ()=>{
+    const hadController = !!navigator.serviceWorker.controller;   // 既に動いていたか（初回インストールと区別）
+    navigator.serviceWorker.register('sw.js').then(reg=>{
+      reg.update();                                   // 起動時に新バージョンがないか確認
+      setInterval(()=>{ reg.update().catch(()=>{}); }, 60*60*1000);  // 1時間ごとにも確認
+    }).catch(()=>{});
+    // 新しいバージョンが有効になったら、一度だけ自動で読み込み直す（最新表示に）
+    let refreshing = false;
+    navigator.serviceWorker.addEventListener('controllerchange', ()=>{
+      if(refreshing || !hadController) return;         // 初回インストール時はリロードしない（ループ防止）
+      refreshing = true;
+      window.location.reload();
+    });
+  });
 }
 
 initBreeds();
