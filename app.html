@@ -397,10 +397,30 @@
   .steps b{color:var(--accent-dark)}
   .install-hero{display:flex; align-items:center; gap:12px; margin-bottom:4px}
   .install-hero img{width:56px; height:56px; border-radius:14px; flex:none}
+  /* 右下の移動ボタン（上へ／目次） */
+  #fabnav{position:fixed; right:16px; bottom:18px; z-index:900; display:flex; flex-direction:column; align-items:flex-end; gap:10px}
+  .fab{width:54px; height:54px; border-radius:50%; border:1px solid var(--line); background:var(--panel); color:var(--accent-dark);
+    font-size:22px; font-weight:800; cursor:pointer; box-shadow:0 4px 14px rgba(120,90,50,.22); display:flex; align-items:center; justify-content:center; line-height:1}
+  .fab:hover{background:var(--accent-soft)}
+  .fab.fab-primary{background:var(--accent); color:#fff; border-color:var(--accent)}
+  .fab.fab-primary:hover{background:var(--accent-dark)}
+  .fab-label{font-size:10px; font-weight:800; line-height:1.05; text-align:center}
+  .fabmenu{background:var(--panel); border:1px solid var(--line); border-radius:16px; box-shadow:0 8px 26px rgba(120,90,50,.25);
+    padding:12px; width:min(90vw,330px); max-height:64vh; overflow:auto}
+  .fabmenu-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:8px}
+  .fabmenu-head b{font-size:14px}
+  .fabmenu-head .fm-x{border:none; background:none; font-size:20px; color:var(--sub); cursor:pointer; line-height:1}
+  .fabmenu-top{width:100%; padding:11px; border-radius:10px; border:1px solid var(--accent); background:#fff; color:var(--accent-dark);
+    font:inherit; font-weight:800; cursor:pointer; font-size:14px}
+  .fabmenu-top:hover{background:var(--accent-soft)}
+  .fabmenu-grid{display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:10px}
+  .fabmenu-grid button{display:flex; align-items:center; gap:7px; padding:10px 8px; border:1px solid var(--line); border-radius:10px;
+    background:#fffdfb; color:var(--ink); font:inherit; font-size:13px; font-weight:600; cursor:pointer; text-align:left}
+  .fabmenu-grid button:hover{border-color:var(--accent); background:var(--accent-soft)}
   /* 印刷 */
   #print-sheet{display:none}
   @media print{
-    header.appbar,.disclaimer,.row-actions,.btn,.help-btn,.modal-bg,#view-profile,.petbar,.wform,.wlog .wdel,.cal-form,.cal-hint,.cal-head .btn,.cal-list .wdel,.av-hint,.linkbtns,.toast{display:none!important}
+    header.appbar,.disclaimer,.row-actions,.btn,.help-btn,.modal-bg,#view-profile,.petbar,.wform,.wlog .wdel,.cal-form,.cal-hint,.cal-head .btn,.cal-list .wdel,.av-hint,.linkbtns,.toast,#fabnav{display:none!important}
     body{background:#fff; font-size:13px}
     .wrap{padding:0}
     .card,.dogcard{box-shadow:none; border-color:#ccc; break-inside:avoid; page-break-inside:avoid}
@@ -758,7 +778,7 @@
       <div id="g-disaster"></div>
     </div>
 
-    <div class="card">
+    <div class="card" id="g-backup">
       <h2 class="section"><span class="em">💾</span>データの保存・バックアップ・引っ越し</h2>
       <div id="backup-reminder"></div>
       <div class="save-tip">
@@ -787,6 +807,17 @@
       出典タグは内容の根拠の目安です（AVSAB＝米国獣医動物行動学会、WSAVA＝世界小動物獣医師会 ほか）。<br>
       ※v1試作のため、掲載内容は代表的なケースのスターターセットです。最終的には専門家のレビューを受けてご利用ください。
     </footer>
+
+    <!-- 右下の移動ボタン（↑上へ／☰目次） -->
+    <div id="fabnav">
+      <div id="fabmenu" class="fabmenu" style="display:none">
+        <div class="fabmenu-head"><b>📑 見たいところへ移動</b><button class="fm-x" onclick="closeFabMenu()" aria-label="閉じる">×</button></div>
+        <button class="fabmenu-top" onclick="scrollToTop()">⬆ いちばん上へ戻る</button>
+        <div class="fabmenu-grid" id="fabmenu-grid"></div>
+      </div>
+      <button id="fab-top" class="fab" onclick="scrollToTop()" title="いちばん上へ戻る" style="display:none"><span class="fab-label">↑<br>上へ</span></button>
+      <button id="fab-menu" class="fab fab-primary" onclick="toggleFabMenu()" title="目次（見たいところへ移動）"><span class="fab-label">☰<br>目次</span></button>
+    </div>
   </section>
 
   <!-- ============ 日記・アルバム ============ -->
@@ -2815,6 +2846,7 @@ function saveAndShow(){
 function showGuide(){
   const pet = currentPet();
   if(!pet){ $("#view-diary").style.display="none"; $("#view-guide").style.display="none"; $("#view-profile").style.display="block"; return; }
+  closeFabMenu();
   renderPetSwitch();
   renderGuide(buildProfile(pet));
   $("#view-diary").style.display="none";
@@ -2903,7 +2935,7 @@ document.addEventListener("change", e=>{
 /* ===================== 使い方ガイド ===================== */
 function openHelp(){ $("#help-modal").classList.add("on"); }
 function closeHelp(){ $("#help-modal").classList.remove("on"); }
-document.addEventListener("keydown", e=>{ if(e.key==="Escape"){ closeHelp(); closeInstallGuide(); } });
+document.addEventListener("keydown", e=>{ if(e.key==="Escape"){ closeHelp(); closeInstallGuide(); closeFabMenu(); } });
 
 /* ===================== アプリ化（ホーム画面に追加）＆保存リマインド ===================== */
 let deferredInstall = null;
@@ -3015,6 +3047,63 @@ function renderBackupReminder(){
   }
   box.innerHTML = msg ? ('<div class="backup-reminder"><b>🔔 バックアップのおすすめ</b><br>'+msg+'</div>') : "";
 }
+
+/* ===================== 右下の移動ボタン（上へ／目次） ===================== */
+const GUIDE_SECTIONS = [
+  {id:"g-stage",    label:"年齢期",       ic:"🌱"},
+  {id:"g-breed",    label:"犬種のこと",   ic:"🧬"},
+  {id:"g-tasks",    label:"今週やりたい", ic:"✅"},
+  {id:"g-exercise", label:"運動・遊び",   ic:"🎾"},
+  {id:"g-food",     label:"フード量",     ic:"🍚"},
+  {id:"g-weight",   label:"体重の記録",   ic:"⚖️"},
+  {id:"g-calendar", label:"予定・記録",   ic:"📅"},
+  {id:"g-home",     label:"住まい・季節", ic:"🏠"},
+  {id:"g-concern",  label:"気になること", ic:"💡"},
+  {id:"g-feelings", label:"気持ちのサイン",ic:"🧡"},
+  {id:"g-care",     label:"健康ケア",     ic:"🪥"},
+  {id:"g-goods",    label:"グッズ",       ic:"🛍️"},
+  {id:"g-emergency",label:"緊急メモ",     ic:"🆘"},
+  {id:"g-disaster", label:"防災・備え",   ic:"🧳"},
+  {id:"g-glossary", label:"用語",         ic:"📚"},
+  {id:"g-backup",   label:"保存・PDF",    ic:"💾"},
+];
+function buildSecMenu(){
+  const grid = $("#fabmenu-grid"); if(!grid) return;
+  grid.innerHTML = GUIDE_SECTIONS.filter(s=>{
+    const el = document.getElementById(s.id);
+    return el && el.offsetParent !== null;   // いま表示されているところだけ
+  }).map(s=>
+    `<button onclick="gotoSec('${s.id}')"><span>${s.ic}</span><span>${s.label}</span></button>`
+  ).join("");
+}
+function openFabMenu(){ buildSecMenu(); const m=$("#fabmenu"); if(m) m.style.display="block"; }
+function closeFabMenu(){ const m=$("#fabmenu"); if(m) m.style.display="none"; }
+function toggleFabMenu(){ const m=$("#fabmenu"); if(!m) return; (m.style.display==="block") ? closeFabMenu() : openFabMenu(); }
+// 指定位置へ移動（どの環境でも確実に動く2引数scrollToを使用）
+function jumpTo(targetY){
+  const y = Math.max(0, Math.round(targetY));
+  window.scrollTo(0, y);
+  // 反映判定（「↑上へ」の表示などを更新）
+  window.dispatchEvent(new Event('scroll'));
+}
+function gotoSec(id){
+  closeFabMenu();
+  const el = document.getElementById(id); if(!el) return;
+  const card = el.closest(".card") || el;
+  const y = card.getBoundingClientRect().top + (window.pageYOffset || document.documentElement.scrollTop || 0) - 12;
+  jumpTo(y);
+}
+function scrollToTop(){ closeFabMenu(); jumpTo(0); }
+// 少しスクロールしたら「↑ 上へ」を表示
+window.addEventListener("scroll", ()=>{
+  const b=$("#fab-top"); if(!b) return;
+  b.style.display = (window.pageYOffset>320) ? "flex" : "none";
+}, {passive:true});
+// メニューの外側をタップしたら閉じる
+document.addEventListener("click", e=>{
+  const nav=$("#fabnav"), m=$("#fabmenu");
+  if(m && m.style.display==="block" && nav && !nav.contains(e.target)) closeFabMenu();
+});
 
 /* ===================== サービスワーカー登録（PWA／オフライン対応） ===================== */
 if('serviceWorker' in navigator){
