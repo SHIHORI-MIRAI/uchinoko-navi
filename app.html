@@ -544,7 +544,7 @@
             <input type="number" id="f-years" min="0" max="25" placeholder="年" style="flex:1">
             <input type="number" id="f-months" min="0" max="11" placeholder="ヶ月" style="flex:1">
           </div>
-          <div class="hint">子犬は「0年 ○ヶ月」で。例：3ヶ月なら 0年・3ヶ月。</div>
+          <div class="hint">子犬は「0年 ○ヶ月」で。例：3ヶ月なら 0年・3ヶ月。<br>💡 正確な<b>生年月日</b>がわかる場合は、下の「緊急・医療情報」で入れると、ここが<b>自動で計算され、時間がたっても正しい年齢</b>になります。</div>
         </div>
         <div>
           <label>性別・状態</label>
@@ -616,6 +616,11 @@
       <h2 class="section" style="font-size:15px; margin-top:24px"><span class="em">🆘</span>緊急・医療情報（もしもの時に）</h2>
       <div class="hint" style="margin-top:0">迷子・災害・急な通院のときに役立つ情報です。わかる範囲でOK、あとから追加もできます。この端末の中だけに保存されます。</div>
       <div class="grid" style="margin-top:8px">
+        <div>
+          <label>生年月日（わかれば）</label>
+          <input type="date" id="f-birth" onchange="onBirthChange()">
+          <div class="hint" id="f-birth-age">入れると「年齢（何歳何ヶ月）」が自動で計算され、時間がたっても正しくなります。</div>
+        </div>
         <div><label>保護者（飼い主）のお名前</label><input type="text" id="f-guardian" placeholder="例：山田 花子"></div>
         <div><label>連絡先（電話・携帯）</label><input type="text" id="f-guardian-tel" placeholder="例：090-1234-5678"></div>
         <div><label>マイクロチップ番号</label><input type="text" id="f-microchip" placeholder="15桁の番号（任意）"></div>
@@ -1756,6 +1761,7 @@ function readForm(){
   return {
     photo: currentPhoto,
     name: $("#f-name").value.trim(),
+    birth: txt("f-birth"),
     guardian: txt("f-guardian"),
     guardianTel: txt("f-guardian-tel"),
     microchip: txt("f-microchip"),
@@ -1778,16 +1784,57 @@ function readForm(){
   };
 }
 
+/* ---- 生年月日 → 年齢（何歳何ヶ月）を自動計算 ---- */
+function isValidBirth(iso){
+  if(!iso) return false;
+  const b = new Date(iso + "T00:00:00");
+  return !isNaN(b.getTime()) && b.getTime() <= Date.now();
+}
+function ageFromBirth(iso){
+  const b = new Date(iso + "T00:00:00");
+  if(isNaN(b.getTime())) return {years:0, months:0, totalMonths:0};
+  const n = new Date();
+  let months = (n.getFullYear()-b.getFullYear())*12 + (n.getMonth()-b.getMonth());
+  if(n.getDate() < b.getDate()) months--;      // その月の“誕生日”をまだ迎えていない
+  if(months < 0) months = 0;
+  return {years: Math.floor(months/12), months: months%12, totalMonths: months};
+}
+function ageLabel(tm){ return tm<12 ? tm+"ヶ月" : Math.floor(tm/12)+"歳"+(tm%12?(tm%12)+"ヶ月":""); }
+function fmtBirth(iso){ const p=String(iso).split('-'); return p.length===3 ? (p[0]+"年"+(+p[1])+"月"+(+p[2])+"日") : String(iso); }
+// 生年月日が入ったら、年齢欄を自動入力＆自動計算の案内を出す
+function onBirthChange(){
+  const el=$("#f-birth"); if(!el) return;
+  const v=el.value, y=$("#f-years"), m=$("#f-months"), h=$("#f-birth-age");
+  if(!v || !isValidBirth(v)){
+    if(y){ y.readOnly=false; y.style.background=""; }
+    if(m){ m.readOnly=false; m.style.background=""; }
+    if(h) h.innerHTML = (v && !isValidBirth(v))
+      ? "⚠️ 未来の日付など、正しくない生年月日です。"
+      : "入れると「年齢（何歳何ヶ月）」が自動で計算され、時間がたっても正しくなります。";
+    return;
+  }
+  const a=ageFromBirth(v);
+  if(y){ y.value=a.years;  y.readOnly=true; y.style.background="#f3efe8"; }
+  if(m){ m.value=a.months; m.readOnly=true; m.style.background="#f3efe8"; }
+  if(h) h.innerHTML = "→ いまは <b>"+ageLabel(a.totalMonths)+"</b>（生年月日から自動で計算されます）";
+}
+
 function buildProfile(f){
   let breed = BREEDS[f.breedIdx] || BREEDS[BREEDS.length-2];
   if(isMixName(breed.name) && (f.sireIdx || f.damIdx)){
     breed = buildMixBreed(breed, f.sireIdx, f.damIdx);
   }
-  const totalMonths = f.years*12 + f.months;
+  // 生年月日があれば“今日時点”の年齢を使う（時間がたっても正確）。無ければ手入力の年・ヶ月。
+  let years=f.years, months=f.months, totalMonths;
+  if(isValidBirth(f.birth)){
+    const a = ageFromBirth(f.birth); years=a.years; months=a.months; totalMonths=a.totalMonths;
+  }else{
+    totalMonths = f.years*12 + f.months;
+  }
   const stage = getStage(totalMonths, breed.size);
   return {
     ...f, breed,
-    totalMonths,
+    years, months, totalMonths,
     size: breed.size, ex: breed.ex,
     neutered: /去勢済み|避妊済み/.test(f.sex||""),
     stage, season: seasonOverride || currentSeason(),
@@ -2023,6 +2070,7 @@ function renderEmergency(p){
   const telHtml = v => '<span class="emv tel"><a href="tel:'+String(v).replace(/[^0-9+]/g,'')+'">'+esc(v)+'</a></span>';
   const rows = [];
   const add = (k, v, isTel) => { if(v) rows.push('<li><span class="emk">'+k+'</span>'+(isTel?telHtml(v):'<span class="emv">'+esc(v)+'</span>')+'</li>'); };
+  add("生年月日", isValidBirth(p.birth) ? (fmtBirth(p.birth)+"（いま "+ageLabel(p.totalMonths)+"）") : "");
   add("保護者名", p.guardian);
   add("連絡先", p.guardianTel, true);
   add("マイクロチップ", p.microchip);
@@ -2080,7 +2128,13 @@ function renderDisaster(){
     '<input type="text" id="d-city" value="'+attr(city)+'" placeholder="例：横浜市／渋谷区" oninput="saveDisasterCity(this.value)">'+
     '<div class="hint">入れておくと、下のボタンでその地域の避難所・ハザードマップをすぐ調べられます。（検索ページが新しいタブで開きます）</div>'+
     '<div class="linkbtns">'+links.map(l=>'<a href="'+l.href+'" target="_blank" rel="noopener">'+l.t+'</a>').join("")+'</div>'+
-    '<div class="advice"><div class="t">🐕 ペットとの同行避難の備え</div><p class="a">①首輪・迷子札・マイクロチップで「この子の身元」が分かるように ②クレートやキャリーに普段から慣らしておく ③人の食料とは別に、ペット用の備蓄を用意 ④避難所でのルールやペットの受け入れ可否を事前に確認。災害時は驚いて逃げやすいので、日ごろの備えが命を守ります。</p><span class="src">出典: 環境省「人とペットの災害対策ガイドライン」</span></div>'+
+    '<div class="advice"><div class="t">🐕 ペットとの同行避難の備え</div><p class="a">'+
+      '① 首輪・迷子札・マイクロチップで「この子の身元」が分かるように<br>'+
+      '② クレートやキャリーに普段から慣らしておく<br>'+
+      '③ 人の食料とは別に、ペット用の備蓄を用意<br>'+
+      '④ 避難所でのルールやペットの受け入れ可否を事前に確認<br>'+
+      '<br>災害時は驚いて逃げやすいので、日ごろの備えが命を守ります。'+
+      '</p><span class="src">出典: 環境省「人とペットの災害対策ガイドライン」</span></div>'+
     '<h2 class="section" style="font-size:14px; margin:18px 0 4px"><span class="em">🧳</span>非常持ち出しリスト（犬用）<span class="tag" id="kit-count">'+doneN+' / '+KIT.length+'</span></h2>'+
     '<ul class="checklist">'+kitRows+'</ul>'+
     '<div class="hint" style="margin-top:8px">チェックは自動で保存されます。上の「📄 PDFで保存」で、このリストも一緒に印刷・保存できます。</div>';
@@ -2119,6 +2173,7 @@ function printSheet(){
       '<table style="margin:0">'+
         '<tr><th>名前</th><td>'+esc(p.name||"うちの子")+'</td></tr>'+
         '<tr><th>犬種</th><td>'+esc(p.breed?p.breed.name:"—")+'</td></tr>'+
+        (isValidBirth(p.birth)?'<tr><th>生年月日</th><td>'+esc(fmtBirth(p.birth))+'</td></tr>':'')+
         '<tr><th>年齢・性別</th><td>'+esc(ageTxt)+' ／ '+esc(p.sex||"—")+'</td></tr>'+
         '<tr><th>体重</th><td>'+esc(latestW)+'</td></tr>'+
       '</table>'+
@@ -2724,9 +2779,14 @@ function editPet(){
 
 function validate(f){
   if(!f.breedIdx) return "犬種（または大きさ）を選んでください。";
-  if(f.years<0 || f.years>25) return "年齢（年）は 0〜25 の範囲で入れてください。";
-  if(f.months<0 || f.months>11) return "月齢（ヶ月）は 0〜11 の範囲で入れてください。";
-  if(f.years*12+f.months===0) return "年齢を入れてください（子犬は「0年 ○ヶ月」でOK）。";
+  if(f.birth && !isValidBirth(f.birth)) return "生年月日は、今日より前の日付で入れてください。";
+  if(isValidBirth(f.birth)){
+    // 生年月日から年齢を計算するので、年・ヶ月の手入力チェックは不要
+  }else{
+    if(f.years<0 || f.years>25) return "年齢（年）は 0〜25 の範囲で入れてください。";
+    if(f.months<0 || f.months>11) return "月齢（ヶ月）は 0〜11 の範囲で入れてください。";
+    if(f.years*12+f.months===0) return "年齢を入れてください（子犬は「0年 ○ヶ月」でOK）。生年月日を入れてもOKです。";
+  }
   if(f.weight && (f.weight<0 || f.weight>90)) return "体重は 0〜90kg の範囲で入れてください。";
   return "";
 }
@@ -2774,11 +2834,12 @@ function clearAll(){
 }
 
 function resetForm(){
-  ["f-name","f-breed","f-sire","f-dam","f-years","f-months","f-sex","f-weight","f-yard","f-floor","f-guardian","f-guardian-tel","f-microchip","f-registration","f-vet","f-vet-tel","f-meds"].forEach(id=>{ const e=$("#"+id); if(e) e.value=""; });
+  ["f-name","f-breed","f-sire","f-dam","f-years","f-months","f-sex","f-weight","f-yard","f-floor","f-birth","f-guardian","f-guardian-tel","f-microchip","f-registration","f-vet","f-vet-tel","f-meds"].forEach(id=>{ const e=$("#"+id); if(e) e.value=""; });
   document.querySelectorAll('input[name=housing]').forEach(r=>r.checked=false);
   document.querySelectorAll('[data-multi] input').forEach(c=>c.checked=false);
   document.querySelectorAll('.chip.on').forEach(c=>c.classList.remove('on'));
   const mp=$("#mix-parents"); if(mp) mp.style.display="none";
+  onBirthChange();   // 年齢欄の自動入力ロック・案内を初期状態に戻す
   clearPhoto();
 }
 
@@ -2805,6 +2866,8 @@ function fillForm(f){
   setv("f-vet", f.vet);
   setv("f-vet-tel", f.vetTel);
   setv("f-meds", f.meds);
+  setv("f-birth", f.birth);
+  onBirthChange();   // 生年月日があれば年齢を自動計算してロック
   if(f.housing){ const r=document.querySelector(`input[name=housing][value="${f.housing}"]`); if(r){r.checked=true; r.closest('.chip').classList.add('on');} }
   (f.owner||[]).forEach(v=>{ const c=document.querySelector(`[data-multi="owner"] input[value="${v}"]`); if(c){c.checked=true; c.closest('.chip').classList.add('on');} });
   (f.concern||[]).forEach(v=>{ const c=document.querySelector(`[data-multi="concern"] input[value="${v}"]`); if(c){c.checked=true; c.closest('.chip').classList.add('on');} });
@@ -2959,6 +3022,7 @@ if('serviceWorker' in navigator){
 }
 
 initBreeds();
+(function(){ const fb=$("#f-birth"); if(fb) fb.max = todayISO(); })();  // 生年月日は今日まで
 loadDB();
 if(currentPet()){
   showGuide();
