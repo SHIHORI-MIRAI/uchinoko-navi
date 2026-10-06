@@ -1,0 +1,19 @@
+{
+  "name": "うちの子ナビ",
+  "short_name": "うちの子ナビ",
+  "description": "愛犬の犬種・月齢・暮らしに合わせたケアナビ。プロフィール・日記・体重・緊急メモをこの端末に保存。",
+  "start_url": "./app.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#fbf7f1",
+  "theme_color": "#d97324",
+  "lang": "ja",
+  "dir": "ltr",
+  "icons": [
+    { "src": "img/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "img/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "img/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "img/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
