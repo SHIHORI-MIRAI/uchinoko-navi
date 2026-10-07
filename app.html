@@ -377,6 +377,19 @@
   .save-tip b{color:var(--accent-dark)}
   .backup-reminder{background:var(--warn-soft); border:1px solid #f3cfc9; border-radius:12px; padding:11px 14px; font-size:13px; line-height:1.6; margin-top:10px}
   .backup-reminder b{color:var(--warn)}
+  /* 引っ越しコード */
+  .handoff-box{background:#f3f8f5; border:1px solid #d7e8dd; border-radius:12px; padding:14px 15px; margin-top:16px}
+  .handoff-h{font-weight:700; font-size:14.5px; color:var(--good)}
+  .handoff-row{display:flex; gap:12px; flex-wrap:wrap; margin-top:12px}
+  .handoff-side{flex:1 1 220px; background:#fff; border:1px solid var(--line); border-radius:10px; padding:12px}
+  .handoff-step{font-size:12.5px; color:var(--sub); font-weight:700; margin-bottom:8px}
+  .handoff-side .btn{width:100%}
+  .handoff-code{font-size:34px; font-weight:800; letter-spacing:4px; text-align:center; color:var(--accent-dark);
+    background:var(--accent-soft); border:2px dashed var(--accent); border-radius:14px; padding:16px 10px; margin:14px 0; user-select:all}
+  .handoff-url{font-size:12.5px; word-break:break-all; background:#f6f3ee; border:1px solid var(--line); border-radius:10px; padding:10px 12px; margin:8px 0; color:var(--ink)}
+  .handoff-in{width:100%; font-size:24px; font-weight:800; letter-spacing:4px; text-align:center; text-transform:uppercase;
+    padding:12px; border:2px solid var(--accent); border-radius:12px; background:#fffdfb; color:var(--ink); font-family:inherit}
+  .handoff-in:focus{outline:2px solid var(--accent-soft)}
   /* アプリ化（ホーム画面に追加）バナー */
   .install-banner{display:flex; align-items:center; gap:12px; background:linear-gradient(135deg,#fff,#fdf3e8);
     border:1px solid var(--accent); border-radius:14px; padding:12px 14px; margin-bottom:16px; box-shadow:var(--shadow); position:relative}
@@ -806,6 +819,24 @@
         <input type="file" id="import-file" accept="application/json,.json" style="display:none" onchange="onImportFile(this)">
       </div>
       <div class="hint">※「読み込み」をすると、今このアプリにあるデータは置き換わります。心配な時は先に「書き出し」をしておくと安心です。スマホでは保存先（ファイル／共有）を選ぶ画面が出ることがあります。</div>
+
+      <!-- 引っ越しコード（ファイル不要・ネット経由でカンタン移動） -->
+      <div class="handoff-box">
+        <div class="handoff-h">🚚 別のブラウザ・スマホへ引っ越し（引っ越しコード）</div>
+        <div class="hint" style="margin-top:4px">ファイルを使わずに、<b>短い番号（引っ越しコード）</b>でまるごとデータを移せます。たとえば <b>Chrome で入力した内容を Safari に移す</b>ときに便利です。</div>
+        <div class="handoff-row">
+          <div class="handoff-side">
+            <div class="handoff-step">① 今データが入っている方（例：Chrome）で</div>
+            <button class="btn" onclick="createHandoff(this)">📤 引っ越しコードを作る</button>
+          </div>
+          <div class="handoff-side">
+            <div class="handoff-step">② 新しい方（例：Safari）で</div>
+            <button class="btn ghost" onclick="openHandoffReceive()">📥 コードを入力して受け取る</button>
+          </div>
+        </div>
+        <div class="hint">※インターネットに接続して使います。預けたデータは<b>受け取ると消え</b>、使わなくても<b>1日で自動的に消えます</b>。コードを知っている人だけが受け取れます。写真が多いと使えないことがあり、その時は上の「書き出し（ファイル）」をお使いください。</div>
+      </div>
+
       <div class="row-actions" style="margin-top:16px">
         <button class="btn ghost" onclick="printSheet()">📄 PDFで保存（もしもの時シート）</button>
       </div>
@@ -889,6 +920,16 @@
 <!-- もしもの時シート（通常は非表示・印刷/PDF時のみ表示） -->
 <div id="print-sheet"></div>
 
+<!-- 引っ越しコードで受け取る／作る（ポップアップ） -->
+<div class="modal-bg" id="handoff-modal" onclick="if(event.target===this)closeHandoff()">
+  <div class="modal" role="dialog" aria-modal="true" aria-label="引っ越しコード">
+    <button class="x" onclick="closeHandoff()" aria-label="閉じる">×</button>
+    <div id="handoff-modal-body"></div>
+  </div>
+</div>
+
+<!-- Supabase（引っ越しコードの送受信に使用。このキーは公開用で安全。保護はデータベース側のルール=RLSで実施） -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 /* ===================== 知識ベース（後から増やせる） ===================== */
 
@@ -1762,37 +1803,180 @@ function onImportFile(input){
     let parsed;
     try{ parsed = JSON.parse(e.target.result); }
     catch(err){ alert("このファイルは読み込めませんでした。うちの子ナビで書き出したバックアップファイル（.json）を選んでください。"); return; }
-    // 形式に寛容：{data:{pets}} でも {pets} でも受ける
-    const data = (parsed && parsed.data && Array.isArray(parsed.data.pets)) ? parsed.data
-               : (parsed && Array.isArray(parsed.pets)) ? parsed : null;
-    if(!data){ alert("このファイルは、うちの子ナビのバックアップではないようです。"); return; }
-    // 各ペットのデータを健全化（欠けている項目を補う）
-    data.pets.forEach(p=>{
-      if(!p.id) p.id = newId();
-      if(!Array.isArray(p.weightLog)) p.weightLog = [];
-      if(!p.done || typeof p.done!=="object") p.done = {};
-      if(!Array.isArray(p.diary)) p.diary = [];
-    });
-    const petCount = data.pets.length;
-    const diaryCount = data.pets.reduce((n,p)=> n + p.diary.length, 0);
-    if(!confirm("このバックアップには「"+petCount+"匹分・日記"+diaryCount+"件」が入っています。\n読み込むと、今このアプリにあるデータは置き換わります。よろしいですか？")) return;
-    // currentId を健全化
-    if(!data.currentId || !data.pets.some(p=>p.id===data.currentId)){
-      data.currentId = data.pets[0] ? data.pets[0].id : null;
-    }
-    const prevDB = DB;
-    DB = data;
-    if(!trySaveDB()){
-      DB = prevDB; trySaveDB();
-      alert("保存容量が足りず、読み込めませんでした。ブラウザの空き容量を確認してください。");
-      return;
-    }
-    seasonOverride = "";
-    showGuide();
-    alert("読み込みが完了しました 🐾");
+    if(applyImportedData(parsed)) alert("読み込みが完了しました 🐾");
   };
   reader.onerror = () => alert("ファイルを読み込めませんでした。");
   reader.readAsText(file);
+}
+
+/* バックアップ／引っ越しで受け取ったデータを取り込む共通処理。成功したら true を返す */
+function applyImportedData(parsed){
+  // 形式に寛容：{data:{pets}} でも {pets} でも受ける
+  const data = (parsed && parsed.data && Array.isArray(parsed.data.pets)) ? parsed.data
+             : (parsed && Array.isArray(parsed.pets)) ? parsed : null;
+  if(!data){ alert("このデータは、うちの子ナビのバックアップではないようです。"); return false; }
+  // 各ペットのデータを健全化（欠けている項目を補う）
+  data.pets.forEach(p=>{
+    if(!p.id) p.id = newId();
+    if(!Array.isArray(p.weightLog)) p.weightLog = [];
+    if(!p.done || typeof p.done!=="object") p.done = {};
+    if(!Array.isArray(p.diary)) p.diary = [];
+    if(!Array.isArray(p.owner)) p.owner = [];       // ガイド表示(matches)が配列前提のため補う
+    if(!Array.isArray(p.concern)) p.concern = [];   // 同上（古い/部分的なデータでも落ちないように）
+  });
+  const petCount = data.pets.length;
+  const diaryCount = data.pets.reduce((n,p)=> n + p.diary.length, 0);
+  if(!confirm("このデータには「"+petCount+"匹分・日記"+diaryCount+"件」が入っています。\n読み込むと、今このアプリにあるデータは置き換わります。よろしいですか？")) return false;
+  // currentId を健全化
+  if(!data.currentId || !data.pets.some(p=>p.id===data.currentId)){
+    data.currentId = data.pets[0] ? data.pets[0].id : null;
+  }
+  const prevDB = DB;
+  DB = data;
+  if(!trySaveDB()){
+    DB = prevDB; trySaveDB();
+    alert("保存容量が足りず、読み込めませんでした。ブラウザの空き容量を確認してください。");
+    return false;
+  }
+  seasonOverride = "";
+  showGuide();
+  return true;
+}
+
+/* ===================== 引っ越しコード（ネット経由でブラウザ／端末間を移動） ===================== */
+const HANDOFF_URL = "https://kpkadjmaffqlozblrobd.supabase.co";
+const HANDOFF_KEY = "sb_publishable_yxsE48Vx0dhUHAWj9d5Vnw_lvqxWRa_";
+let _handoffSB = null;
+function handoffSB(){
+  if(_handoffSB) return _handoffSB;
+  if(!window.supabase || !window.supabase.createClient) return null;   // CDN未読み込み（オフライン等）
+  try{ _handoffSB = window.supabase.createClient(HANDOFF_URL, HANDOFF_KEY); return _handoffSB; }
+  catch(e){ return null; }
+}
+function openHandoffModal(html){
+  const m=$("#handoff-modal"), b=$("#handoff-modal-body");
+  if(!m||!b) return;
+  b.innerHTML = html;
+  m.classList.add("on");
+}
+function closeHandoff(){ const m=$("#handoff-modal"); if(m) m.classList.remove("on"); }
+
+// ①作る：今のデータを預けて、短い引っ越しコードを表示
+async function createHandoff(btn){
+  if(!DB.pets || !DB.pets.length){ alert("まだ登録データがありません。プロフィールを保存してからお試しください。"); return; }
+  const sb = handoffSB();
+  if(!sb){ alert("インターネットに接続してからお試しください。\n（引っ越しコードはネット経由で動きます）"); return; }
+  let json;
+  try{ json = JSON.stringify({ app:"uchinoko-navi", version:2, exportedAt:new Date().toISOString(), data:DB }); }
+  catch(e){ alert("データの準備に失敗しました。"); return; }
+  if(json.length > 6000000){ alert("データが大きいため、引っ越しコードは作れませんでした。\nお手数ですが、上の「💾 書き出し（ファイル）」での引っ越しをお使いください。"); return; }
+  if(btn) btn.disabled = true;
+  openHandoffModal('<h2>🚚 引っ越しコードを作っています…</h2><p class="lead">少しお待ちください。</p>');
+  try{
+    const { data, error } = await sb.rpc("handoff_create", { p_payload: json });
+    if(error || !data) throw (error || new Error("no code"));
+    const code = String(data);
+    const pretty = code.slice(0,3) + "-" + code.slice(3);
+    openHandoffModal(handoffCreatedHTML(pretty));
+    appMeta().lastBackup = Date.now(); trySaveDB();   // 控えを取ったとみなし、保存リマインドを更新
+    if($("#backup-reminder")) renderBackupReminder();
+  }catch(e){
+    closeHandoff();
+    alert("引っ越しコードを作れませんでした。\nネット接続を確認して、時間をおいてお試しください。");
+  }finally{
+    if(btn) btn.disabled = false;
+  }
+}
+
+function handoffCreatedHTML(pretty){
+  const url = location.href.split('#')[0];
+  return ''
+   + '<h2>🚚 引っ越しコードができました</h2>'
+   + '<p class="lead">新しいブラウザ（例：Safari）でこのアプリを開き、「📥 コードを入力して受け取る」に下の番号を入れてください。</p>'
+   + '<div class="handoff-code" id="handoff-code">'+pretty+'</div>'
+   + '<div class="row-actions" style="justify-content:center">'
+   +   '<button class="btn" onclick="copyFrom(\'#handoff-code\', this)">📋 コードをコピー</button>'
+   + '</div>'
+   + '<div class="tiplist">'
+   +   '<div class="ti">📱 <b>同じスマホの Safari で開くには</b></div>'
+   +   '<div class="ti">1.「Safari」を開く</div>'
+   +   '<div class="ti">2. このアプリのページを開く（下のアドレスをコピーして貼り付けると確実です）</div>'
+   +   '<div class="ti">3.「保存・バックアップ」まで下にスクロール →「📥 コードを入力して受け取る」に <b>'+pretty+'</b> を入力</div>'
+   + '</div>'
+   + '<div class="handoff-url" id="handoff-url">'+esc(url)+'</div>'
+   + '<div class="row-actions" style="justify-content:center">'
+   +   '<button class="btn ghost" onclick="copyFrom(\'#handoff-url\', this)">🔗 このページのアドレスをコピー</button>'
+   + '</div>'
+   + '<div class="hint" style="margin-top:12px">※このコードは <b>1日で自動的に消えます</b>。受け取りが終わると使えなくなります。番号は他の人に教えないでください。</div>';
+}
+
+// ②受け取る：コード入力画面
+function openHandoffReceive(){
+  openHandoffModal(handoffReceiveHTML());
+  setTimeout(()=>{ const i=$("#handoff-input"); if(i) i.focus(); }, 60);
+}
+function handoffReceiveHTML(){
+  return ''
+   + '<h2>📥 引っ越しコードで受け取る</h2>'
+   + '<p class="lead">前のブラウザ（例：Chrome）で作った <b>引っ越しコード</b>を入力して、「受け取る」を押してください。</p>'
+   + '<input type="text" id="handoff-input" class="handoff-in" placeholder="ABC-123" maxlength="10"'
+   +   ' inputmode="latin" autocapitalize="characters" autocorrect="off" autocomplete="off" spellcheck="false"'
+   +   ' onkeydown="if(event.key===\'Enter\'){event.preventDefault();claimHandoff();}">'
+   + '<div class="row-actions" style="justify-content:center; margin-top:14px">'
+   +   '<button class="btn" onclick="claimHandoff(this)">📥 受け取る</button>'
+   + '</div>'
+   + '<div class="hint" style="margin-top:12px">※受け取ると、<b>今このブラウザにあるデータは置き換わります</b>。大文字・小文字どちらでもOK、ハイフンは省いても大丈夫です。</div>';
+}
+
+async function claimHandoff(btn){
+  const input = $("#handoff-input");
+  const code = ((input && input.value) || "").replace(/[^A-Za-z0-9]/g,"").toUpperCase();
+  if(code.length < 6){ alert("コードは6文字です。もう一度ご確認ください。"); if(input) input.focus(); return; }
+  const sb = handoffSB();
+  if(!sb){ alert("インターネットに接続してからお試しください。"); return; }
+  if(btn) btn.disabled = true;
+  try{
+    const { data, error } = await sb.rpc("handoff_claim", { p_code: code });
+    if(error) throw error;
+    if(!data){
+      alert("そのコードのデータが見つかりませんでした。\nコードちがい、または期限切れ（1日）の可能性があります。\n前のブラウザでもう一度「引っ越しコードを作る」からお試しください。");
+      if(btn) btn.disabled = false; return;
+    }
+    let parsed;
+    try{ parsed = JSON.parse(data); }
+    catch(e){ alert("受け取ったデータを読み取れませんでした。"); if(btn) btn.disabled = false; return; }
+    const ok = applyImportedData(parsed);
+    if(ok){
+      try{ await sb.rpc("handoff_delete", { p_code: code }); }catch(e){}   // 成功したらサーバーから消す（個人情報を残さない）
+      closeHandoff();
+      alert("受け取りが完了しました 🐾");
+    }else{
+      if(btn) btn.disabled = false;   // キャンセル／失敗時は再試行できるように戻す
+    }
+  }catch(e){
+    alert("受け取りに失敗しました。\nネット接続を確認して、もう一度お試しください。");
+    if(btn) btn.disabled = false;
+  }
+}
+
+// クリップボードへコピー（指定要素の文字をコピー。古い端末向けのフォールバック付き）
+function copyFrom(sel, btn){
+  const el = $(sel); if(!el) return;
+  const text = el.textContent.trim();
+  const orig = btn ? btn.textContent : "";
+  const done = ()=>{ if(btn){ btn.textContent = "✓ コピーしました"; setTimeout(()=>{ btn.textContent = orig; }, 1600); } };
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(done).catch(()=>fallbackCopy(text, done));
+  }else{ fallbackCopy(text, done); }
+}
+function fallbackCopy(text, done){
+  try{
+    const ta=document.createElement("textarea"); ta.value=text;
+    ta.style.position="fixed"; ta.style.top="-1000px"; ta.style.opacity="0";
+    document.body.appendChild(ta); ta.focus(); ta.select();
+    const ok=document.execCommand("copy"); document.body.removeChild(ta);
+    if(ok && done) done(); else if(!ok) toast("コピーできませんでした。手入力してください");
+  }catch(e){ toast("コピーできませんでした。手入力してください"); }
 }
 
 function readForm(){

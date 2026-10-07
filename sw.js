@@ -4,7 +4,7 @@
    - 画像など他のファイルは「キャッシュ優先」＋裏で更新（表示が速い・オフラインでも開ける）。
    アプリを更新したら CACHE のバージョンを上げる。古いキャッシュは activate で自動削除し、
    skipWaiting + clients.claim ですぐ新バージョンに切り替わる（ページ側は controllerchange で自動リロード）。 */
-const CACHE = 'uchinoko-v2';
+const CACHE = 'uchinoko-v3';
 const PRECACHE = [
   './app.html',
   './manifest.webmanifest',
