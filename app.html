@@ -651,7 +651,14 @@
       <div class="grid" style="margin-top:8px">
         <div>
           <label>生年月日（わかれば）</label>
-          <input type="date" id="f-birth" onchange="onBirthChange()">
+          <div style="display:flex; align-items:center; gap:4px; flex-wrap:wrap">
+            <input type="number" id="f-birth-y" inputmode="numeric" placeholder="西暦" min="1900" oninput="onBirthNumChange()" style="width:5.4em" aria-label="生まれた年（西暦4けた）"><span>年</span>
+            <input type="number" id="f-birth-m" inputmode="numeric" placeholder="月" min="1" max="12" oninput="onBirthNumChange()" style="width:3.6em" aria-label="生まれた月"><span>月</span>
+            <input type="number" id="f-birth-d" inputmode="numeric" placeholder="日" min="1" max="31" oninput="onBirthNumChange()" style="width:3.6em" aria-label="生まれた日"><span>日</span>
+          </div>
+          <div class="hint" style="margin-top:6px">数字でそのまま入れられます（例：2013 年 5 月 20 日）。カレンダーで選びたいときは
+            <input type="date" id="f-birth" onchange="onBirthDateChange()" style="vertical-align:middle">
+          </div>
           <div class="hint" id="f-birth-age">入れると「年齢（何歳何ヶ月）」が自動で計算され、時間がたっても正しくなります。</div>
         </div>
         <div><label>保護者（飼い主）のお名前</label><input type="text" id="f-guardian" placeholder="例：山田 花子"></div>
@@ -2042,6 +2049,45 @@ function onBirthChange(){
   if(m){ m.value=a.months; m.readOnly=true; m.style.background="#f3efe8"; }
   if(h) h.innerHTML = "→ いまは <b>"+ageLabel(a.totalMonths)+"</b>（生年月日から自動で計算されます）";
 }
+// 年・月・日（数字）→ ISO日付。実在しない日付（2/30など）は "" を返す
+function ymdToISO(y,m,d){
+  y=parseInt(y,10); m=parseInt(m,10); d=parseInt(d,10);
+  if(!y||!m||!d) return "";
+  if(y<1900 || m<1 || m>12 || d<1 || d>31) return "";
+  const dt=new Date(y, m-1, d);
+  if(dt.getFullYear()!==y || dt.getMonth()!==m-1 || dt.getDate()!==d) return "";  // 実在チェック
+  const p=n=>String(n).padStart(2,"0");
+  return y+"-"+p(m)+"-"+p(d);
+}
+// ISO日付 → 年・月・日の入力欄に反映（読み込み時・カレンダー選択時に使う）
+function syncBirthNums(){
+  const fb=$("#f-birth"), yb=$("#f-birth-y"), mb=$("#f-birth-m"), db=$("#f-birth-d");
+  if(!fb||!yb||!mb||!db) return;
+  const p=(fb.value||"").split('-');
+  if(p.length===3){ yb.value=+p[0]; mb.value=+p[1]; db.value=+p[2]; }
+  else { yb.value=""; mb.value=""; db.value=""; }
+}
+// 数字の「年・月・日」を入力したとき
+function onBirthNumChange(){
+  const y=$("#f-birth-y"), m=$("#f-birth-m"), d=$("#f-birth-d"), fb=$("#f-birth"), h=$("#f-birth-age");
+  if(!y||!m||!d||!fb) return;
+  const ys=y.value.trim(), ms=m.value.trim(), ds=d.value.trim();
+  const iso=(ys&&ms&&ds) ? ymdToISO(ys,ms,ds) : "";
+  fb.value=(iso && isValidBirth(iso)) ? iso : "";
+  onBirthChange();   // 年齢の自動計算／解除と案内を更新
+  if(!fb.value && h){ // 数字入力ならではの、やさしい案内に差し替え
+    if(ys||ms||ds){
+      h.innerHTML = (ys&&ms&&ds)
+        ? "⚠️ その日付は入れられません。今日より前の、実在する日付で入れてください。"
+        : "あと少し：西暦（4けた）・月・日を、ぜんぶ入れてください。";
+    }
+  }
+}
+// カレンダーで日付を選んだとき（数字欄にも反映してから年齢計算）
+function onBirthDateChange(){
+  syncBirthNums();
+  onBirthChange();
+}
 
 function buildProfile(f){
   let breed = BREEDS[f.breedIdx] || BREEDS[BREEDS.length-2];
@@ -2340,7 +2386,7 @@ function renderDisaster(){
     {href:"https://www.google.com/search?q="+q,  t:"🔎 近くの避難所を調べる"},
     {href:"https://www.google.com/search?q="+qh, t:"🗺️ ハザードマップ"},
     {href:"https://www.jma.go.jp/bosai/",         t:"⛅ 気象庁 防災情報"},
-    {href:"https://www.env.go.jp/nature/dobutsu/aigo/2_data/pamph/h3009.html", t:"🐾 環境省 ペット防災"},
+    {href:"https://www.env.go.jp/nature/dobutsu/aigo/2_data/pamph/h3009a.html", t:"🐾 環境省 ペット防災"},
   ];
   const kitRows = KIT.map(it=>{
     const on = !!d.kit[it.key];
@@ -3059,7 +3105,7 @@ function clearAll(){
 }
 
 function resetForm(){
-  ["f-name","f-breed","f-sire","f-dam","f-years","f-months","f-sex","f-weight","f-yard","f-floor","f-birth","f-guardian","f-guardian-tel","f-microchip","f-registration","f-vet","f-vet-tel","f-meds"].forEach(id=>{ const e=$("#"+id); if(e) e.value=""; });
+  ["f-name","f-breed","f-sire","f-dam","f-years","f-months","f-sex","f-weight","f-yard","f-floor","f-birth","f-birth-y","f-birth-m","f-birth-d","f-guardian","f-guardian-tel","f-microchip","f-registration","f-vet","f-vet-tel","f-meds"].forEach(id=>{ const e=$("#"+id); if(e) e.value=""; });
   document.querySelectorAll('input[name=housing]').forEach(r=>r.checked=false);
   document.querySelectorAll('[data-multi] input').forEach(c=>c.checked=false);
   document.querySelectorAll('.chip.on').forEach(c=>c.classList.remove('on'));
@@ -3092,6 +3138,7 @@ function fillForm(f){
   setv("f-vet-tel", f.vetTel);
   setv("f-meds", f.meds);
   setv("f-birth", f.birth);
+  syncBirthNums();   // 保存された生年月日を数字欄にも反映
   onBirthChange();   // 生年月日があれば年齢を自動計算してロック
   if(f.housing){ const r=document.querySelector(`input[name=housing][value="${f.housing}"]`); if(r){r.checked=true; r.closest('.chip').classList.add('on');} }
   (f.owner||[]).forEach(v=>{ const c=document.querySelector(`[data-multi="owner"] input[value="${v}"]`); if(c){c.checked=true; c.closest('.chip').classList.add('on');} });
@@ -3317,7 +3364,7 @@ if('serviceWorker' in navigator){
 }
 
 initBreeds();
-(function(){ const fb=$("#f-birth"); if(fb) fb.max = todayISO(); })();  // 生年月日は今日まで
+(function(){ const fb=$("#f-birth"); if(fb) fb.max = todayISO(); const yb=$("#f-birth-y"); if(yb) yb.max = new Date().getFullYear(); })();  // 生年月日は今日まで
 loadDB();
 if(currentPet()){
   showGuide();
