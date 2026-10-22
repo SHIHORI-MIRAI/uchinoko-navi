@@ -458,8 +458,39 @@
     #print-sheet .sh-foot{margin-top:16px; font-size:10.5px; color:#666; border-top:1px solid #ccc; padding-top:6px}
   }
 </style>
+<style>
+/* ===== 合言葉ロック画面 ===== */
+#gate{position:fixed; inset:0; z-index:99999; padding:24px;
+  background:linear-gradient(135deg,#d97324,#b85c14);
+  display:flex; align-items:center; justify-content:center;
+  font-family:"Yu Gothic UI","Hiragino Sans",Meiryo,"Segoe UI",sans-serif;}
+#gate .box{background:#fff; border-radius:18px; box-shadow:0 12px 44px rgba(80,50,20,.32);
+  padding:34px 26px 28px; width:100%; max-width:360px; text-align:center; box-sizing:border-box;}
+#gate .emoji{font-size:46px; line-height:1}
+#gate h2{margin:12px 0 4px; font-size:21px; color:#2c2622}
+#gate p{margin:0 0 18px; font-size:13px; color:#6f655c; line-height:1.6}
+#gate input{width:100%; padding:12px 14px; border:1px solid #ece3d8; border-radius:10px;
+  font:inherit; font-size:16px; text-align:center; background:#fffdfb; color:#2c2622; box-sizing:border-box;}
+#gate input:focus{outline:2px solid #fdecd9; border-color:#d97324}
+#gate button{width:100%; margin-top:10px; background:#d97324; color:#fff; border:none;
+  padding:12px; border-radius:10px; font:inherit; font-weight:700; cursor:pointer}
+#gate button:hover{background:#b85c14}
+#gate .err{color:#c0392b; font-size:12.5px; min-height:18px; margin-top:10px}
+body.unlocked #gate{display:none}
+</style>
 </head>
 <body>
+<!-- ============ 合言葉ロック（関係者のみ入れます） ============ -->
+<div id="gate">
+  <div class="box">
+    <div class="emoji">🐾</div>
+    <h2>うちの子ナビ</h2>
+    <p>このアプリは関係者向けです。<br>合言葉を入力してください。</p>
+    <input type="password" id="gate-input" placeholder="合言葉" autocomplete="off" inputmode="text">
+    <button id="gate-btn" type="button">はいる</button>
+    <div class="err" id="gate-err"></div>
+  </div>
+</div>
 <header class="appbar">
   <div class="appbar-top">
     <div>
@@ -3373,6 +3404,61 @@ if(currentPet()){
   openHelp();
 }
 initInstall();
+</script>
+<script>
+/* ===== ★合言葉（パスワード）の設定 =====
+   ▼変えたいときは、下の "" の中の文字だけを書き換えて保存してください。
+     例）  const APP_PASSWORD = "wanwan2026";
+   ・一度合言葉が合った端末では、次回から入力を省略します。
+   ・合言葉を変更すると、全員もう一度入力が必要になります（＝配り直し）。
+   ※これは「関係者以外にうっかり広まらない」ための簡易ロックです。
+     ページのソースを見られると突破され得る点はご承知おきください。 */
+const APP_PASSWORD = "うちのこ";
+
+/* 入力の表記ゆれも通します（スマホの変換ミス対策）。
+   別の言い方も許可したいときは、この配列に足してください。 */
+const APP_PASSWORD_ALIASES = ["うちの子", "ウチノコ", "uchinoko"];
+
+(function(){
+  function setupGate(){
+    const GATE_KEY = "uchinoko_gate_ok";
+    const input = document.getElementById("gate-input");
+    const btn   = document.getElementById("gate-btn");
+    const err   = document.getElementById("gate-err");
+    if(!input || !btn){ return; }
+
+    const norm = s => (s || "").trim().toLowerCase();
+    const OK = new Set([APP_PASSWORD, ...APP_PASSWORD_ALIASES].map(norm));
+
+    // この端末で前回合言葉が合っていれば、そのまま開く
+    try{
+      if(localStorage.getItem(GATE_KEY) === APP_PASSWORD){
+        document.body.classList.add("unlocked");
+        return;
+      }
+    }catch(e){}
+
+    function tryUnlock(){
+      if(OK.has(norm(input.value))){
+        try{ localStorage.setItem(GATE_KEY, APP_PASSWORD); }catch(e){}
+        document.body.classList.add("unlocked");
+      }else{
+        err.textContent = "合言葉がちがうようです。もう一度お試しください。";
+        input.value = "";
+        input.focus();
+      }
+    }
+    btn.addEventListener("click", tryUnlock);
+    input.addEventListener("keydown", function(e){ if(e.key === "Enter") tryUnlock(); });
+    input.focus();
+  }
+
+  if(document.readyState === "loading"){
+    document.addEventListener("DOMContentLoaded", setupGate);
+  }else{
+    setupGate();
+  }
+})();
 </script>
 </body>
 </html>
