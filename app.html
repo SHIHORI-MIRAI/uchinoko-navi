@@ -538,7 +538,7 @@ body.unlocked #gate{display:none}
       <div class="ti"><span>🐕</span><span><b>複数の子を登録</b>：ガイド上部のドロップダウンで切り替え。「＋新しい子を追加」で何頭でも登録できます。</span></div>
       <div class="ti"><span>📝</span><span><b>編集</b>：ガイド上部の「編集」からいつでもプロフィール・顔写真を直せます。</span></div>
       <div class="ti"><span>☀️</span><span><b>季節の切替</b>：「住まい・季節に合わせた注意」の右上で季節を手動切替（既定は今の季節を自動表示）。犬種ごとの夏冬の体質アドバイスも切り替わります。</span></div>
-      <div class="ti"><span>🖨️</span><span><b>印刷・PDF保存</b>：ガイド上部の「🖨️印刷」で、動物病院やご家族と共有できる形に出力できます。</span></div>
+      <div class="ti"><span>🖨️</span><span><b>印刷・PDF保存</b>：ガイド上部の「🖨️印刷」や「📄PDFで保存」で、動物病院やご家族と共有できる形に出力できます。<b>ホーム画面に追加したアプリ</b>では「📄PDFで保存」から<b>共有メニュー</b>（メモ・メール・プリント等）に渡せます。</span></div>
       <div class="ti"><span>🔒</span><span><b>プライバシー</b>：入力内容はこの端末の中だけに保存され、外部には送信されません。</span></div>
       <div class="ti"><span>⚠️</span><span><b>ご注意</b>：本アプリは情報提供が目的で、獣医師の診断・指導の代わりではありません。気になる症状は専門家にご相談ください。</span></div>
     </div>
@@ -728,7 +728,7 @@ body.unlocked #gate{display:none}
         <select id="pet-switch" onchange="onPetSwitch(this.value)" title="子を切り替え"></select>
         <button class="btn ghost" onclick="openDiary()">📔 日記</button>
         <button class="btn ghost" onclick="editPet()">編集</button>
-        <button class="btn ghost" onclick="window.print()">🖨️ 印刷</button>
+        <button class="btn ghost" onclick="printGuide()">🖨️ 印刷</button>
       </div>
     </div>
 
@@ -878,7 +878,7 @@ body.unlocked #gate{display:none}
       <div class="row-actions" style="margin-top:16px">
         <button class="btn ghost" onclick="printSheet()">📄 PDFで保存（もしもの時シート）</button>
       </div>
-      <div class="hint">プロフィール・緊急メモ・非常持ち出しリストを1枚にまとめて印刷／PDF保存できます。首輪に付けたり、避難バッグや病院に入れておくと安心。保存先の画面で「PDF」を選んでください。</div>
+      <div class="hint">プロフィール・緊急メモ・非常持ち出しリストを1枚にまとめて印刷／PDF保存できます。首輪に付けたり、避難バッグや病院に入れておくと安心。<br>・パソコン／Android／Safariのタブで開いた場合：新しいタブに印刷ページが開くので「🖨️印刷」→保存先で「PDF」を選んでください。<br>・iPhoneのホーム画面アプリで開いた場合：共有メニューが開くので「メモに保存」「メールで送る」「プリント」などから選べます。</div>
     </div>
 
     <footer>
@@ -2577,12 +2577,112 @@ function toggleKit(key, el){
   if(tag){ const doneN = KIT.filter(it=>d.kit[it.key]).length; tag.textContent = doneN+" / "+KIT.length; }
 }
 
+/* ===================== 印刷ユーティリティ ===================== */
+/* iPhoneのホーム画面アプリ(standalone)判定。standaloneのiOSでは window.print() が
+   無反応になるWebKitの不具合があるため、印刷は「新しいタブ」か「共有」に逃がす。 */
+function isStandalone(){
+  try{
+    return (window.navigator.standalone === true) ||
+           (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches);
+  }catch(e){ return false; }
+}
+/* 新しいタブに自己完結の印刷用ページを開く。開けたら true。
+   通常ブラウザ面(Safariタブ/PC/Android)で確実に印刷・PDF保存できるようにする。 */
+function openPrintWindow(innerHTML, css){
+  let w=null;
+  try{ w = window.open("", "_blank"); }catch(e){ w=null; }
+  if(!w){ return false; }
+  const base = location.href.substring(0, location.href.lastIndexOf("/")+1);
+  const html =
+    '<!doctype html><html lang="ja"><head><meta charset="utf-8">'+
+    '<meta name="viewport" content="width=device-width, initial-scale=1">'+
+    '<base href="'+base+'">'+
+    '<title>うちの子ナビ — 印刷 / PDF保存</title><style>'+
+    'html{color-scheme:light}'+
+    'body{margin:0; background:#fff; color:#111; font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif}'+
+    '.pbar{position:sticky; top:0; z-index:9; display:flex; flex-wrap:wrap; gap:8px; align-items:center; padding:10px 12px; background:#fff7ef; border-bottom:1px solid #eadfce}'+
+    '.pbar button{padding:11px 14px; font-size:15px; font-weight:700; border:0; border-radius:10px; cursor:pointer}'+
+    '.pbar .go{background:#d97324; color:#fff}'+
+    '.pbar .cl{background:#eee; color:#444}'+
+    '.pbar .tip{font-size:12px; color:#8a6a44; flex:1 1 100%; line-height:1.5}'+
+    '.pwrap{max-width:720px; margin:0 auto; padding:16px}'+
+    '@media print{ .pbar{display:none!important} .pwrap{max-width:none; padding:0} }'+
+    css+
+    '</style></head><body>'+
+    '<div class="pbar">'+
+      '<button class="go" onclick="window.print()">🖨️ 印刷 / PDFで保存</button>'+
+      '<button class="cl" onclick="window.close()">閉じる</button>'+
+      '<span class="tip">iPhoneは「印刷」→ 右上の共有アイコン →「ファイルに保存」でPDFにできます。</span>'+
+    '</div><div class="pwrap">'+innerHTML+'</div>'+
+    '<scr'+'ipt>window.addEventListener("load",function(){setTimeout(function(){try{window.print();}catch(e){}},600);});<\/scr'+'ipt>'+
+    '</body></html>';
+  try{ w.document.open(); w.document.write(html); w.document.close(); }
+  catch(e){ /* 書き込めなくてもタブは開いている */ }
+  return true;
+}
+/* ガイド全体を印刷（新しいタブ方式。開けなければ従来の印刷にフォールバック） */
+function printGuide(){
+  const src = document.getElementById("view-guide");
+  if(!src){ window.print(); return; }
+  const clone = src.cloneNode(true);
+  clone.querySelectorAll('#install-banner,.install-banner,.petbar,#fabnav,.toast,.help-btn,.row-actions,.linkbtns,select,button')
+       .forEach(el=> el.remove());
+  let styles="";
+  document.querySelectorAll("style").forEach(s=> styles += s.textContent + "\n");
+  if(openPrintWindow(clone.innerHTML, styles)) return;
+  // 新しいタブが開けなかった場合
+  if(isStandalone()){
+    alert("このホーム画面アプリでは直接印刷できないことがあります。\n下の「📄PDFで保存（もしもの時シート）」から共有メニュー経由で出力するか、Safariでこのページを開いてお試しください。");
+    return;
+  }
+  window.print();
+}
+/* もしもの時シートの内容をテキスト化（共有フォールバック用） */
+function sheetText(p, ageTxt, latestW, d, stamp){
+  const L=[];
+  L.push("🐾 "+(p.name||"うちの子")+" のもしもの時シート（"+stamp+" 時点）");
+  L.push("犬種: "+(p.breed?p.breed.name:"—"));
+  if(isValidBirth(p.birth)) L.push("生年月日: "+fmtBirth(p.birth));
+  L.push("年齢・性別: "+ageTxt+" / "+(p.sex||"—"));
+  L.push("体重: "+latestW);
+  L.push("");
+  L.push("【身元・連絡先】");
+  L.push("保護者: "+(p.guardian||"—"));
+  L.push("連絡先: "+(p.guardianTel||"—"));
+  L.push("マイクロチップ: "+(p.microchip||"—"));
+  L.push("登録(鑑札)番号: "+(p.registration||"—"));
+  L.push("");
+  L.push("【医療】");
+  L.push("かかりつけ病院: "+(p.vet||"—"));
+  L.push("病院の連絡先: "+(p.vetTel||"—"));
+  L.push("お薬・サプリ: "+(p.meds||"—"));
+  L.push("");
+  L.push("【非常持ち出しリスト（犬用）"+(d.city?"／お住まい: "+d.city:"")+"】");
+  KIT.forEach(it=> L.push((d.kit[it.key]?"☑":"☐")+" "+it.label));
+  return L.join("\n");
+}
+const SHEET_CSS =
+  '#print-sheet{color:#111; font-size:12.5px; line-height:1.6}'+
+  '#print-sheet .sh-title{font-size:19px; font-weight:800; margin:0 0 2px}'+
+  '#print-sheet .sh-sub{font-size:11px; color:#555; margin:0 0 12px}'+
+  '#print-sheet .sh-top{display:flex; gap:14px; align-items:flex-start; margin-bottom:12px}'+
+  '#print-sheet .sh-photo{width:92px; height:92px; border-radius:10px; object-fit:cover; border:1px solid #bbb; flex:0 0 auto}'+
+  '#print-sheet .sh-photo.ph{display:flex; align-items:center; justify-content:center; background:#f3f3f3; font-size:38px}'+
+  '#print-sheet table{width:100%; border-collapse:collapse; margin:0 0 12px}'+
+  '#print-sheet th,#print-sheet td{border:1px solid #bbb; padding:6px 9px; text-align:left; vertical-align:top; font-size:12.5px}'+
+  '#print-sheet th{background:#f3f3f3; white-space:nowrap; width:34%; font-weight:700}'+
+  '#print-sheet h3{font-size:14px; margin:14px 0 6px; border-left:4px solid #888; padding-left:8px}'+
+  '#print-sheet .sh-kit{columns:2; font-size:12.5px; margin:0; padding:0; list-style:none}'+
+  '#print-sheet .sh-kit li{padding:2px 0; break-inside:avoid}'+
+  '#print-sheet .sh-foot{margin-top:16px; font-size:10.5px; color:#666; border-top:1px solid #ccc; padding-top:6px}';
+
 /* ===================== もしもの時シート（印刷・PDF保存） ===================== */
 function printSheet(){
   const pet = currentPet();
   if(!pet){ alert("先にプロフィールを保存してください。"); return; }
   const p = buildProfile(pet);
   const sheet = $("#print-sheet"); if(!sheet) return;
+  const title = (p.name||"うちの子")+" のもしもの時シート";
   const ageTxt = p.totalMonths<12 ? p.totalMonths+"ヶ月"
     : Math.floor(p.totalMonths/12)+"歳"+(p.totalMonths%12?(p.totalMonths%12)+"ヶ月":"");
   const latestW = (pet.weightLog && pet.weightLog.length)
@@ -2594,7 +2694,7 @@ function printSheet(){
   const kitHtml = KIT.map(it=> '<li>'+(d.kit[it.key]?"☑":"☐")+' '+it.label+'</li>').join("");
   const now = new Date(), z = n=>String(n).padStart(2,"0");
   const stamp = now.getFullYear()+"/"+z(now.getMonth()+1)+"/"+z(now.getDate());
-  sheet.innerHTML =
+  const content =
     '<div class="sh-title">🐾 '+esc(p.name||"うちの子")+' のもしもの時シート</div>'+
     '<div class="sh-sub">迷子・災害・急な通院のときに。'+stamp+' 時点の情報です。</div>'+
     '<div class="sh-top">'+photoHtml+
@@ -2614,6 +2714,18 @@ function printSheet(){
     '<h3>非常持ち出しリスト（犬用）'+(d.city?'　／　お住まい：'+esc(d.city):'')+'</h3>'+
     '<ul class="sh-kit">'+kitHtml+'</ul>'+
     '<div class="sh-foot">うちの子ナビ（データはこの端末内に保存）　※迷子札・首輪にこのシートの連絡先を控えておくと安心です。</div>';
+
+  // iPhoneのホーム画面アプリ(standalone)は window.print() が効かない → 共有シートで取り出す
+  if(isStandalone() && navigator.share){
+    try{ navigator.share({ title:title, text:sheetText(p, ageTxt, latestW, d, stamp) }).catch(()=>{}); }
+    catch(e){ sheet.innerHTML = content; document.body.classList.add("sheet-mode"); window.print(); }
+    return;
+  }
+  // それ以外（PC / Android / Safariのタブ）：新しいタブに印刷用ページを開く
+  if(openPrintWindow('<div id="print-sheet">'+content+'</div>', SHEET_CSS)) return;
+  // 新しいタブが開けなかった場合の保険：共有 → それも無ければ従来の印刷
+  if(navigator.share){ try{ navigator.share({ title:title, text:sheetText(p, ageTxt, latestW, d, stamp) }).catch(()=>{}); return; }catch(e){} }
+  sheet.innerHTML = content;
   document.body.classList.add("sheet-mode");
   window.print();
 }
